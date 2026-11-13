@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27d61059a7321140a3a7b540a1eba58, type: 3}
+  m_Name: AudioBank
+  m_EditorClassIdentifier: FarmIdle.Data::FarmIdle.AudioBank
+  sounds:
+  - cue: 0
+    clips:
+    - {fileID: 8300000, guid: c6c7a3dc55c47f24a94757c1d26dc966, type: 3}
+    - {fileID: 8300000, guid: 5aab23e28a9adbe4293cfb615204b4aa, type: 3}
+    - {fileID: 8300000, guid: e5ebe9f9372f606428ab704b89517583, type: 3}
+    volume: 0.8
+    pitchMin: 0.95
+    pitchMax: 1.12
+    minIntervalSeconds: 0.05
+  - cue: 1
+    clips:
+    - {fileID: 8300000, guid: 5a130130417af884d95eec36e7d47844, type: 3}
+    - {fileID: 8300000, guid: 67d4e9bd9d228e146ba1da21d5c1b84b, type: 3}
+    - {fileID: 8300000, guid: ee6021bf0c7169448af3aa5a29e155f7, type: 3}
+    volume: 0.7
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 0.045
+  - cue: 2
+    clips:
+    - {fileID: 8300000, guid: 890bdf9abeeb61d4fafd9c4deb241ed3, type: 3}
+    - {fileID: 8300000, guid: 6da2388445c434a419234180fe3480fa, type: 3}
+    volume: 0.9
+    pitchMin: 0.98
+    pitchMax: 1.02
+    minIntervalSeconds: 0.2
+  - cue: 3
+    clips:
+    - {fileID: 8300000, guid: 1d666810ef0045e46bb893d5ebea30dd, type: 3}
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 0.5
+  - cue: 4
+    clips:
+    - {fileID: 8300000, guid: 92c22122492768f4293a0e12959690db, type: 3}
+    volume: 0.9
+    pitchMin: 0.98
+    pitchMax: 1.04
+    minIntervalSeconds: 0.2
+  - cue: 5
+    clips:
+    - {fileID: 8300000, guid: 94ef1f58f7b26674d8ec1a5ce09577cc, type: 3}
+    volume: 0.9
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 0.5
+  - cue: 6
+    clips:
+    - {fileID: 8300000, guid: 6792ce022e51669409f121414f9f6927, type: 3}
+    volume: 0.8
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 1
+  - cue: 7
+    clips:
+    - {fileID: 8300000, guid: 621421c3e493c82448692361ff82b29c, type: 3}
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 0.5
+  - cue: 8
+    clips:
+    - {fileID: 8300000, guid: 30c56699ebebc7d44ac5515cbe0ea2c2, type: 3}
+    volume: 0.55
+    pitchMin: 0.9
+    pitchMax: 0.96
+    minIntervalSeconds: 0.7
+  - cue: 9
+    clips:
+    - {fileID: 8300000, guid: f9ffe07d60170b340a7507148da417e6, type: 3}
+    volume: 0.9
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 1
+  - cue: 10
+    clips:
+    - {fileID: 8300000, guid: 0b8ad3f2cf8e24749aea681c2a199d2b, type: 3}
+    volume: 0.9
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 0.5
+  - cue: 11
+    clips:
+    - {fileID: 8300000, guid: 0b759673b1a3be440b0bb0e86a485aef, type: 3}
+    volume: 0.8
+    pitchMin: 0.98
+    pitchMax: 1.04
+    minIntervalSeconds: 0.08
+  music: {fileID: 8300000, guid: 303de1cc131db3c42a40265299462766, type: 3}
+  musicVolume: 0.35

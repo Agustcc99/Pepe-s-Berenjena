@@ -1,0 +1,218 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4054bd8c996b086498ae6c68eae0d2fe, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: FarmIdle.Data::FarmIdle.GameConfig
+  startingCoins: 0
+  backpackCapacity: 10
+  sellIntervalSeconds: 0.12
+  sellFlightSeconds: 0.3
+  zones:
+  - {fileID: 11400000, guid: 3d4d129f54a5b054ca3660280a54a820, type: 2}
+  - {fileID: 11400000, guid: 4a790bd649763534e98afdbc74e1aae1, type: 2}
+  - {fileID: 11400000, guid: bebcd4a10d5f2d841b95ca7fc7b04047, type: 2}
+  - {fileID: 11400000, guid: 793809a597a24fe4c8913a0b49b2f7bd, type: 2}
+  - {fileID: 11400000, guid: 5dac8589070c0f64f8b3cf27fc42824a, type: 2}
+  upgrades:
+  - {fileID: 11400000, guid: 5269c9fe838a4a447b8e2eb79ae1742b, type: 2}
+  - {fileID: 11400000, guid: d84d3bbf048403540a547b67416d4ff8, type: 2}
+  - {fileID: 11400000, guid: 5ad5b9e5bdd7bbd459589f4ce2514b5e, type: 2}
+  - {fileID: 11400000, guid: b27fe800538217c4f8ac98552d535aa3, type: 2}
+  - {fileID: 11400000, guid: 7d379ae3c9ede2848ac7684af0e21838, type: 2}
+  purchaseSeconds: 1.2
+  purchaseStartDelaySeconds: 0.7
+  crops:
+  - {fileID: 11400000, guid: ae8f31126c36b574fbc498588ac0f937, type: 2}
+  - {fileID: 11400000, guid: 34c3cf306129d2d4388e7696907c40b9, type: 2}
+  - {fileID: 11400000, guid: ab3c6b6c33e6e764da02070c01561890, type: 2}
+  - {fileID: 11400000, guid: cb568f46098e0f34b90f9c0ba7bc9fda, type: 2}
+  - {fileID: 11400000, guid: 3e110be0159077a4994085c28a18409e, type: 2}
+  - {fileID: 11400000, guid: e0f3ad156800a16419cbdf6b20086a82, type: 2}
+  - {fileID: 11400000, guid: 4032e221b134b8c4b8820afd57cb9834, type: 2}
+  - {fileID: 11400000, guid: 2b86066d344057944acfd0fc9ebf78d5, type: 2}
+  perks:
+  - {fileID: 11400000, guid: b13a697e4b3d16c4c902a1af63d5fa2f, type: 2}
+  - {fileID: 11400000, guid: f3781ae10722d494e99c7dc3365f48eb, type: 2}
+  levelBaseXp: 325
+  maxLevel: 20
+  maxMoveSpeedMultiplier: 1.5
+  saveDelaySeconds: 3
+  webSaveDelaySeconds: 1
+  prestigeStep: 0.25
+  seedsPerSeasonBase: 1
+  seedsPerSeasonDivisor: 2
+  prestigeShop:
+  - id: shop_coins
+    kind: 0
+    costs: 010000000100000002000000i
+    values:
+    - 300
+    - 1000
+    - 3000
+  - id: shop_growth
+    kind: 1
+    costs: 010000000200000003000000i
+    values:
+    - 1.1
+    - 1.2
+    - 1.35
+  - id: shop_offline
+    kind: 2
+    costs: 010000000100000002000000i
+    values:
+    - 3600
+    - 7200
+    - 14400
+  - id: shop_sell
+    kind: 3
+    costs: 020000000300000004000000i
+    values:
+    - 1.1
+    - 1.2
+    - 1.3
+  - id: shop_fert
+    kind: 4
+    costs: 010000000100000002000000i
+    values:
+    - 1
+    - 2
+    - 3
+  - id: shop_xp
+    kind: 5
+    costs: 010000000200000002000000i
+    values:
+    - 1.15
+    - 1.3
+    - 1.5
+  rareHarvestChance: 0.03
+  rareHarvestMultiplier: 3
+  ordersMinZones: 2
+  orderQuantityShare: 0.8
+  orderMinQuantity: 4
+  orderMaxQuantity: 24
+  orderBigFactor: 2
+  orderBigMaxQuantity: 40
+  orderBonus: 0.25
+  orderBigBonus: 0.4
+  orderRefillSeconds: 60
+  orderBigRefillSeconds: 600
+  orderSeedsPerSeasonCap: 2
+  orderCrops:
+  - cropId: wheat
+    zoneId: 
+    weight: 1
+  - cropId: carrot
+    zoneId: 
+    weight: 1
+  - cropId: tomato
+    zoneId: 
+    weight: 1
+  - cropId: pumpkin
+    zoneId: zone_west
+    weight: 2
+  - cropId: corn
+    zoneId: zone_north
+    weight: 2
+  - cropId: eggplant
+    zoneId: zone_north
+    weight: 3
+  - cropId: watermelon
+    zoneId: zone_northwest
+    weight: 3
+  - cropId: sunflower
+    zoneId: zone_northeast
+    weight: 3
+  offlineEfficiency: 0.25
+  offlineBaseCapSeconds: 7200
+  offlineMaxCoinsPerHour: 25000
+  offlineMinSeconds: 120
+  missions:
+  - {fileID: 11400000, guid: 4db8f2748ecd79d4c9a39b215844663a, type: 2}
+  - {fileID: 11400000, guid: b3e7e5d2227c9fa42adbff58bb0b7d47, type: 2}
+  - {fileID: 11400000, guid: 93315ab3a54188647a76fb767af552fa, type: 2}
+  - {fileID: 11400000, guid: 79870f9d9975d6d49bc298592727b389, type: 2}
+  - {fileID: 11400000, guid: 7423995a70f6c1f4f97b5fdcbeb47ddb, type: 2}
+  - {fileID: 11400000, guid: 6b899cd6b01d2cc49ba689f10c455c73, type: 2}
+  - {fileID: 11400000, guid: 183dbbd42e48b604c9622f9194f0411d, type: 2}
+  - {fileID: 11400000, guid: d6b57c57ab7112a4698aa23e7aed6af1, type: 2}
+  missionsPerDay: 3
+  missionMinCoins: 25
+  missionRewardScale: 0.3
+  achievements:
+  - {fileID: 11400000, guid: d4498092c4705b44e9b5f2c25814a8d8, type: 2}
+  - {fileID: 11400000, guid: eb5c292102ad45b499a923883dec8100, type: 2}
+  - {fileID: 11400000, guid: 72c816fa4c95e2c42b46a46e2a355e11, type: 2}
+  - {fileID: 11400000, guid: f25efc7415326c74aa1ff94918b0c2bb, type: 2}
+  - {fileID: 11400000, guid: 0248aa758d128764da4e0c7b084dce17, type: 2}
+  - {fileID: 11400000, guid: c5b9e61ec136ce44babed17ca223eeb1, type: 2}
+  - {fileID: 11400000, guid: 2fb18e1491222444f95edd8248c28bd7, type: 2}
+  - {fileID: 11400000, guid: 3e51e5f16ea563f489406e86bb7c1cf7, type: 2}
+  - {fileID: 11400000, guid: a22fe1fdd7ad78f4e806e62f78498f01, type: 2}
+  - {fileID: 11400000, guid: 48b29b481774b2b4e88e07ff1d5a741a, type: 2}
+  - {fileID: 11400000, guid: 1543d23b49d03d745b68695f547330f8, type: 2}
+  - {fileID: 11400000, guid: cce80c98871361f449bf625b1195ff3e, type: 2}
+  - {fileID: 11400000, guid: 5092078296b33f94c96edc97daadeb11, type: 2}
+  - {fileID: 11400000, guid: 4d7c8e367ddfc2b4d9470902002834b1, type: 2}
+  - {fileID: 11400000, guid: 4318934fbea10d0418ecdb0086a09e84, type: 2}
+  - {fileID: 11400000, guid: b775404a0ee205147802878b43d5c722, type: 2}
+  - {fileID: 11400000, guid: b573cebc0d077bb448956681ca79b2bf, type: 2}
+  - {fileID: 11400000, guid: 45b787a9f80077243bdd56f0bb051aff, type: 2}
+  dailyRewardMinutes:
+  - 4
+  - 5
+  - 6
+  - 8
+  - 10
+  - 12
+  - 20
+  dailyRewardFertilizer: 00000000000000000000000001000000000000000000000002000000i
+  dailyGraceDays: 1
+  decorations:
+  - {fileID: 11400000, guid: 966740d21f0fe46458cf636a9400ffeb, type: 2}
+  - {fileID: 11400000, guid: 844badb45ab5a634ea7a56d3d19fa906, type: 2}
+  - {fileID: 11400000, guid: 5a5e955b4b857a74c8cd8e6a25fa5458, type: 2}
+  - {fileID: 11400000, guid: ea5ac3ebcb094a649a812cbad3be057a, type: 2}
+  - {fileID: 11400000, guid: e7c509d4f2dbb1449a12051892413a1f, type: 2}
+  - {fileID: 11400000, guid: bcb12a09486653f4ba5c8c17a5b19583, type: 2}
+  - {fileID: 11400000, guid: a1ef33083792ba74eaa5b0274bfdf7dd, type: 2}
+  - {fileID: 11400000, guid: ad755b588a158b14aa9f3b15a032b61a, type: 2}
+  helpers:
+  - {fileID: 11400000, guid: 08d6844f698209f4f813afde6716e243, type: 2}
+  - {fileID: 11400000, guid: 818aa9d9d20cb2348b01f7db7781d773, type: 2}
+  - {fileID: 11400000, guid: 302c90cdc7636b1458c6018da68a524e, type: 2}
+  skins:
+  - {fileID: 11400000, guid: ce02b51d31efb1b4fb5cd8e4d159bd2f, type: 2}
+  - {fileID: 11400000, guid: 558bc138cd543674f92c6c13c3ac0d24, type: 2}
+  - {fileID: 11400000, guid: 3354537a02bdd5a4d8f64d2550d25cf3, type: 2}
+  - {fileID: 11400000, guid: 14c5ac6df5f87ec4aa9a100019ccb74c, type: 2}
+  - {fileID: 11400000, guid: bec1eeea229b15049a22697758336d66, type: 2}
+  - {fileID: 11400000, guid: 49a7f36525091c54b92dce01ad0e902e, type: 2}
+  rewards:
+  - {fileID: 11400000, guid: d3a11d7ac9420c54d9c3ac4fd117c713, type: 2}
+  - {fileID: 11400000, guid: a54c5b74a52ddf541ac4989737724db1, type: 2}
+  - {fileID: 11400000, guid: c195caa2d76f1cb48b2f9fd91f9f3ed5, type: 2}
+  maxFinalMoveSpeed: 11
+  fertilizerPrice: 1500
+  fertilizerPriceStepPerZone: 1.8
+  fertilizerMaxStock: 3
+  fertilizerBuyMaxStock: 1
+  fertilizerBuyCooldownSeconds: 180
+  adMinIntervalSeconds: 180
+  adTimeoutSeconds: 120
+  offerFirstDelaySeconds: 60
+  offerMinIntervalSeconds: 120
+  offerMaxIntervalSeconds: 180
+  offerLifetimeSeconds: 25
+  audioBank: {fileID: 11400000, guid: 7437f8378f1f9d74680ebdc10f92715d, type: 2}
+  audioVoices: 10
+  targetFrameRate: 60
+  keepScreenOn: 1

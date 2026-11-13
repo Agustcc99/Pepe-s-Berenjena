@@ -1,0 +1,17 @@
+FarmIdle - créditos de audio
+
+Efectos de sonido (Assets/Audio/Sfx): Kenney (www.kenney.nl), licencia CC0 (dominio público, http://creativecommons.org/publicdomain/zero/1.0/).
+Se copiaron, sin modificar, de tres paquetes y se renombraron por el sonido del juego que cumplen:
+
+  Interface Sounds 1.0  (kenney_interface-sounds.zip, 834.536 bytes, https://kenney.nl/assets/interface-sounds)
+      harvest_1 = pluck_001      harvest_2 = pluck_002       harvest_3 = drop_002
+      purchase_1 = confirmation_001   purchase_2 = confirmation_002
+      perk_1 = maximize_006      denied_1 = error_001        step_1 = bong_001      click_1 = click_003
+  Casino Audio          (kenney_casino-audio.zip, 876.839 bytes, https://kenney.nl/assets/casino-audio)
+      sell_1 = chips-handle-2    sell_2 = chips-handle-3     sell_3 = chips-handle-4
+  Digital Audio         (kenney_digital-audio.zip, 990.367 bytes, https://kenney.nl/assets/digital-audio)
+      levelup_1 = powerUp5       fertilize_1 = pepSound4     offer_1 = twoTone2
+      reward_1 = zapThreeToneUp  turbo_1 = phaserUp6
+
+Música de fondo (Assets/Audio/Music/farm_loop.wav): loop de 24 s generado desde cero con Tools/music_loop.py (síntesis simple: pad,
+melodía pentatónica y eco; sin material de terceros). Se libera igual que el resto del proyecto: sin restricciones.

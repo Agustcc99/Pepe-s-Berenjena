@@ -1,0 +1,31 @@
+{
+    "name": "FarmIdle.Tests.PlayMode",
+    "rootNamespace": "FarmIdle.Tests",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "FarmIdle.Core",
+        "FarmIdle.Data",
+        "FarmIdle.Managers",
+        "FarmIdle.Environment",
+        "FarmIdle.Player",
+        "FarmIdle.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

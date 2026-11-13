@@ -1,0 +1,10 @@
+<!-- Recorte (stripping) de código en los builds de release: lo propio del juego no se recorta (es chico y usa JsonUtility y reflexión de
+     Unity en las partidas guardadas); el recorte "alto" se lo lleva el resto (Unity, mscorlib, paquetes). -->
+<linker>
+  <assembly fullname="FarmIdle.Core" preserve="all" />
+  <assembly fullname="FarmIdle.Data" preserve="all" />
+  <assembly fullname="FarmIdle.Managers" preserve="all" />
+  <assembly fullname="FarmIdle.Environment" preserve="all" />
+  <assembly fullname="FarmIdle.Player" preserve="all" />
+  <assembly fullname="FarmIdle.UI" preserve="all" />
+</linker>

@@ -1,0 +1,19 @@
+{
+    "name": "FarmIdle.Environment",
+    "rootNamespace": "FarmIdle",
+    "references": [
+        "FarmIdle.Core",
+        "FarmIdle.Data",
+        "FarmIdle.Managers",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

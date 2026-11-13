@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.farmidle.vibration">
+  <!-- Permiso para los pulsos cortos de HapticsManager (ROADMAP U-06). Se mezcla con el manifiesto del juego al compilar. -->
+  <uses-permission android:name="android.permission.VIBRATE" />
+</manifest>

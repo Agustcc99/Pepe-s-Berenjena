@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db20d8d365bccb84e9242ed5b9ba0f00, type: 3}
+  m_Name: Crop_Pumpkin
+  m_EditorClassIdentifier: FarmIdle.Data::FarmIdle.CropData
+  id: pumpkin
+  displayName: Calabaza
+  icon: {fileID: 0}
+  plantPrefab: {fileID: 4237619871066986162, guid: 7595497a3c526a44981398c54adff6cf, type: 3}
+  productPrefab: {fileID: 6279026194217320904, guid: 72be2f7917da9ce4db6111fc3b05edf4, type: 3}
+  growSeconds: 84
+  sellPrice: 48

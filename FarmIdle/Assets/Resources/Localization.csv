@@ -1,0 +1,192 @@
+key,es,en
+# Tabla de textos del juego (ROADMAP U-03). Una fila por texto: clave / español / inglés. Las celdas con comas van entre comillas dobles; la secuencia barra-n es un salto de línea; {0} y {1} se completan al mostrar.
+# Prefijos: menu.* pantalla de inicio · settings.* ajustes · hud.* pantalla de juego · pad.* carteles de los pads · ad.* anuncio · fmt.* formatos · data.<id> nombres de cultivos, zonas, mejoras, perks y recompensas.
+menu.title,Pepe's Berenjena,Pepe's Berenjena
+menu.tap_to_play,Tocá para jugar,Tap to Play
+menu.language_switch,English,Español
+plaza.videos,VIDEOS,VIDEOS
+plaza.fertilizer,FERTILIZANTE,FERTILIZER
+plaza.attributes,ATRIBUTOS,UPGRADES
+plaza.points,PUNTOS,POINTS
+plaza.storage,ALMACÉN Y EXTRAS,STORAGE & EXTRAS
+settings.text_size_normal,Texto: Normal,Text: Normal
+settings.text_size_large,Texto: Grande,Text: Large
+menu.keyboard_hint,"Mover: WASD o flechas\nEmpezar: Espacio","Move: WASD or arrow keys\nStart: Space"
+settings.title,Ajustes,Settings
+settings.music,Música,Music
+settings.sfx,Efectos,Effects
+settings.mute,Silenciar,Mute
+settings.unmute,Activar sonido,Unmute
+settings.vibration_on,Vibración: Sí,Vibration: On
+settings.vibration_off,Vibración: No,Vibration: Off
+settings.language_auto,Idioma: Automático,Language: Automatic
+settings.language_es,Idioma: Español,Language: Español
+settings.language_en,Idioma: English,Language: English
+settings.credits,Créditos,Credits
+settings.credits_body,"Pepe's Berenjena\n\nModelos 3D y sonidos: Kenney (kenney.nl), licencia CC0.\nMúsica: loop generado para este juego.\nFuente: Liberation Sans (licencia SIL OFL).\nHecho con Unity.","Pepe's Berenjena\n\n3D models and sounds: Kenney (kenney.nl), CC0 license.\nMusic: loop generated for this game.\nFont: Liberation Sans (SIL OFL license).\nMade with Unity."
+settings.privacy,Privacidad,Privacy
+settings.privacy_policy,Política de privacidad,Privacy policy
+settings.delete,Borrar partida,Delete save
+settings.delete_confirm,"¿Borrar la partida?\nSe pierde todo el progreso.","Delete your save?\nAll progress will be lost."
+settings.delete_yes,"Sí, borrar","Yes, delete"
+settings.cancel,Cancelar,Cancel
+settings.close,Cerrar,Close
+hud.level_short,Nv,Lv
+hud.xp,XP,XP
+hud.level_up,¡Nivel {0}!,Level {0}!
+hud.points_one,{0} punto: ¡elegí un perk en la plaza!,{0} point: pick a perk at the plaza!
+hud.points_many,{0} puntos: ¡elegí un perk en la plaza!,{0} points: pick a perk at the plaza!
+hud.fertilizer,Fertilizante,Fertilizer
+season.button,¡Nueva temporada!,New season!
+season.title,Nueva temporada,New season
+season.body,"Empezás de cero: monedas, zonas y mejoras vuelven al inicio.\nTus ventas pasan a pagar x{0} (ahora x{1}).\nGanás {2} semillas doradas para la tienda.\nConservás tu nivel, tus perks, el fertilizante y las mejoras de la tienda.","You start over: coins, zones and upgrades go back to the beginning.\nYour sales will pay x{0} (now x{1}).\nYou earn {2} golden seeds for the shop.\nYou keep your level, perks, fertilizer and shop upgrades."
+season.yes,¡Empezar!,Start!
+season.no,Todavía no,Not yet
+shop.button,Semillas,Seeds
+shop.title,Semillas doradas,Golden seeds
+shop.seeds,Semillas: {0},Seeds: {0}
+shop.close,Cerrar,Close
+shop.row,"{0}  ({1}/{2})\n{3}\nCosto: {4}","{0}  ({1}/{2})\n{3}\nCost: {4}"
+shop.row_max,"{0}  (máx.)\n{1}","{0}  (max)\n{1}"
+shop.name.shop_coins,Monedas iniciales,Starting coins
+shop.desc.shop_coins,Cada temporada arrancás con más monedas,Start each season with more coins
+shop.name.shop_growth,Cultivos veloces,Fast crops
+shop.desc.shop_growth,Las plantas crecen más rápido,Plants grow faster
+shop.name.shop_offline,Depósito grande,Big storehouse
+shop.desc.shop_offline,Más horas de progreso offline,More hours of offline progress
+shop.name.shop_sell,Buen precio,Good price
+shop.desc.shop_sell,Vendés más caro,Sell for more
+shop.name.shop_fert,Fertilizante de regalo,Free fertilizer
+shop.desc.shop_fert,Arrancás cada temporada con fertilizante,Start each season with fertilizer
+shop.name.shop_xp,Aprendiz veloz,Quick learner
+shop.desc.shop_xp,Ganás más XP,Earn more XP
+pad.max,MAX,MAX
+pad.points,Puntos:,Points:
+pad.watch,Ver video,Watch video
+pad.in,En,In
+pad.wait,Esperá,Wait
+pad.stock_full,Stock lleno,Stock full
+pad.already_active,Ya activo,Already active
+pad.no_ad,Sin anuncio,No ad
+pad.video,Video,Video
+pad.video_fertilizer,Video: +{0} fertilizante,Video: +{0} fertilizer
+pad.video_reward,Video: {0},Video: {0}
+pad.use_fertilizer,Usar fertilizante,Use fertilizer
+pad.no_stock,Sin stock,No stock
+pad.nothing_growing,Nada creciendo,Nothing growing
+pad.buy_fertilizer,Comprar fertilizante,Buy fertilizer
+pad.decorate,Decorar la granja,Decorate the farm
+pad.deco_locked,Abrí todas las granjas,Open every farm first
+pad.deco_done,Granja completa,Farm complete
+pad.skins,Colores,Skins
+pad.skins_all,Todos los colores,All skins owned
+pad.skins_wearing,Llevás:,Wearing:
+pad.skins_default,Naranja,Orange
+data.skin_tomato,Tomate,Tomato
+data.skin_sky,Cielo,Sky
+data.skin_leaf,Hoja,Leaf
+data.skin_grape,Uva,Grape
+data.skin_rose,Rosa,Rose
+data.skin_gold,Oro,Gold
+pad.helpers,Ayudantes,Helpers
+pad.helpers_max,Equipo completo,Full crew
+pad.helpers_bonus,+{0}% de producción solos,+{0}% production on their own
+data.helper_1,Peón,Farmhand
+data.helper_2,Capataz,Foreman
+data.helper_3,Cosechadora,Harvester
+data.deco_lamp,Farol,Lamp post
+data.deco_scarecrow,Espantapájaros,Scarecrow
+data.deco_bench,Banco,Bench
+data.deco_flowers,Parterre de flores,Flower bed
+data.deco_pond,Estanque,Pond
+data.deco_windmill,Molino,Windmill
+data.deco_flag,Bandera,Flag
+data.deco_haystack,Fardo de heno,Hay bale
+pad.full,Lleno,Full
+pad.you_have,Tenés,You have
+pad.upgrade,Mejora,Upgrade
+pad.zone,Zona,Zone
+pad.turbo,Turbo,Turbo
+ad.generic,Anuncio,Ad
+ad.watching,Viendo el anuncio...,Watching the ad...
+ad.simulated,simulado,simulated
+fmt.slot,+{0} lugar,+{0} slot
+fmt.slots,+{0} lugares,+{0} slots
+fmt.percent,+{0} %,+{0}%
+data.wheat,Trigo,Wheat
+data.carrot,Zanahoria,Carrot
+data.tomato,Tomate,Tomato
+data.pumpkin,Calabaza,Pumpkin
+data.corn,Maíz,Corn
+data.eggplant,Berenjena,Eggplant
+data.watermelon,Sandía,Watermelon
+data.sunflower,Girasol,Sunflower
+data.zone_east,Huerta del Este,Eastern Garden
+data.zone_west,Huerto Dorado,Golden Orchard
+data.zone_north,Huerta del Norte,Northern Garden
+data.zone_northwest,Chacra del Noroeste,Northwest Farm
+data.zone_northeast,Quinta del Nordeste,Northeast Grove
+data.upgrade_capacity,Mochila,Backpack
+data.upgrade_speed,Velocidad,Speed
+data.upgrade_growth,Crecimiento,Growth
+data.upgrade_price,Precio,Price
+data.perk_strength,Fuerza,Strength
+data.perk_speed,Velocidad,Speed
+data.reward_turbo,Turbo,Turbo
+data.reward_fertilizer,Fertilizante,Fertilizer
+data.reward_offline_double,Duplicar ganancia,Double earnings
+offline.title,¡Bienvenido de vuelta!,Welcome back!
+offline.body,"Estuviste fuera {1}.\nTus parcelas produjeron {0} monedas.","You were away for {1}.\nYour plots produced {0} coins."
+offline.claim,Reclamar,Claim
+offline.double,Duplicar (video),Double (video)
+offline.time_hm,{0} h {1} min,{0} h {1} min
+offline.time_m,{0} min,{0} min
+mission.button,Misiones,Missions
+mission.title,Misiones del día,Daily missions
+mission.claim,Reclamar,Claim
+mission.claimed,Reclamada,Claimed
+mission.reward_coins,Premio: {0} monedas,Reward: {0} coins
+mission.reward_fert,Premio: +{0} fertilizante,Reward: +{0} fertilizer
+data.mission_harvest_small,Cosechá {0} productos,Harvest {0} products
+data.mission_harvest_medium,Cosechá {0} productos,Harvest {0} products
+data.mission_harvest_big,Cosechá {0} productos,Harvest {0} products
+data.mission_sell_small,Vendé {0} productos,Sell {0} products
+data.mission_sell_big,Vendé {0} productos,Sell {0} products
+data.mission_fertilizer,Usá el fertilizante {0} vez,Use fertilizer {0} time
+data.mission_buy_one,Comprá {0} mejora o zona,Buy {0} upgrade or zone
+data.mission_buy_two,Comprá {0} mejoras o zonas,Buy {0} upgrades or zones
+daily.button,Premio diario,Daily reward
+daily.title,Premio diario,Daily reward
+daily.day,Día {0},Day {0}
+daily.cell_coins,Monedas,Coins
+daily.cell_fert,+{0} fert.,+{0} fert.
+daily.streak,Racha: {0},Streak: {0}
+daily.come_back,Volvé mañana para seguir la racha,Come back tomorrow to keep your streak
+achievement.button,Logros,Achievements
+achievement.title,Logros,Achievements
+data.ach_harvest_1,Cosechá {0} productos en total,Harvest {0} products in total
+data.ach_harvest_2,Cosechá {0} productos en total,Harvest {0} products in total
+data.ach_harvest_3,Cosechá {0} productos en total,Harvest {0} products in total
+data.ach_sell_1,Vendé {0} productos en total,Sell {0} products in total
+data.ach_sell_2,Vendé {0} productos en total,Sell {0} products in total
+data.ach_coins_1,Ganá {0} monedas vendiendo,Earn {0} coins from sales
+data.ach_coins_2,Ganá {0} monedas vendiendo,Earn {0} coins from sales
+data.ach_level_1,Llegá al nivel {0},Reach level {0}
+data.ach_level_2,Llegá al nivel {0},Reach level {0}
+data.ach_level_3,Llegá al nivel {0},Reach level {0}
+data.ach_fertilizer,Usá el fertilizante {0} veces,Use fertilizer {0} times
+data.ach_zones,Abrí {0} zonas,Open {0} zones
+data.ach_upgrades,Comprá {0} mejoras,Buy {0} upgrades
+data.ach_videos,Mirá {0} videos de premio,Watch {0} reward videos
+data.ach_turbo,Usá el Turbo {0} vez,Use Turbo {0} time
+data.ach_missions,Reclamá {0} misiones,Claim {0} missions
+data.ach_season_1,Cerrá {0} temporada,Finish {0} season
+data.ach_season_2,Cerrá {0} temporadas,Finish {0} seasons
+data.upgrade_offline,Almacén,Storehouse
+fmt.hours,+{0} h,+{0} h
+pad.order,Pedido,Order
+pad.order_big,Pedido grande,Big order
+pad.order_locked,Abrí {0} granjas,Open {0} farms first
+pad.order_wait,Nuevo en,Next in
+pad.order_seed,+1 semilla,+1 seed
+hud.orders,Pedidos del pueblo,Town orders

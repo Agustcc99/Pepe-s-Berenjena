@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db20d8d365bccb84e9242ed5b9ba0f00, type: 3}
+  m_Name: Crop_Corn
+  m_EditorClassIdentifier: FarmIdle.Data::FarmIdle.CropData
+  id: corn
+  displayName: "Ma\xEDz"
+  icon: {fileID: 0}
+  plantPrefab: {fileID: 8912019842607252953, guid: bd3e76b76e0a5154587fc3982cd30ec1, type: 3}
+  productPrefab: {fileID: 8135924677963761620, guid: 82b4944b1a87c564e87ed94259e6d169, type: 3}
+  growSeconds: 140
+  sellPrice: 96

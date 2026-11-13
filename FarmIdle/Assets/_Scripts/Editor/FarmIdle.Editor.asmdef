@@ -1,0 +1,29 @@
+{
+    "name": "FarmIdle.Editor",
+    "rootNamespace": "FarmIdle.EditorTools",
+    "references": [
+        "FarmIdle.Core",
+        "FarmIdle.Data",
+        "FarmIdle.Managers",
+        "FarmIdle.Environment",
+        "FarmIdle.Player",
+        "FarmIdle.UI",
+        "Unity.Cinemachine",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "UnityEditor.TestRunner",
+        "UnityEngine.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

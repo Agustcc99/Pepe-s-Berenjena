@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b2f68296fec4948aa0ce28cc3e2c75, type: 3}
+  m_Name: Reward_Turbo
+  m_EditorClassIdentifier: FarmIdle.Data::FarmIdle.RewardData
+  id: reward_turbo
+  displayName: Turbo
+  shortLabel: Turbo
+  kind: 1
+  magnitude: 3
+  durationSeconds: 30
+  cooldownSeconds: 90
+  placement: 
