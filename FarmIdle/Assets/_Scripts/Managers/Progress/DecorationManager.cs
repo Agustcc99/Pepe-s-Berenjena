@@ -35,6 +35,9 @@ namespace FarmIdle
         public DecorationData Next => !AllOwned ? _config.Decorations[_owned] : null;
         public long NextCost => Next != null ? Next.Cost : 0L;
 
+        // La decoración número 'index' de la lista, o null si no existe.
+        public DecorationData At(int index) => _config != null && index >= 0 && index < Total ? _config.Decorations[index] : null;
+
         // Todas las zonas abiertas (sin progresión, como en una prueba suelta, cuenta como abierto).
         public bool IsUnlocked
         {

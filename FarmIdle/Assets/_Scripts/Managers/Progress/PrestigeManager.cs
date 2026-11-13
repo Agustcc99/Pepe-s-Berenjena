@@ -70,9 +70,13 @@ namespace FarmIdle
             _levels[index]++;
             ApplyMultiplier();
             Changed?.Invoke();
+            ShopBought?.Invoke(index);
             SaveRequested?.Invoke();
             return true;
         }
+
+        // N-06: se compró un nivel de la mejora 'index' de la tienda, jugando. Nunca al restaurar una partida.
+        public event Action<int> ShopBought;
 
         // F-18: semillas doradas extra (el premio de un pedido grande). Suma, avisa y pide guardar.
         public void GrantSeeds(int amount)

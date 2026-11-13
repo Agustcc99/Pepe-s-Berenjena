@@ -22,6 +22,14 @@ namespace FarmIdle
         public const string DailyReward = "premio_diario";            // dia: el día de la racha (1 a 7) que se reclamó (F-07)
         public const string Abandon = "abandono";                     // ultimo_pad: última compra antes de dejar el juego
 
+        // N-06: los sistemas que llegaron después de N-01. Solo al jugar, nunca al restaurar una partida.
+        public const string OrderCompleted = "pedido_completado";     // grande: 0 | 1 (F-18)
+        public const string DecorationBought = "decoracion_comprada"; // id: la decoración (F-17)
+        public const string HelperBought = "ayudante_comprado";       // nivel: el nivel de ayudante que quedó (F-17)
+        public const string SkinBought = "skin_comprada";             // id: la skin (F-17)
+        public const string SeedShopBought = "mejora_semillas";       // id: la mejora de la tienda de prestigio (F-11)
+        public const string RareHarvest = "cosecha_rara";             // id: el cultivo (J-04)
+
         // Nombres de los parámetros.
         public const string StepKey = "paso";
         public const string DurationKey = "duracion";
@@ -33,5 +41,6 @@ namespace FarmIdle
         public const string AmountKey = "cantidad";
         public const string LastPadKey = "ultimo_pad";
         public const string SeasonKey = "temporada";
+        public const string BigKey = "grande";
     }
 }

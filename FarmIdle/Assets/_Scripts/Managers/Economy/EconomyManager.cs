@@ -129,6 +129,9 @@ namespace FarmIdle
         // J-04: azar de la cosecha rara (0 a 1). Las pruebas lo reemplazan por uno fijo.
         public Func<float> RareRoll { get; set; } = () => UnityEngine.Random.value;
 
+        // N-06: salió una cosecha rara (cultivo, monedas ya acreditadas). Para quien no ve el mundo (la analítica).
+        public event Action<CropData, long> RareHarvested;
+
         // J-04: al cosechar, sortea si salió rara. Si sí, acredita el premio (multiplicador x precio final) y devuelve las
         // monedas; si no, devuelve 0. No cuenta como venta (ni XP). Sin asignaciones.
         public long TryRareHarvest(CropData crop)
@@ -142,6 +145,7 @@ namespace FarmIdle
             if (bonus <= 0L) return 0L;
 
             _wallet.Add(bonus);
+            RareHarvested?.Invoke(crop, bonus);
             return bonus;
         }
 

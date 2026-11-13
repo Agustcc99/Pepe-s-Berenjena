@@ -37,6 +37,11 @@ namespace FarmIdle
         private MissionManager _missions;
         private AchievementManager _achievements;
         private DailyRewardManager _daily;
+        private OrdersManager _orders;
+        private DecorationManager _decorations;
+        private HelperManager _helpers;
+        private SkinManager _skins;
+        private EconomyManager _economy;
 
         public IAnalytics Service => _service;
         public bool SessionOpen => _sessionOpen;
@@ -167,7 +172,26 @@ namespace FarmIdle
             if (_buffs != null) _buffs.BuffStarted += OnBuffStarted;
 
             _prestige = PrestigeManager.Instance;
-            if (_prestige != null) _prestige.SeasonStarted += OnSeasonStarted;
+            if (_prestige != null)
+            {
+                _prestige.SeasonStarted += OnSeasonStarted;
+                _prestige.ShopBought += OnSeedShopBought;
+            }
+
+            _orders = OrdersManager.Instance;
+            if (_orders != null) _orders.Completed += OnOrderCompleted;
+
+            _decorations = DecorationManager.Instance;
+            if (_decorations != null) _decorations.Bought += OnDecorationBought;
+
+            _helpers = HelperManager.Instance;
+            if (_helpers != null) _helpers.Bought += OnHelperBought;
+
+            _skins = SkinManager.Instance;
+            if (_skins != null) _skins.Bought += OnSkinBought;
+
+            _economy = EconomyManager.Instance;
+            if (_economy != null) _economy.RareHarvested += OnRareHarvested;
 
             _offline = OfflineManager.Instance;
             if (_offline != null) _offline.Claimed += OnOfflineClaimed;
@@ -206,11 +230,56 @@ namespace FarmIdle
             if (_offers != null) _offers.OfferStarted -= OnOfferStarted;
             if (_fertilizer != null) _fertilizer.Used -= OnFertilizerUsed;
             if (_buffs != null) _buffs.BuffStarted -= OnBuffStarted;
-            if (_prestige != null) _prestige.SeasonStarted -= OnSeasonStarted;
+            if (_prestige != null)
+            {
+                _prestige.SeasonStarted -= OnSeasonStarted;
+                _prestige.ShopBought -= OnSeedShopBought;
+            }
+
+            if (_orders != null) _orders.Completed -= OnOrderCompleted;
+            if (_decorations != null) _decorations.Bought -= OnDecorationBought;
+            if (_helpers != null) _helpers.Bought -= OnHelperBought;
+            if (_skins != null) _skins.Bought -= OnSkinBought;
+            if (_economy != null) _economy.RareHarvested -= OnRareHarvested;
             if (_offline != null) _offline.Claimed -= OnOfflineClaimed;
             if (_missions != null) _missions.Completed -= OnMissionCompleted;
             if (_achievements != null) _achievements.Unlocked -= OnAchievementUnlocked;
             if (_daily != null) _daily.Claimed -= OnDailyClaimed;
+        }
+
+        // ---------- N-06: pedidos, sumideros, tienda de semillas y cosecha rara ----------
+
+        private void OnOrderCompleted(int slot, long coins, int seeds)
+        {
+            _service.Log(AnalyticsEvents.OrderCompleted, AnalyticsEvents.BigKey, OrderBoard.IsBig(slot) ? 1L : 0L);
+        }
+
+        private void OnDecorationBought(int index)
+        {
+            DecorationData decoration = _decorations.At(index);
+            if (decoration != null) _service.Log(AnalyticsEvents.DecorationBought, AnalyticsEvents.IdKey, decoration.Id);
+        }
+
+        private void OnHelperBought(int level)
+        {
+            _service.Log(AnalyticsEvents.HelperBought, AnalyticsEvents.LevelKey, level);
+        }
+
+        // La skin recién comprada queda puesta: es la equipada.
+        private void OnSkinBought(int index)
+        {
+            SkinData skin = _skins.EquippedSkin;
+            if (skin != null) _service.Log(AnalyticsEvents.SkinBought, AnalyticsEvents.IdKey, skin.Id);
+        }
+
+        private void OnSeedShopBought(int index)
+        {
+            _service.Log(AnalyticsEvents.SeedShopBought, AnalyticsEvents.IdKey, _prestige.ShopItem(index).Id);
+        }
+
+        private void OnRareHarvested(CropData crop, long bonus)
+        {
+            _service.Log(AnalyticsEvents.RareHarvest, AnalyticsEvents.IdKey, crop.Id);
         }
 
         private void OnDailyClaimed(int day, long coins, int fertilizer)

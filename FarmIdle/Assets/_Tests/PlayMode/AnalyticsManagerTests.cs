@@ -205,6 +205,175 @@ namespace FarmIdle.Tests
         }
     }
 
+    // N-06: pedidos, sumideros (decoración, ayudante, skin), tienda de semillas y cosecha rara, con los servicios mínimos (sin escena).
+    public class AnalyticsNewSystemsTests
+    {
+        private readonly List<Object> _objects = new List<Object>();
+        private GameConfig _config;
+        private CropData _crop;
+        private EconomyManager _economy;
+        private BackpackManager _backpack;
+        private PrestigeManager _prestige;
+        private OrdersManager _orders;
+        private DecorationManager _decorations;
+        private HelperManager _helpers;
+        private SkinManager _skins;
+        private RecordingAnalytics _log;
+
+        private T Create<T>() where T : Component
+        {
+            var go = new GameObject(typeof(T).Name);
+            _objects.Add(go);
+            return go.AddComponent<T>();
+        }
+
+        private T Data<T>(string id, int cost) where T : GameDataAsset
+        {
+            T data = ScriptableObject.CreateInstance<T>();
+            data.name = id;
+            TestReflection.Set(data, "id", id);
+            TestReflection.Set(data, "displayName", id);
+            TestReflection.Set(data, "cost", cost);
+            _objects.Add(data);
+            return data;
+        }
+
+        [UnitySetUp]
+        public IEnumerator SetUp()
+        {
+            _crop = ScriptableObject.CreateInstance<CropData>();
+            _crop.name = "crop_a";
+            TestReflection.Set(_crop, "id", "crop_a");
+            TestReflection.Set(_crop, "displayName", "crop_a");
+            TestReflection.Set(_crop, "sellPrice", 10);
+            _objects.Add(_crop);
+
+            _config = ScriptableObject.CreateInstance<GameConfig>();
+            _objects.Add(_config);
+            TestReflection.Set(_config, "crops", new[] { _crop });
+            TestReflection.Set(_config, "ordersMinZones", 0);
+            TestReflection.Set(_config, "orderCrops", new[] { new OrderCropRule("crop_a", "", 1) });
+            TestReflection.Set(_config, "decorations", new[] { Data<DecorationData>("deco_a", 100), Data<DecorationData>("deco_b", 200) });
+            TestReflection.Set(_config, "helpers", new[] { Data<HelperData>("helper_a", 100) });
+            TestReflection.Set(_config, "skins", new[] { Data<SkinData>("skin_a", 100) });
+
+            _economy = Create<EconomyManager>();
+            _economy.Initialize(_config);
+            _backpack = Create<BackpackManager>();
+            _backpack.Initialize(_config);
+            _prestige = Create<PrestigeManager>();
+            _prestige.Initialize(_config);
+            _orders = Create<OrdersManager>();
+            _orders.Initialize(_config);
+            _orders.Roll = max => 0;
+            _decorations = Create<DecorationManager>();
+            _decorations.Initialize(_config);
+            _helpers = Create<HelperManager>();
+            _helpers.Initialize(_config);
+            _skins = Create<SkinManager>();
+            _skins.Initialize(_config);
+
+            _log = new RecordingAnalytics();
+            Create<AnalyticsManager>().Initialize(_log);
+            _log.Events.Clear();
+            yield return null;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (Object obj in _objects)
+            {
+                if (obj != null) Object.DestroyImmediate(obj);
+            }
+
+            _objects.Clear();
+        }
+
+        [UnityTest]
+        public IEnumerator AnOrder_EmitsOnlyWhenItIsCompleted_NotOnAPartialDelivery()
+        {
+            _orders.Tick(0.1f);
+            int wanted = _orders.QuantityOf(0);
+            Assert.Greater(wanted, 1);
+
+            _backpack.TryAdd(_crop);
+            Assert.AreEqual(1, _orders.TryDeliver(0));
+            CollectionAssert.IsEmpty(_log.Events, "Una entrega a medias no es un pedido cumplido.");
+
+            for (int i = 1; i < wanted; i++) _backpack.TryAdd(_crop);
+            Assert.AreEqual(wanted - 1, _orders.TryDeliver(0));
+
+            CollectionAssert.AreEqual(new[] { "pedido_completado grande=0" }, _log.Events);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator TheSinks_EmitWhatWasBought_AndARefusedPurchaseEmitsNothing()
+        {
+            Assert.IsFalse(_decorations.TryBuyNext(), "Sin monedas no se compra.");
+            CollectionAssert.IsEmpty(_log.Events);
+
+            _economy.AddCoins(1000);
+            Assert.IsTrue(_decorations.TryBuyNext());
+            Assert.IsTrue(_decorations.TryBuyNext());
+            Assert.IsTrue(_helpers.TryBuyNext());
+            Assert.IsTrue(_skins.TryBuyNext());
+
+            CollectionAssert.AreEqual(
+                new[] { "decoracion_comprada id=deco_a", "decoracion_comprada id=deco_b", "ayudante_comprado nivel=1", "skin_comprada id=skin_a" },
+                _log.Events);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator TheSeedShop_EmitsTheUpgradeBought_AndGrantingSeedsEmitsNothing()
+        {
+            _prestige.GrantSeeds(5);
+            CollectionAssert.IsEmpty(_log.Events);
+
+            Assert.IsTrue(_prestige.TryBuyShop(0));
+
+            CollectionAssert.AreEqual(new[] { "mejora_semillas id=" + _prestige.ShopItem(0).Id }, _log.Events);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator ARareHarvest_EmitsTheCrop_AndACommonOneEmitsNothing()
+        {
+            _economy.RareRoll = () => 0.99f;
+            Assert.AreEqual(0L, _economy.TryRareHarvest(_crop));
+            CollectionAssert.IsEmpty(_log.Events);
+
+            _economy.RareRoll = () => 0f;
+            Assert.Greater(_economy.TryRareHarvest(_crop), 0L);
+
+            CollectionAssert.AreEqual(new[] { "cosecha_rara id=crop_a" }, _log.Events);
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator RestoringAGame_EmitsNoPurchases()
+        {
+            _economy.AddCoins(1000);
+            _decorations.TryBuyNext();
+            _helpers.TryBuyNext();
+            _skins.TryBuyNext();
+            _prestige.GrantSeeds(5);
+            _prestige.TryBuyShop(0);
+            string decorations = _decorations.Capture(), helpers = _helpers.Capture(), skins = _skins.Capture(), prestige = _prestige.Capture();
+            _log.Events.Clear();
+
+            _decorations.Restore(decorations);
+            _helpers.Restore(helpers);
+            _skins.Restore(skins);
+            _prestige.Restore(prestige);
+
+            CollectionAssert.IsEmpty(_log.Events, "Cargar la partida no es comprar.");
+            yield break;
+        }
+    }
+
     // El juego completo: el Bootstrapper crea el AnalyticsManager y la sesión arranca con el "Tap to Play".
     public class AnalyticsBootTests
     {

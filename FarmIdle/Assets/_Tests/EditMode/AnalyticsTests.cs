@@ -40,7 +40,9 @@ namespace FarmIdle.Tests
             {
                 "tutorial_paso", "sesion_inicio", "sesion_fin", "nivel_subido", "pad_comprado", "rewarded_ofrecido",
                 "rewarded_aceptado", "rewarded_completado", "offline_reclamado", "fertilizante_usado", "turbo_usado",
-                "prestigio", "mision_completada", "abandono"
+                "prestigio", "mision_completada", "abandono",
+                // N-06
+                "pedido_completado", "decoracion_comprada", "ayudante_comprado", "skin_comprada", "mejora_semillas", "cosecha_rara"
             };
             CollectionAssert.IsSubsetOf(expected, AllNames());
         }
