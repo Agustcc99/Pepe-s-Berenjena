@@ -90,7 +90,7 @@ Ordenado por urgencia. "Quién" sigue la convención del roadmap.
 | # | Acción | Quién | Esfuerzo | Hallazgo |
 |---|---|---|---|---|
 | 1 | Copiar `Downloads\aa` a otro disco o a la nube (sin `Library` ni `Builds`: quedan ~30 MB). | Yo | 5 min | H-1 |
-| 2 | Crear un repo git propio en `Downloads\aa` (`git init` ahí, primer commit) y subirlo a un repo **privado** de GitHub. Requiere tu pedido explícito para el commit y el push. | Ambos | S | H-1 |
+| 2 | ~~Crear un repo git propio en `Downloads\aa` y primer commit.~~ **Hecho 2026-11-13** (rama `main`, 1.492 archivos; había además un repo vacío en `FarmIdle/.git`, que se apartó). Falta subirlo a un repo **privado** de GitHub (requiere tu pedido explícito). | Ambos | S | H-1 |
 | 3 | Decidir qué hacer con el repo vacío de `C:\Users\Agus Tacconi` (recomendado: borrar esa carpeta `.git`; no tiene commits). | Yo | 5 min | H-1 |
 
 ### Esta semana (destraba la publicación web)
