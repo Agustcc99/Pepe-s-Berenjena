@@ -93,6 +93,7 @@ namespace FarmIdle.Tests
             var view = player.GetComponent<BackpackStackView>();
             IReadOnlyInventory backpack = BackpackManager.Instance.Backpack;
             EconomyManager economy = EconomyManager.Instance;
+            economy.RareRoll = () => 1f;   // sin cosecha rara (J-04): paga al cosechar y esta prueba cuenta monedas; con azar real fallaba seguido
             int capacity = backpack.Capacity;
             Assert.GreaterOrEqual(capacity, 10, "Esta prueba supone una mochila de al menos 10.");
             long startBalance = economy.Balance;

@@ -32,7 +32,7 @@ namespace FarmIdle.EditorTools
 
         // ---------- Banco de audio ----------
 
-        // Cada sonido: sus variantes (archivos de Assets/Audio/Sfx sin extensión), volumen, rango de tono y mínimo entre disparos.
+        // Cada sonido: sus variantes (archivos de Assets/Audio/Sfx; sin extensión son .ogg), volumen, rango de tono y mínimo entre disparos.
         private sealed class SoundSpec
         {
             public SoundCue Cue;
@@ -42,7 +42,8 @@ namespace FarmIdle.EditorTools
 
         private static readonly SoundSpec[] Sounds =
         {
-            new SoundSpec { Cue = SoundCue.Harvest, Clips = new[] { "harvest_1", "harvest_2", "harvest_3" }, Volume = 0.80f, PitchMin = 0.95f, PitchMax = 1.12f, MinInterval = 0.05f },
+            // Cosecha: marimba suave propia (Tools/sfx_gen.py). Casi sin variación de tono: la nota la pone el combo (HarvestScale).
+            new SoundSpec { Cue = SoundCue.Harvest, Clips = new[] { "harvest_soft_1.wav", "harvest_soft_2.wav", "harvest_soft_3.wav" }, Volume = 0.60f, PitchMin = 0.99f, PitchMax = 1.01f, MinInterval = 0.05f },
             new SoundSpec { Cue = SoundCue.Sell, Clips = new[] { "sell_1", "sell_2", "sell_3" }, Volume = 0.70f, PitchMin = 1.00f, PitchMax = 1.00f, MinInterval = 0.045f },
             new SoundSpec { Cue = SoundCue.Purchase, Clips = new[] { "purchase_1", "purchase_2" }, Volume = 0.90f, PitchMin = 0.98f, PitchMax = 1.02f, MinInterval = 0.20f },
             new SoundSpec { Cue = SoundCue.LevelUp, Clips = new[] { "levelup_1" }, Volume = 1.00f, PitchMin = 1.00f, PitchMax = 1.00f, MinInterval = 0.50f },
@@ -54,6 +55,8 @@ namespace FarmIdle.EditorTools
             new SoundSpec { Cue = SoundCue.Turbo, Clips = new[] { "turbo_1" }, Volume = 0.90f, PitchMin = 1.00f, PitchMax = 1.00f, MinInterval = 1.00f },
             new SoundSpec { Cue = SoundCue.Step, Clips = new[] { "step_1" }, Volume = 0.90f, PitchMin = 1.00f, PitchMax = 1.00f, MinInterval = 0.50f },
             new SoundSpec { Cue = SoundCue.Click, Clips = new[] { "click_1" }, Volume = 0.80f, PitchMin = 0.98f, PitchMax = 1.04f, MinInterval = 0.08f },
+            new SoundSpec { Cue = SoundCue.BackpackFull, Clips = new[] { "backpack_full_1.wav" }, Volume = 0.70f, PitchMin = 1.00f, PitchMax = 1.00f, MinInterval = 1.00f },
+            new SoundSpec { Cue = SoundCue.TruckHorn, Clips = new[] { "truck_horn_1.wav" }, Volume = 0.50f, PitchMin = 0.98f, PitchMax = 1.02f, MinInterval = 1.50f },
         };
 
         [MenuItem("FarmIdle/Fase 9/Reimportar audio y rehacer el banco")]
@@ -119,7 +122,7 @@ namespace FarmIdle.EditorTools
                 clips.arraySize = spec.Clips.Length;
                 for (int c = 0; c < spec.Clips.Length; c++)
                 {
-                    clips.GetArrayElementAtIndex(c).objectReferenceValue = Phase2SceneBuilder.LoadRequired<AudioClip>(SfxFolder + "/" + spec.Clips[c] + ".ogg");
+                    clips.GetArrayElementAtIndex(c).objectReferenceValue = Phase2SceneBuilder.LoadRequired<AudioClip>(SfxFolder + "/" + (Path.HasExtension(spec.Clips[c]) ? spec.Clips[c] : spec.Clips[c] + ".ogg"));
                 }
             }
 

@@ -457,6 +457,54 @@ namespace FarmIdle.Tests
             Assert.AreEqual(0, _sell.Feedback.PendingArrivals);
         }
 
+        // J-08: una venta grande (acá, 3 unidades o más sin cortar) remata con el "+N" total en grande antes de apagarse.
+        [UnityTest]
+        public IEnumerator ABigSale_EndsWithTheTotalInBig_AndASmallOneDoesNot()
+        {
+            TestReflection.Set(_sell.Feedback, "bigSaleUnits", 3);
+
+            Load(1);
+            StandOnThePad();
+            bool big = false;
+            float deadline = Time.realtimeSinceStartup + 3f;
+            while (Time.realtimeSinceStartup < deadline)
+            {
+                big |= _sell.Feedback.IsBigSaleFinish;
+                if (_rig.Backpack.Count == 0 && _sell.Feedback.PendingArrivals == 0 && _sell.Feedback.PopupAmount == 0 && _sell.Economy.SoldUnits == 1) break;
+                yield return null;
+            }
+
+            Assert.IsFalse(big, "Una unidad sola no es una venta grande.");
+            Assert.AreEqual(0L, _sell.Feedback.PopupAmount);
+
+            LeaveThePad();
+            yield return null;
+            Load(2, 1, 2);
+            StandOnThePad();
+            float biggest = 0f;
+            long total = 0;
+            deadline = Time.realtimeSinceStartup + 5f;
+            while (Time.realtimeSinceStartup < deadline)
+            {
+                if (_sell.Feedback.IsBigSaleFinish)
+                {
+                    big = true;
+                    total = Math.Max(total, _sell.Feedback.PopupAmount);
+                    biggest = Mathf.Max(biggest, _sell.Feedback.PopupLabel.transform.localScale.x);
+                }
+
+                if (big && _sell.Feedback.PopupAmount == 0) break;
+                yield return null;
+            }
+
+            Assert.IsTrue(big, "Tres unidades seguidas: el \"+N\" hace su remate.");
+            Assert.AreEqual(27L, total, "El remate muestra el total de la tanda.");
+            Assert.Greater(biggest, 1.4f, "Y lo muestra en grande.");
+            Assert.AreEqual(0L, _sell.Feedback.PopupAmount, "Después se apaga solo.");
+            Assert.IsFalse(_sell.Feedback.IsBigSaleFinish);
+            Assert.AreEqual(1f, _sell.Feedback.PopupLabel.transform.localScale.x, 1e-4f);
+        }
+
         [UnityTest]
         public IEnumerator TheEffects_AppearOnlyWhenTheProductArrives_NotWhenItLeaves()
         {

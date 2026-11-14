@@ -9,6 +9,8 @@ namespace FarmIdle
     //     ni de PlayOneShot mientras se juega. Cada sonido sale del AudioBank (variantes al azar, tono con un poco de variación) y
     //     tiene un mínimo entre disparos (SoundThrottle) para que ninguna cosecha ni venta suene como una ametralladora.
     //   - Venta: vender varias unidades seguidas sube el tono un paso por unidad (ComboCounter), el "ding, ding, ding" ascendente.
+    //   - Cosecha (J-08): cosechar seguido sube por una escala pentatónica (HarvestScale); la cosecha que llena la mochila suena a
+    //     festejo (BackpackFull) y al terminar una venta grande suena la bocina del camión (StreakTracker).
     //   - Música: un loop suave en su propia fuente, que arranca cuando el jugador toca "Tap to Play" (en la web ese toque es el que
     //     le permite al navegador reproducir audio) y sigue hasta cerrar.
     //   - Mezcla por categorías: la ganancia de la música y la de los efectos salen de SettingsManager (volumen general x categoría,
@@ -33,6 +35,8 @@ namespace FarmIdle
         private int _nextVoice;
         private readonly SoundThrottle _throttle = new SoundThrottle(Enum.GetValues(typeof(SoundCue)).Length);
         private readonly ComboCounter _sellCombo = new ComboCounter(SellComboWindowSeconds, SellComboMaxSteps);
+        private readonly ComboCounter _harvestCombo = new ComboCounter(JuiceRules.HarvestStreakWindowSeconds, HarvestScale.MaxStep);
+        private readonly StreakTracker _saleRun = new StreakTracker(JuiceRules.SaleRunWindowSeconds, JuiceRules.BigSaleUnits);
         private int[] _lastClip;
         private int[] _triggerCounts;
         private System.Random _random = new System.Random();
@@ -213,7 +217,9 @@ namespace FarmIdle
         {
             if (change.IsReplacement || !change.Added) return;
 
-            Play(SoundCue.Harvest);
+            // J-08: cosechar seguido sube una nota de la escala por parcela; la que llena la mochila suma su festejo.
+            Play(SoundCue.Harvest, HarvestScale.PitchFor(_harvestCombo.Next(Time.unscaledTime)));
+            if (_backpack.IsFull) Play(SoundCue.BackpackFull);
         }
 
         private void OnBackpackFull()
@@ -229,6 +235,14 @@ namespace FarmIdle
         {
             int step = _sellCombo.Next(Time.unscaledTime);
             Play(SoundCue.Sell, 1f + step * SellComboPitchStep);
+            _saleRun.Add(Time.unscaledTime);
+        }
+
+        // J-08: cuando termina una venta grande (JuiceRules.BigSaleUnits sin cortar), el camión toca bocina. Una comparación por
+        // cuadro mientras hay una tanda abierta; nada más.
+        private void Update()
+        {
+            if (_saleRun.Count > 0 && _saleRun.PollBigStreakEnded(Time.unscaledTime)) Play(SoundCue.TruckHorn);
         }
 
         private void OnProgressChanged(ProgressChange change)

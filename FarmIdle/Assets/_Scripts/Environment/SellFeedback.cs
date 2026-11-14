@@ -61,13 +61,21 @@ namespace FarmIdle
         [SerializeField, Min(1f), Tooltip("Cuánto crece el pad al recibir un producto.")]
         private float padPulseScale = 1.07f;
 
+        [SerializeField, Min(1), Tooltip("J-08: desde cuántas unidades vendidas sin cortar el \"+N\" hace su remate de venta grande.")]
+        private int bigSaleUnits = JuiceRules.BigSaleUnits;
+
         private readonly Arrival[] _queue = new Arrival[QueueSize];
         private Coin[] _coins;
         private int _queueHead;
         private int _queueCount;
         private int _activeCoins;
 
+        private const float BigSaleScale = 1.5f;     // J-08: el "+N" total de una venta grande queda así de grande
+        private const float BigSalePunchSeconds = 0.3f;
+
         private long _popupSum;
+        private int _popupUnits;      // unidades que suma este "+N" (una venta grande son JuiceRules.BigSaleUnits o más)
+        private bool _bigFinish;      // el "+N" ya está en su remate de venta grande
         private float _popupLastAt;
         private float _padPulseAt = -10f;
         private bool _padPulsing;
@@ -77,6 +85,8 @@ namespace FarmIdle
 
         // Para pruebas y depuración.
         public long PopupAmount => _popupSum;
+        public int PopupUnits => _popupUnits;
+        public bool IsBigSaleFinish => _bigFinish;
         public int ActiveCoins => _activeCoins;
         public int PendingArrivals => _queueCount;
         public GameObject CoinPrefab => coinPrefab;
@@ -176,6 +186,7 @@ namespace FarmIdle
             SpawnCoin(now);
 
             _popupSum += coins;
+            _popupUnits++;
             _popupLastAt = now;
             _padPulseAt = now;
         }
@@ -228,6 +239,16 @@ namespace FarmIdle
             if (_popupSum <= 0) return;
 
             float age = now - _popupLastAt;
+
+            // J-08: venta grande. Si el "+N" que se iba a apagar sumó la mochila entera, antes hace su remate: el total crece de
+            // golpe y se queda un rato más (el reloj vuelve a empezar). Una sola vez por "+N".
+            if (!_bigFinish && age >= popupHoldSeconds && _popupUnits >= bigSaleUnits)
+            {
+                _bigFinish = true;
+                _popupLastAt = now;
+                age = 0f;
+            }
+
             if (age >= popupHoldSeconds + popupFadeSeconds)
             {
                 HidePopup();
@@ -237,7 +258,9 @@ namespace FarmIdle
             popupLabel.SetText("+{0:0}", _popupSum);
 
             // Un saltito cada vez que suma, y al final se desvanece subiendo.
-            float punch = 1f + 0.3f * Mathf.Clamp01(1f - age / 0.15f);
+            float punch = _bigFinish
+                ? BigSaleScale + 0.5f * Mathf.Clamp01(1f - age / BigSalePunchSeconds)
+                : 1f + 0.3f * Mathf.Clamp01(1f - age / 0.15f);
             float fade = Mathf.Clamp01((age - popupHoldSeconds) / popupFadeSeconds);
 
             Transform t = popupLabel.transform;
@@ -253,6 +276,8 @@ namespace FarmIdle
         private void HidePopup()
         {
             _popupSum = 0;
+            _popupUnits = 0;
+            _bigFinish = false;
             if (popupLabel == null) return;
 
             popupLabel.enabled = false;

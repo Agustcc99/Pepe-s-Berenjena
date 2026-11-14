@@ -79,6 +79,12 @@ namespace FarmIdle
         [SerializeField, Range(0f, 0.6f), Tooltip("Cuánto se estira/achata el producto al aterrizar.")]
         private float settleSquash = 0.25f;
 
+        [SerializeField, Min(0.05f), Tooltip("J-08: duración del rebote de la pila ENTERA cuando la mochila se llena.")]
+        private float fullBounceSeconds = 0.5f;
+
+        [SerializeField, Range(0f, 0.6f), Tooltip("Cuánto se estira/achata la pila entera al llenarse.")]
+        private float fullBounceSquash = 0.35f;
+
         // Un producto que ya salió de la pila y vuela hacia la zona de venta. Es dueño de su GameObject hasta que llega.
         private sealed class Departure
         {
@@ -93,8 +99,10 @@ namespace FarmIdle
         private float _slotHeight;   // alto efectivo de cada lugar con la capacidad actual
         private int _columns = 1;    // 1 o 2, según la capacidad actual
         private bool _missingPrefabLogged;
+        private Coroutine _fullBounce;
 
         // Para pruebas y depuración.
+        public bool IsFullBouncing => _fullBounce != null;
         public int ItemCount => _items.Count;
         public int DepartingCount => _departing.Count;
         public GameObject DepartingObject(int index) { return _departing[index].Instance; }
@@ -152,6 +160,10 @@ namespace FarmIdle
                 actor.ProductLeaving -= OnProductLeaving;
             }
 
+            // Al desactivarse Unity ya detuvo el rebote de la pila: el ancla vuelve a su tamaño.
+            _fullBounce = null;
+            if (anchor != null) anchor.localScale = Vector3.one;
+
             // Los productos viven en el pool, no en esta escena: tienen que volver antes de que la escena se descargue.
             for (int i = _items.Count - 1; i >= 0; i--)
             {
@@ -168,6 +180,28 @@ namespace FarmIdle
         private void OnInventoryChanged(InventoryChange change)
         {
             Sync();
+
+            // J-08: la cosecha que llena la mochila hace rebotar la pila entera (una corrutina por llenado, no por cuadro).
+            if (change.Added && !change.IsReplacement && _inventory.IsFull)
+            {
+                if (_fullBounce != null) StopCoroutine(_fullBounce);
+                _fullBounce = StartCoroutine(FullBounce());
+            }
+        }
+
+        // Squash & stretch del ancla (y con ella de toda la pila), con tiempo sin escala. Es cosmético.
+        private IEnumerator FullBounce()
+        {
+            float elapsed = 0f;
+            while (elapsed < fullBounceSeconds)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                anchor.localScale = SquashStretch.Evaluate(elapsed / fullBounceSeconds, fullBounceSquash);
+                yield return null;
+            }
+
+            anchor.localScale = Vector3.one;
+            _fullBounce = null;
         }
 
         // La mochila creció (mejora de capacidad). Lo que lleva no cambia, así que no se toca ningún producto: solo se

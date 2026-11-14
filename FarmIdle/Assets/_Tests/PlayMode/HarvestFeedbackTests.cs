@@ -80,6 +80,28 @@ namespace FarmIdle.Tests
             yield return null;
         }
 
+        // J-08: combo de cosecha. Desde la décima cosecha seguida el "+1" sale grande; si se corta, vuelve al tamaño normal.
+        [UnityTest]
+        public IEnumerator HarvestingInARow_MakesThePopupBig_FromTheTenth_AndAPauseResetsIt()
+        {
+            Object.DestroyImmediate(_farmer.gameObject);
+            _farmer = FakeFarmer.Create(FarAway, 30);
+            PlotView plot = _world.Plots[0];
+
+            for (int i = 0; i < JuiceRules.HarvestStreakForBigPopup - 1; i++) Harvest(plot);
+            Assert.AreEqual(JuiceRules.HarvestStreakForBigPopup - 1, _feedback.HarvestStreak);
+            Assert.AreEqual(1f, _feedback.LastPopupScale, 1e-5f, "La novena todavía es un \"+1\" normal.");
+
+            Harvest(plot);
+            Assert.Greater(_feedback.LastPopupScale, 1.2f, "La décima seguida sale grande.");
+
+            yield return new WaitForSecondsRealtime(JuiceRules.HarvestStreakWindowSeconds + 0.2f);
+
+            Harvest(plot);
+            Assert.AreEqual(1, _feedback.HarvestStreak, "Pasó un rato sin cosechar: el combo vuelve a empezar.");
+            Assert.AreEqual(1f, _feedback.LastPopupScale, 1e-5f);
+        }
+
         [UnityTest]
         public IEnumerator DisablingTheFeedback_ReturnsEverythingToThePool()
         {

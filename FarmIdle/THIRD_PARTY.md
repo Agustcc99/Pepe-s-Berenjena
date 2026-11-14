@@ -12,6 +12,7 @@ Inventario de todo lo que no es código propio y va en el proyecto o en el build
 | Casino Audio (efectos de venta) | `Assets/Audio/Sfx` | Kenney — https://kenney.nl/assets/casino-audio | CC0 1.0 | Ídem. |
 | Digital Audio (nivel, fertilizante, oferta, recompensa, Turbo) | `Assets/Audio/Sfx` | Kenney — https://kenney.nl/assets/digital-audio | CC0 1.0 | Ídem. |
 | Loop de música `farm_loop.wav` | `Assets/Audio/Music` | Propio, generado con `Docs/music_loop.py` | Propio, sin restricciones | Síntesis desde cero, sin material de terceros. |
+| Efectos propios: `harvest_soft_1..3.wav`, `backpack_full_1.wav`, `truck_horn_1.wav` (J-08) | `Assets/Audio/Sfx` | Propios, generados con `Tools/sfx_gen.py` | Propio, sin restricciones | Síntesis desde cero (marimba y bocina), sin material de terceros. Reemplazan a los `harvest_1..3` de Kenney. |
 | Sprites de UI e íconos (`Sprites/UI`, `Sprites/AppIcon`) | `Assets/Sprites` | Propios, generados por código (builders de editor, `ReleaseArt`) | Propio, sin restricciones | No hay arte externo. |
 | Liberation Sans (fuente de TextMesh Pro) | `Assets/TextMesh Pro/Fonts` | Red Hat / Liberation Fonts | SIL Open Font License 1.1 | Texto de la licencia en `Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt`. Se puede redistribuir con el juego sin cambiar el nombre. |
 

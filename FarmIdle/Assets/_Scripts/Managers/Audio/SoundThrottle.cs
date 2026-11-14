@@ -68,4 +68,64 @@ namespace FarmIdle
             _step = -1;
         }
     }
+
+    // El tono del combo de cosecha (J-08): cada cosecha seguida sube una nota de una escala pentatónica mayor (Do, Re, Mi, Sol,
+    // La, Do...), que suena bien en cualquier orden; subir de a pasos iguales de frecuencia, como la venta, desafina.
+    public static class HarvestScale
+    {
+        private static readonly int[] Semitones = { 0, 2, 4, 7, 9, 12, 14, 16 };
+
+        public static int MaxStep => Semitones.Length - 1;
+
+        // Por cuánto se multiplica el tono en ese paso del combo (1 en el primero).
+        public static float PitchFor(int step)
+        {
+            if (step < 0) step = 0;
+            if (step > MaxStep) step = MaxStep;
+
+            return (float)Math.Pow(2d, Semitones[step] / 12d);
+        }
+    }
+
+    // Una tanda de eventos seguidos (ventas) y el aviso, UNA vez, de que terminó una tanda grande: la bocina de la venta grande.
+    public sealed class StreakTracker
+    {
+        private readonly double _windowSeconds;
+        private readonly int _threshold;
+        private double _lastAt;
+        private int _count;
+
+        public StreakTracker(double windowSeconds, int threshold)
+        {
+            _windowSeconds = windowSeconds > 0d ? windowSeconds : 0.01d;
+            _threshold = threshold < 1 ? 1 : threshold;
+        }
+
+        public int Count => _count;
+
+        // Un evento más. Devuelve cuántos van en la tanda (1 si es el primero o pasó la ventana).
+        public int Add(double now)
+        {
+            if (_count > 0 && now - _lastAt > _windowSeconds) _count = 0;
+
+            _count++;
+            _lastAt = now;
+            return _count;
+        }
+
+        // true una sola vez, cuando una tanda que llegó al umbral ya terminó (pasó la ventana sin eventos nuevos).
+        public bool PollBigStreakEnded(double now)
+        {
+            if (_count == 0 || now - _lastAt <= _windowSeconds) return false;
+
+            bool big = _count >= _threshold;
+            _count = 0;
+            return big;
+        }
+
+        public void Reset()
+        {
+            _count = 0;
+        }
+    }
 }

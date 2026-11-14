@@ -16,10 +16,21 @@ namespace FarmIdle
         [SerializeField, Min(0f)] private float pulseAmount = 0.12f;
         [SerializeField, Min(0.1f)] private float pulseSpeed = 6f;
 
+        [SerializeField, Min(0f), Tooltip("J-08: cuánto dura el festejo \"¡Llena!\" al llenarse, antes de volver al MAX.")]
+        private float cheerSeconds = 1.2f;
+        [SerializeField, Min(1f), Tooltip("Cuánto crece el cartel al aparecer el festejo.")]
+        private float cheerScale = 1.7f;
+
+        private const string FullKey = "pad.max";
+        private const string CheerKey = "backpack.full_cheer";
+
         private IReadOnlyInventory _inventory;
         private Camera _camera;
+        private bool _cheering;
+        private float _cheerStartedAt;
 
         // Para pruebas y depuración.
+        public bool IsCheering => _cheering;
         public bool IsShowing => label != null && label.enabled;
         public TMP_Text Label => label;
 
@@ -54,12 +65,34 @@ namespace FarmIdle
                 _inventory = null;
             }
 
-            if (label != null) label.enabled = false;
+            if (label != null)
+            {
+                EndCheer();
+                label.enabled = false;
+            }
         }
 
         private void OnInventoryChanged(InventoryChange change)
         {
+            bool wasShowing = label.enabled;
             Refresh();
+
+            // J-08: llenarla cosechando es un logro. El cartel entra grande y dice "¡Llena!" un momento; después queda el MAX.
+            // Una partida que se carga con la mochila llena no festeja.
+            if (!wasShowing && label.enabled && change.Added && !change.IsReplacement && cheerSeconds > 0f)
+            {
+                _cheering = true;
+                _cheerStartedAt = Time.unscaledTime;
+                label.text = Loc.Get(CheerKey);
+            }
+        }
+
+        private void EndCheer()
+        {
+            if (!_cheering) return;
+
+            _cheering = false;
+            label.text = Loc.Get(FullKey);
         }
 
         private void OnCapacityChanged(int capacity)
@@ -70,7 +103,11 @@ namespace FarmIdle
         private void Refresh()
         {
             label.enabled = _inventory.IsFull;
-            if (!label.enabled) label.transform.localScale = Vector3.one;
+            if (!label.enabled)
+            {
+                EndCheer();
+                label.transform.localScale = Vector3.one;
+            }
         }
 
         // Billboard (el jugador gira y el texto no tiene que girar con él) y un latido suave mientras está a la vista.
@@ -80,6 +117,20 @@ namespace FarmIdle
 
             if (_camera == null) _camera = Camera.main;
             if (_camera != null) label.transform.rotation = _camera.transform.rotation;
+
+            if (_cheering)
+            {
+                float k = (Time.unscaledTime - _cheerStartedAt) / cheerSeconds;
+                if (k < 1f)
+                {
+                    // Entra de golpe a 'cheerScale' y se asienta rápido en un tamaño algo mayor que el del MAX.
+                    float settle = Mathf.Clamp01(k / 0.25f);
+                    label.transform.localScale = Vector3.one * Mathf.Lerp(cheerScale, 1.25f, settle * (2f - settle));
+                    return;
+                }
+
+                EndCheer();
+            }
 
             label.transform.localScale = Vector3.one * (1f + pulseAmount * Mathf.Sin(Time.unscaledTime * pulseSpeed));
         }

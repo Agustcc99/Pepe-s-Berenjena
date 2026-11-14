@@ -138,6 +138,22 @@ namespace FarmIdle.Tests
             Assert.AreEqual(0f, Vector3.Distance(new Vector3(0f, 2.5f * height, 0f), _rig.View.ItemObject(2).transform.localPosition), 1e-4f);
         }
 
+        // J-08: la cosecha que llena la mochila hace rebotar la pila entera, y el rebote termina dejándola como estaba.
+        [UnityTest]
+        public IEnumerator FillingTheBackpack_BouncesTheWholeStack_AndItSettlesBack()
+        {
+            Fill(Capacity - 1);
+            Assert.IsFalse(_rig.View.IsFullBouncing, "Con un lugar libre no hay festejo.");
+
+            Fill(1);
+            Assert.IsTrue(_rig.View.IsFullBouncing);
+
+            yield return new WaitForSecondsRealtime(0.9f);
+
+            Assert.IsFalse(_rig.View.IsFullBouncing);
+            Assert.AreEqual(0f, Vector3.Distance(Vector3.one, _rig.View.Anchor.localScale), 1e-5f, "La pila vuelve a su tamaño.");
+        }
+
         [UnityTest]
         public IEnumerator TheFullIndicator_ShowsWhenTheBackpackIsFull_AndHidesWhenThereIsRoom()
         {
@@ -161,9 +177,13 @@ namespace FarmIdle.Tests
             Fill(1);
             Assert.IsTrue(_rig.Backpack.IsFull);
             Assert.IsTrue(indicator.IsShowing, "Llena: aparece el MAX.");
+            Assert.IsTrue(indicator.IsCheering, "J-08: llenarla cosechando se festeja.");
+            Assert.AreEqual(Loc.Get("backpack.full_cheer"), label.text);
 
             Assert.IsTrue(_rig.Manager.TryPop(out _));
             Assert.IsFalse(indicator.IsShowing, "Se liberó un lugar: se va.");
+            Assert.IsFalse(indicator.IsCheering);
+            Assert.AreEqual(Loc.Get("pad.max"), label.text, "Y el cartel vuelve a su texto de siempre.");
 
             Fill(1);
             Assert.IsTrue(indicator.IsShowing);

@@ -7,7 +7,7 @@ namespace FarmIdle
     // conocen el audio.
     public enum SoundCue
     {
-        Harvest,     // un producto entra a la mochila
+        Harvest,     // un producto entra a la mochila (sube de nota si se cosecha seguido)
         Sell,        // se vende un producto (sube el tono si se venden varios seguidos)
         Purchase,    // se abre una zona o sube una mejora
         LevelUp,     // sube de nivel
@@ -18,7 +18,10 @@ namespace FarmIdle
         Denied,      // "no se puede": sin monedas, mochila llena, sin anuncio...
         Turbo,       // arranca el Turbo
         Step,        // se cumple un paso de la guía de los primeros minutos
-        Click        // tocar un botón de la interfaz
+        Click,       // tocar un botón de la interfaz
+        // Los nuevos van SIEMPRE al final: el banco guarda el índice.
+        BackpackFull,   // la mochila se llenó con esta cosecha (festejo, no error)
+        TruckHorn       // terminó una venta grande: bocina del camión
     }
 
     // Un sonido: sus variantes (se sortea una distinta cada vez), volumen, rango de tono y el mínimo entre dos disparos.

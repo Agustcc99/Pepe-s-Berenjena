@@ -15,12 +15,12 @@ MonoBehaviour:
   sounds:
   - cue: 0
     clips:
-    - {fileID: 8300000, guid: c6c7a3dc55c47f24a94757c1d26dc966, type: 3}
-    - {fileID: 8300000, guid: 5aab23e28a9adbe4293cfb615204b4aa, type: 3}
-    - {fileID: 8300000, guid: e5ebe9f9372f606428ab704b89517583, type: 3}
-    volume: 0.8
-    pitchMin: 0.95
-    pitchMax: 1.12
+    - {fileID: 8300000, guid: ba760ccce890b5346acd3847a4ef1b3b, type: 3}
+    - {fileID: 8300000, guid: 95f5b13e830b1d946ae11108f79e26d4, type: 3}
+    - {fileID: 8300000, guid: 60d2347a3c3a9b04fa32077110f4db04, type: 3}
+    volume: 0.6
+    pitchMin: 0.99
+    pitchMax: 1.01
     minIntervalSeconds: 0.05
   - cue: 1
     clips:
@@ -102,5 +102,19 @@ MonoBehaviour:
     pitchMin: 0.98
     pitchMax: 1.04
     minIntervalSeconds: 0.08
+  - cue: 12
+    clips:
+    - {fileID: 8300000, guid: 54d1136d33b6efa4cad3d51cd4de615a, type: 3}
+    volume: 0.7
+    pitchMin: 1
+    pitchMax: 1
+    minIntervalSeconds: 1
+  - cue: 13
+    clips:
+    - {fileID: 8300000, guid: 9ba80f4fef0b0614eab9c5791abb222a, type: 3}
+    volume: 0.5
+    pitchMin: 0.98
+    pitchMax: 1.02
+    minIntervalSeconds: 1.5
   music: {fileID: 8300000, guid: 303de1cc131db3c42a40265299462766, type: 3}
   musicVolume: 0.35

@@ -112,6 +112,48 @@ namespace FarmIdle.Tests
             Assert.AreEqual(denied + 1, audio.TriggerCount(SoundCue.Denied));
         }
 
+        // J-08: la cosecha que llena la mochila suena a festejo, y una venta grande termina con la bocina del camión.
+        [UnityTest]
+        public IEnumerator TheAudio_CelebratesAFullBackpack_AndHonksAfterABigSale()
+        {
+            yield return StartPlaying();
+            AudioManager audio = AudioManager.Instance;
+            EconomyManager economy = EconomyManager.Instance;
+            BackpackManager backpack = BackpackManager.Instance;
+            CropData wheat = InitialPlots()[0].Crop;
+
+            Assert.IsTrue(backpack.TryAdd(wheat));
+            Assert.AreEqual(0, audio.TriggerCount(SoundCue.BackpackFull), "Con lugar libre no hay festejo.");
+
+            for (int i = 0; i < 200 && !backpack.Backpack.IsFull; i++) Assert.IsTrue(backpack.TryAdd(wheat));
+            Assert.IsTrue(backpack.Backpack.IsFull);
+            Assert.AreEqual(1, audio.TriggerCount(SoundCue.BackpackFull));
+            Assert.AreEqual(0, audio.TriggerCount(SoundCue.Denied), "Llenarla no suena a error.");
+
+            // Una venta chica no toca bocina.
+            for (int i = 0; i < JuiceRules.BigSaleUnits - 1; i++) economy.SellProduct(wheat);
+            yield return new WaitForSecondsRealtime(JuiceRules.SaleRunWindowSeconds + 0.3f);
+            Assert.AreEqual(0, audio.TriggerCount(SoundCue.TruckHorn));
+
+            // Una grande sí, una sola vez, cuando termina.
+            for (int i = 0; i < JuiceRules.BigSaleUnits; i++) economy.SellProduct(wheat);
+            yield return null;
+            Assert.AreEqual(0, audio.TriggerCount(SoundCue.TruckHorn), "Mientras se sigue vendiendo no suena.");
+            yield return new WaitForSecondsRealtime(JuiceRules.SaleRunWindowSeconds + 0.3f);
+            Assert.AreEqual(1, audio.TriggerCount(SoundCue.TruckHorn));
+            yield return new WaitForSecondsRealtime(0.3f);
+            Assert.AreEqual(1, audio.TriggerCount(SoundCue.TruckHorn));
+
+            // El banco real trae los sonidos nuevos (si falta rehacerlo con Phase9SceneBuilder.RebuildAudio, esto lo avisa).
+            AudioBank bank = Resources.FindObjectsOfTypeAll<AudioBank>().First();
+            SoundEntry harvest = bank.Find(SoundCue.Harvest);
+            Assert.IsNotNull(harvest);
+            Assert.AreEqual(3, harvest.Clips.Length);
+            foreach (AudioClip clip in harvest.Clips) StringAssert.StartsWith("harvest_soft_", clip.name, "La cosecha usa la marimba suave.");
+            Assert.IsNotNull(bank.Find(SoundCue.BackpackFull));
+            Assert.IsNotNull(bank.Find(SoundCue.TruckHorn));
+        }
+
         [UnityTest]
         public IEnumerator TheAudio_StartsTheMusicOnTapToPlay_AndGoesSilentOnPauseAdsAndFocusLoss()
         {

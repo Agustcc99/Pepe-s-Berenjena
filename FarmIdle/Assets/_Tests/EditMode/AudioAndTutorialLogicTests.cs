@@ -223,5 +223,45 @@ namespace FarmIdle.Tests
             combo.Reset();
             Assert.AreEqual(0, combo.Next(3.2));
         }
+
+        // J-08: el combo de cosecha sube por una escala (siempre más agudo, nunca fuera de lo que una voz puede sonar).
+        [Test]
+        public void TheHarvestScale_StartsAtOne_AlwaysRises_AndStopsAtItsTop()
+        {
+            Assert.AreEqual(1f, HarvestScale.PitchFor(0), 1e-6f);
+            Assert.AreEqual(1f, HarvestScale.PitchFor(-3), 1e-6f);
+
+            for (int step = 1; step <= HarvestScale.MaxStep; step++)
+            {
+                Assert.Greater(HarvestScale.PitchFor(step), HarvestScale.PitchFor(step - 1), "Paso " + step);
+            }
+
+            Assert.AreEqual(2f, HarvestScale.PitchFor(5), 1e-5f, "El sexto paso es la octava.");
+            Assert.LessOrEqual(HarvestScale.PitchFor(HarvestScale.MaxStep), 3f);
+            Assert.AreEqual(HarvestScale.PitchFor(HarvestScale.MaxStep), HarvestScale.PitchFor(HarvestScale.MaxStep + 10), 1e-6f, "Tope.");
+        }
+
+        [Test]
+        public void ABigStreak_IsReportedOnce_WhenItEnds_AndASmallOneNever()
+        {
+            var run = new StreakTracker(0.5, 3);
+
+            Assert.IsFalse(run.PollBigStreakEnded(0.0), "Sin eventos no hay nada que avisar.");
+
+            Assert.AreEqual(1, run.Add(1.0));
+            Assert.AreEqual(2, run.Add(1.2));
+            Assert.IsFalse(run.PollBigStreakEnded(2.0), "Dos no llegan al umbral.");
+            Assert.AreEqual(0, run.Count);
+
+            run.Add(3.0);
+            run.Add(3.2);
+            Assert.AreEqual(3, run.Add(3.4));
+            Assert.IsFalse(run.PollBigStreakEnded(3.6), "Todavía puede seguir.");
+            Assert.IsTrue(run.PollBigStreakEnded(4.0));
+            Assert.IsFalse(run.PollBigStreakEnded(4.1), "Una sola vez.");
+
+            Assert.AreEqual(1, run.Add(10.0));
+            Assert.AreEqual(1, run.Add(11.0), "Pasó la ventana: tanda nueva.");
+        }
     }
 }

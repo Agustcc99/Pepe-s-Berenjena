@@ -16,6 +16,7 @@ namespace FarmIdle
             public TMP_Text Label;
             public Vector3 Origin;
             public float StartedAt;
+            public float Scale;
         }
 
         [SerializeField, Tooltip("Prefab del texto \"+1\" (TextMeshPro en el mundo). Sale del PoolManager.")]
@@ -33,6 +34,9 @@ namespace FarmIdle
         [SerializeField, Tooltip("Altura sobre la planta donde nace el texto.")]
         private float startHeight = 0.8f;
 
+        [SerializeField, Min(1f), Tooltip("J-08: cuánto más grande sale el \"+1\" cuando se viene cosechando seguido (JuiceRules.HarvestStreakForBigPopup).")]
+        private float streakScale = 1.6f;
+
         private const float RareExtraHeight = 0.6f;
         private static readonly Color RareColor = new Color(1f, 0.82f, 0.18f, 1f);   // dorado
 
@@ -42,9 +46,13 @@ namespace FarmIdle
         private int _active;
         private Camera _camera;
         private bool _wired;
+        private int _streak;
+        private float _streakLastAt;
 
         // Para pruebas y depuración.
         public int ActivePopups => _active;
+        public int HarvestStreak => _streak;
+        public float LastPopupScale { get; private set; } = 1f;
         public GameObject PopupPrefab => popupPrefab;
 
         private void OnEnable()
@@ -93,18 +101,26 @@ namespace FarmIdle
 
         private void OnHarvested(CropData crop, Vector3 position)
         {
-            Show(position, 0f, -1L);
+            // J-08: combo de cosecha. Cosechando seguido, desde la décima el "+1" sale grande (solo se ve: no hay premio).
+            float now = Time.unscaledTime;
+            if (now - _streakLastAt > JuiceRules.HarvestStreakWindowSeconds) _streak = 0;
+            _streak++;
+            _streakLastAt = now;
+
+            Show(position, 0f, -1L, _streak >= JuiceRules.HarvestStreakForBigPopup ? streakScale : 1f);
         }
 
         // J-04: cosecha rara. Un segundo texto, más alto y dorado, con las monedas del premio (el "+N" sale de la venta, pero
         // acá el texto sí se arma porque pasa pocas veces).
         private void OnRareHarvested(CropData crop, Vector3 position, long bonus)
         {
-            Show(position, RareExtraHeight, bonus);
+            Show(position, RareExtraHeight, bonus, 1f);
         }
 
-        private void Show(Vector3 position, float extraHeight, long bonus)
+        private void Show(Vector3 position, float extraHeight, long bonus, float scale)
         {
+            LastPopupScale = scale;
+
             PoolManager pools = PoolManager.Instance;
             if (pools == null) return;
 
@@ -132,7 +148,7 @@ namespace FarmIdle
                     label.color = _defaultColor;
                 }
 
-                _popups[i] = new Popup { Instance = instance, Label = label, Origin = origin, StartedAt = Time.unscaledTime };
+                _popups[i] = new Popup { Instance = instance, Label = label, Origin = origin, StartedAt = Time.unscaledTime, Scale = scale };
                 label.alpha = 1f;
                 _active++;
                 return;
@@ -162,7 +178,7 @@ namespace FarmIdle
                 Transform t = _popups[i].Instance.transform;
                 t.position = _popups[i].Origin + Vector3.up * (ease * rise);
                 if (_camera != null) t.rotation = _camera.transform.rotation;   // mira a la cámara
-                t.localScale = Vector3.one * (1f + 0.3f * Mathf.Clamp01(1f - k / 0.2f));   // saltito al nacer
+                t.localScale = Vector3.one * (_popups[i].Scale * (1f + 0.3f * Mathf.Clamp01(1f - k / 0.2f)));   // saltito al nacer
                 _popups[i].Label.alpha = k < 0.6f ? 1f : 1f - (k - 0.6f) / 0.4f;
             }
         }
