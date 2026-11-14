@@ -132,6 +132,7 @@ namespace FarmIdle.EditorTools
             AssetDatabase.SaveAssets();
 
             DecorationBuilder.CreateAssets();   // F-17: datos y mallas de las decoraciones de la granja
+            HelperCrewBuilder.CreateAssets();   // F-19: mallas de los ayudantes que se ven
 
             BuildSymbolPrefab();
             AssetDatabase.SaveAssets();
@@ -348,6 +349,7 @@ namespace FarmIdle.EditorTools
             BuildDwellPad<FertilizerBuyPad>(root.transform, "FertilizerPad_Buy", new Vector3(PlazaBuilder.EastFarX, 0f, RowZ), PadIcon.Buy);
 
             DecorationBuilder.BuildWorldPieces(root.transform);   // F-17: pads de decoraciones y ayudantes, y las decoraciones
+            HelperCrewBuilder.Build(root.transform);              // F-19: los peones, apagados hasta que se compra su nivel
 
             var slotsRoot = new GameObject("OfferSlots");
             slotsRoot.transform.SetParent(root.transform, false);
