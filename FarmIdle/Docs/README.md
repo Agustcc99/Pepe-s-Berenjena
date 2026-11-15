@@ -19,6 +19,7 @@ Roadmap AR-07. Punto de entrada: leé primero `../../CLAUDE.md` (reglas del proy
 | `ECONOMIA_V1.md` | Cómo se calibró la economía con el bot de balance (B-02, F-04). |
 | `REWARDED_REGLAS.md` | Dónde se ofrece cada video, enfriamientos y reglas de anuncios (B-03). |
 | `CRAZYGAMES_REQUISITOS.md` | Requisitos vigentes de CrazyGames con fuente y fecha de lectura (D-01). |
+| `FICHA_CRAZYGAMES.md` | Textos de la ficha, qué subir, paso a paso del envío y qué se comprobó en el build (D-05). |
 | `RELEASE.md` | Cómo sacar un release (Android y Web), firma por variables de entorno y hosting. |
 | `MARKETING.md` | Portadas del portal y cómo regenerarlas (K-01). |
 | `ART_PACK_CHECKLIST.md` | Checklist para elegir el pack de arte (A-01). |
