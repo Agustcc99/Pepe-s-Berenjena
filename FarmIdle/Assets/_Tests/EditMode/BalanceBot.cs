@@ -139,11 +139,30 @@ namespace FarmIdle.Tests
         private bool _calibrating;
         private string _targetId;          // id de lo que NextTarget eligió por última vez
 
+        // Con qué arranca una temporada que no es la primera (F-03 y F-11; lo arma PrestigeBot). Los valores de fábrica son los
+        // de una partida nueva, así que el bot sin esto juega igual que siempre.
+        public sealed class SeasonStart
+        {
+            public float PriceMultiplier = 1f;    // PrestigeManager.Multiplier: (1 + paso x temporadas) x mejora «Buen precio»
+            public float GrowthMultiplier = 1f;   // PrestigeManager.GrowthFactor (mejora «Cultivos veloces»)
+            public float XpMultiplier = 1f;       // PrestigeManager.XpFactor (mejora «Aprendiz veloz»)
+            public long CoinsBonus;               // mejora «Monedas iniciales»: se suma a GameConfig.StartingCoins
+            public int Fertilizer;                // stock con el que arranca (lo que sobró + el regalo, ya recortado al tope)
+            public long Xp;                       // la XP no se reinicia con la temporada
+        }
+
+        private readonly SeasonStart _start;
+
+        public int FertilizerLeft => _fertilizer;
+        public int Level => _level;
+
         // 'zoneIds' limita qué zonas del GameConfig juega el bot (null = todas); las demás ni se compran ni cuentan.
-        public BalanceBot(GameConfig config, IReadOnlyCollection<string> zoneIds = null)
+        // 'start' = con qué arranca la temporada (null = partida nueva). Con XP inicial, LevelSeconds/SecondsToLevel no valen.
+        public BalanceBot(GameConfig config, IReadOnlyCollection<string> zoneIds = null, SeasonStart start = null)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _zoneIds = zoneIds;
+            _start = start ?? new SeasonStart();
 
             foreach (FieldSpec field in Fields)
             {
@@ -174,7 +193,10 @@ namespace FarmIdle.Tests
 
             _curve = new LevelCurve(config.LevelBaseXp, config.MaxLevel);
             _pos = Vector2.zero;
-            _coins = config.StartingCoins;
+            _coins = config.StartingCoins + Math.Max(0L, _start.CoinsBonus);   // como EconomyManager.ResetCoins
+            _fertilizer = Mathf.Clamp(_start.Fertilizer, 0, config.FertilizerMaxStock);
+            BaseXp = Math.Max(0L, _start.Xp);
+            _level = Mathf.Max(1, _curve.LevelForXp(BaseXp));
             _nextVideoAt = FertilizerVideoEverySeconds;
         }
 
@@ -192,7 +214,7 @@ namespace FarmIdle.Tests
         }
 
         private float Speed => BaseSpeed * Mathf.Min(Multiplier(UpgradeKind.MoveSpeed), _config.MaxMoveSpeedMultiplier);
-        private float Growth => Multiplier(UpgradeKind.GrowthSpeed);
+        private float Growth => Multiplier(UpgradeKind.GrowthSpeed) * _start.GrowthMultiplier;
 
         private int Capacity
         {
@@ -397,7 +419,7 @@ namespace FarmIdle.Tests
         {
             float price = Multiplier(UpgradeKind.SellPrice);
             long total = 0;
-            foreach (CropData crop in _backpack) total += PriceCalculator.FinalPrice(crop.SellPrice, price, 1f);
+            foreach (CropData crop in _backpack) total += PriceCalculator.FinalPrice(crop.SellPrice, price, 1f, _start.PriceMultiplier);
             return total;
         }
 
@@ -516,7 +538,7 @@ namespace FarmIdle.Tests
         private void CreditRareHarvest(CropData crop)
         {
             double expected = _config.RareHarvestChance * _config.RareHarvestMultiplier
-                              * PriceCalculator.FinalPrice(crop.SellPrice, Multiplier(UpgradeKind.SellPrice), 1f);
+                              * PriceCalculator.FinalPrice(crop.SellPrice, Multiplier(UpgradeKind.SellPrice), 1f, _start.PriceMultiplier);
             _rareCarry += expected;
 
             long whole = (long)_rareCarry;
@@ -540,11 +562,11 @@ namespace FarmIdle.Tests
                 CropData crop = _backpack[_backpack.Count - 1];
                 _backpack.RemoveAt(_backpack.Count - 1);
 
-                long coins = PriceCalculator.FinalPrice(crop.SellPrice, price, 1f);
+                long coins = PriceCalculator.FinalPrice(crop.SellPrice, price, 1f, _start.PriceMultiplier);
                 _coins += coins;
                 CoinsEarned += coins;
                 CreditOrderBonus(coins);
-                BaseXp += crop.SellPrice;
+                BaseXp += Math.Max(1L, (long)Math.Round(crop.SellPrice * (double)_start.XpMultiplier));   // como ProgressionManager (x1 = el precio base)
                 Advance(_config.SellIntervalSeconds);
 
                 while (_level < _curve.MaxLevel && _curve.LevelForXp(BaseXp) > _level)
