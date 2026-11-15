@@ -7,7 +7,9 @@ namespace FarmIdle
     //   - Se compran en orden (TryBuyNext, por EconomyManager.TrySpend); alcanza con guardar el NIVEL (0 = ninguno).
     //   - Efecto: mientras se juega (GameManager en Playing), suman por segundo monedas = OfflineManager.ProductionPerSecond x
     //     Share del nivel. Es la misma vara que ya usan las misiones y el progreso offline, así que sigue a las mejoras, el
-    //     prestigio y las zonas abiertas sin tocarlos. Las monedas se acreditan enteras (el resto queda acumulado).
+    //     prestigio y las zonas abiertas sin tocarlos. Lo que juntan se entrega POR TANDAS, cada GameConfig.HelperPayoutSeconds
+    //     (monedas enteras; el resto queda acumulado): acreditar moneda a moneda reiniciaba en cada cuadro el conteo y el latido
+    //     del contador del HUD, que quedaba "tildado". Paid avisa de cada tanda.
     //   - Una nueva temporada (prestigio) los reinicia, como a las mejoras: es el sumidero que vuelve a aparecer en cada vuelta.
     //   - Partida guardada: ISaveable "helpers" con el nivel. Restaurar no cobra nada; una partida sin la sección arranca en 0.
     //   - Números PROVISORIOS (10 / 20 / 35 %): se ajustan con datos reales (B-05); el bot de balance no los compra.
@@ -27,6 +29,7 @@ namespace FarmIdle
         private GameConfig _config;
         private int _level;
         private double _carry;
+        private float _sincePayout;   // segundos de juego desde la última tanda
         private PrestigeManager _prestige;
 
         public int Level => _level;
@@ -53,6 +56,9 @@ namespace FarmIdle
         public event Action<int> Bought;
         public event Action Refused;
 
+        // Los ayudantes entregaron una tanda: cuántas monedas. Nunca al restaurar una partida.
+        public event Action<long> Paid;
+
         public void ReportRefused()
         {
             Refused?.Invoke();
@@ -76,6 +82,7 @@ namespace FarmIdle
         {
             _level = 0;
             _carry = 0d;
+            _sincePayout = 0f;
             Changed?.Invoke();
             SaveRequested?.Invoke();
         }
@@ -102,7 +109,8 @@ namespace FarmIdle
             Tick(Time.deltaTime);
         }
 
-        // Acredita lo que rinden los ayudantes en 'dt' segundos de juego. Sin asignaciones: dos cuentas y, a lo sumo, una suma.
+        // Junta lo que rinden los ayudantes en 'dt' segundos de juego y, cuando pasó el intervalo, entrega la tanda entera (si
+        // todavía no llega a una moneda, espera a que llegue). Sin asignaciones: dos cuentas y, a lo sumo, una suma por tanda.
         public void Tick(float dt)
         {
             if (_level <= 0 || dt <= 0f) return;
@@ -112,11 +120,14 @@ namespace FarmIdle
             if (offline == null || economy == null) return;
 
             _carry += offline.ProductionPerSecond * Share * dt;
-            if (_carry < 1d) return;
+            _sincePayout += dt;
+            if (_sincePayout < _config.HelperPayoutSeconds || _carry < 1d) return;
 
+            _sincePayout = 0f;
             long whole = (long)_carry;
             _carry -= whole;
             economy.AddCoins(whole);
+            Paid?.Invoke(whole);
         }
 
         // ---------- Partida guardada ----------
@@ -148,6 +159,7 @@ namespace FarmIdle
 
             _level = save != null ? Mathf.Clamp(save.level, 0, Total) : 0;
             _carry = 0d;
+            _sincePayout = 0f;
             Changed?.Invoke();
         }
 

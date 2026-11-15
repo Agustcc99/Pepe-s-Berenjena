@@ -27,7 +27,7 @@ Borrador de Claude, 2026-11-15. Los textos van en **inglés** (el portal lo exig
 
 | Qué | Dónde está | Nota |
 |---|---|---|
-| Build | `FarmIdle/Builds/Release/Web-CrazyGames/` (la carpeta entera: `index.html`, `crazygames-adapter.js` y `Build/` con 4 archivos) | Generado el 2026-11-15 15:07 desde el commit `06c3794`: 6 archivos, 8,4 MB, Brotli. Arrastrar los archivos sueltos, sin `.zip` salvo que el formulario lo pida |
+| Build | `FarmIdle/Builds/Release/Web-CrazyGames/` (la carpeta entera: `index.html`, `crazygames-adapter.js` y `Build/` con 4 archivos) | Generado el 2026-11-15 15:28, con el arreglo de los ayudantes que pagan por tandas (F-19) incluido: 6 archivos, 8,4 MB, Brotli. Arrastrar los archivos sueltos, sin `.zip` salvo que el formulario lo pida |
 | Portadas | `FarmIdle/Marketing/covers/` (`cover_16x9_1920x1080.png`, `cover_2x3_800x1200.png`, `cover_1x1_800x800.png`) | Son borrador: miralas antes |
 | Video | No hay (K-02 quedó para más adelante) | **A verificar en el formulario** si deja enviar sin video; la doc lo lista entre lo que "vas a necesitar" |
 

@@ -143,6 +143,57 @@ namespace FarmIdle.Tests
             Assert.AreEqual(before + 1L, economy.Wallet.Balance, 1d, "Las fracciones de moneda se acumulan en vez de perderse.");
         }
 
+        // El contador del HUD reinicia su conteo y su latido con cada cambio de saldo: si los ayudantes acreditan en cada cuadro,
+        // queda "tildado". Tienen que entregar por tandas, cada GameConfig.HelperPayoutSeconds.
+        [Test]
+        public void TheHelpers_PayInBatches_EveryPayoutInterval_NotEveryFrame()
+        {
+            float interval = _config.HelperPayoutSeconds;
+            Assert.That(interval, Is.InRange(2f, 15f), "El intervalo de pago tiene que notarse sin hacerse esperar.");
+
+            HelperManager helpers = CreateServices(100f, out EconomyManager economy);
+            economy.AddCoins(1000000L);
+            helpers.TryBuyNext();
+            long before = economy.Wallet.Balance;
+
+            int payments = 0;
+            long paid = 0L;
+            helpers.Paid += amount => { payments++; paid += amount; };
+
+            const float Frame = 1f / 60f;
+            int framesBefore = Mathf.FloorToInt((interval - 0.5f) / Frame);
+            for (int i = 0; i < framesBefore; i++) helpers.Tick(Frame);
+            Assert.AreEqual(before, economy.Wallet.Balance, "Antes del intervalo no entregan nada, aunque ya juntaron monedas.");
+            Assert.AreEqual(0, payments);
+
+            for (int i = 0; i < 60; i++) helpers.Tick(Frame);   // cruza el intervalo
+            Assert.AreEqual(1, payments, "Una sola tanda al cumplirse el intervalo.");
+            Assert.AreEqual(before + paid, economy.Wallet.Balance);
+            Assert.AreEqual(100d * _config.Helpers[0].Share * interval, paid, 2d, "La tanda trae todo lo juntado en el intervalo.");
+        }
+
+        [Test]
+        public void TheBatches_AddUpToTheSameIncome_WithFewBalanceChanges()
+        {
+            HelperManager helpers = CreateServices(100f, out EconomyManager economy);
+            economy.AddCoins(1000000L);
+            helpers.TryBuyNext();
+            long before = economy.Wallet.Balance;
+
+            int changes = 0;
+            economy.Wallet.BalanceChanged += (balance, delta) => changes++;
+
+            const float Frame = 1f / 60f;
+            const int Seconds = 60;
+            for (int i = 0; i < Seconds * 60; i++) helpers.Tick(Frame);
+
+            double expected = 100d * _config.Helpers[0].Share * Seconds;
+            double tolerance = 100d * _config.Helpers[0].Share * _config.HelperPayoutSeconds + 2d;   // lo que quedó juntado sin entregar
+            Assert.AreEqual(expected, economy.Wallet.Balance - before, tolerance, "Por tandas rinde lo mismo que moneda a moneda.");
+            Assert.LessOrEqual(changes, Mathf.CeilToInt(Seconds / _config.HelperPayoutSeconds), "El saldo cambia una vez por tanda, no en cada cuadro.");
+            Assert.Greater(changes, 0);
+        }
+
         [Test]
         public void TheLevel_Saves_Restores_AndAnOldSaveStartsAtZero()
         {

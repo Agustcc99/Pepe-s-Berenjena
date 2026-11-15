@@ -164,6 +164,9 @@ namespace FarmIdle
         [SerializeField, Tooltip("Niveles de ayudantes automáticos, en el orden en que se compran (se reinician con cada temporada).")]
         private HelperData[] helpers = new HelperData[0];
 
+        [SerializeField, Min(0f), Tooltip("Cada cuántos segundos de juego los ayudantes entregan, de una, las monedas que juntaron (0 = moneda a moneda).")]
+        private float helperPayoutSeconds = 5f;
+
         [SerializeField, Tooltip("Skins (colores) del jugador, en el orden en que se compran. El color de fábrica no está en la lista.")]
         private SkinData[] skins = new SkinData[0];
 
@@ -285,6 +288,7 @@ namespace FarmIdle
         public IReadOnlyList<RewardData> Rewards => rewards;
         public IReadOnlyList<DecorationData> Decorations => decorations;
         public IReadOnlyList<HelperData> Helpers => helpers;
+        public float HelperPayoutSeconds => helperPayoutSeconds;
         public IReadOnlyList<SkinData> Skins => skins;
         public float MaxFinalMoveSpeed => maxFinalMoveSpeed;
         public int FertilizerPrice => fertilizerPrice;

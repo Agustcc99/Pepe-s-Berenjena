@@ -2,6 +2,14 @@
 
 Roadmap AR-06. Una entrada corta por decisión que no se deduce leyendo el código: **qué**, **por qué** y **cuándo** (con el ID del roadmap). Lo más nuevo, arriba. Una decisión que se revierte no se borra: se agrega una entrada nueva que la reemplaza.
 
+### Los ayudantes pagan por tandas (F-19) · 2026-11-15
+- **Qué:** `HelperManager` junta lo que rinden los ayudantes y lo entrega de una cada `GameConfig.HelperPayoutSeconds` (5 s; evento `Paid`). El ingreso total no cambia. Lo juntado y no entregado (hasta 5 s) se pierde al cerrar o al empezar una temporada.
+- **Por qué:** pedido del usuario. Acreditar moneda a moneda cambiaba el saldo casi en cada cuadro, y `CoinCounterView` reinicia su conteo y su latido con cada cambio: el contador quedaba "tildado" (y arrancaba corrutinas en cada cuadro).
+- **Pendiente:** la tanda no está sincronizada con el peón que descarga en el camión ni muestra un "+N" en el mundo; el aviso es el latido del contador.
+
+### Correo de contacto público (M-04) · 2026-11-15
+- **Qué:** el contacto de la política de privacidad (`Legal/index.html`) es `alternativaflay@gmail.com`, dado por el usuario para publicarse.
+
 ### Nombre del estudio: Pepe's Dev (DEC-2b) · 2026-11-04
 - **Qué:** el estudio se llama "Pepe's Dev"; es el titular de la política de privacidad (M-04) y de las cuentas de Play (D-07/D-09).
 - **Por qué:** lo eligió el usuario; va con el juego "Pepe's Berenjena". Chequeo de INPI y de homónimos: pendiente (no verificado por Claude).
