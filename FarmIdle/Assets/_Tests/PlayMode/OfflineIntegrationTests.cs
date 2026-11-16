@@ -81,7 +81,7 @@ namespace FarmIdle.Tests
             Assert.Greater(offline.BaseCoinsPerSecond, 0f, "El campo inicial está registrado como fuente.");
 
             // 1 h x lo que rinde el campo x 25% de eficiencia (sin mejoras todavía), con un par de segundos de margen del arranque.
-            double expected = 3600d * offline.BaseCoinsPerSecond * 0.25d;
+            double expected = 3600d * offline.BaseCoinsPerSecond * 0.15d;   // B-11: eficiencia 15 % (antes 25 %)
             Assert.AreEqual(expected, offline.PendingCoins, expected * 0.01d + 2d);
 
             string body = Card.transform.Find("Card/Body").GetComponent<TMP_Text>().text;

@@ -137,6 +137,8 @@ data.reward_fertilizer,Fertilizante,Fertilizer
 data.reward_offline_double,Duplicar ganancia,Double earnings
 offline.title,¡Bienvenido de vuelta!,Welcome back!
 offline.body,"Estuviste fuera {1}.\nTus parcelas produjeron {0} monedas.","You were away for {1}.\nYour plots produced {0} coins."
+offline.grown,"\n\nLo que sembraste ya creció.","\n\nYour crops grew while you were away."
+offline.rotted,"\n\nPasaron más de {0} h: lo sembrado se pudrió.","\n\nOver {0} h away: your crops rotted."
 offline.claim,Reclamar,Claim
 offline.double,Duplicar (video),Double (video)
 offline.time_hm,{0} h {1} min,{0} h {1} min
@@ -183,11 +185,21 @@ data.ach_missions,Reclamá {0} misiones,Claim {0} missions
 data.ach_season_1,Cerrá {0} temporada,Finish {0} season
 data.ach_season_2,Cerrá {0} temporadas,Finish {0} seasons
 data.upgrade_offline,Almacén,Storehouse
-fmt.hours,+{0} h,+{0} h
+fmt.hours,+{0} h de monedas al volver,+{0} h of away coins
 pad.order,Pedido,Order
 pad.order_big,Pedido grande,Big order
 pad.order_locked,Abrí {0} granjas,Open {0} farms first
 pad.order_wait,Nuevo en,Next in
 pad.order_seed,+1 semilla,+1 seed
 hud.orders,Pedidos del pueblo,Town orders
+hud.order_done,¡Pedido completado!,Order complete!
+guide.sow,Pisá la tierra para sembrar,Step on the soil to plant
+guide.harvest,Pisá el cultivo maduro,Step on the ripe crop
+guide.sell,Llevá la cosecha al puesto,Carry your harvest to the stand
+guide.buy,Parate en el pad para comprar,Stand on the pad to buy
+guide.sell_full,Mochila llena: andá al puesto,Backpack full: go sell
+guide.new_item,¡Tu decoración nueva está acá!,Your new decoration is here!
+guide.can_buy,¡Te alcanza! Comprá acá,You can afford this!
+settings.control_floating,Control: Flotante,Controls: Floating
+settings.control_fixed,Control: Fijo,Controls: Fixed
 backpack.full_cheer,¡Llena!,Full!

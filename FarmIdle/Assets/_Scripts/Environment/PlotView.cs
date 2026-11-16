@@ -136,6 +136,28 @@ namespace FarmIdle
             return _logic.TryFinishGrowing();
         }
 
+        // B-11: segundos de crecimiento que lleva lo sembrado (para guardarlo en la partida).
+        public float ElapsedSeconds => _logic != null ? _logic.Elapsed : 0f;
+
+        // B-11: deja la parcela como estaba en la partida guardada, sin entregar nada. Solo sobre una parcela vacía.
+        public void Restore(PlotState state, float elapsedSeconds)
+        {
+            if (_logic == null || _logic.State != PlotState.Empty || state == PlotState.Empty || !IsConfigured()) return;
+            if (!_logic.TryPlant(crop.GrowSeconds)) return;
+
+            if (state == PlotState.Ready) _logic.TryFinishGrowing();
+            else Tick(elapsedSeconds);
+        }
+
+        // B-11: lo sembrado se pudrió: la parcela queda vacía sin entregar nada. Devuelve true si tenía algo.
+        public bool Rot()
+        {
+            if (_logic == null || _logic.State == PlotState.Empty) return false;
+
+            if (_logic.State == PlotState.Growing) _logic.TryFinishGrowing();
+            return _logic.TryHarvest();
+        }
+
         // Lo llama el PlotField en cada frame con el tiempo del juego (0 en pausa y con un anuncio en pantalla).
         public void Tick(float deltaSeconds)
         {

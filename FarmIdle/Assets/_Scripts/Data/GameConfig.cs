@@ -34,7 +34,7 @@ namespace FarmIdle
         private float purchaseSeconds = 1.2f;
 
         [SerializeField, Min(0f), Tooltip("Segundos que hay que estar parado en el pad antes de que empiece a gotear, para no gastar monedas solo por cruzarlo.")]
-        private float purchaseStartDelaySeconds = 0.7f;
+        private float purchaseStartDelaySeconds = 1f;
 
         [Header("Cultivos")]
         [SerializeField, Tooltip("Todos los cultivos del juego. La partida guardada los referencia por Id (la mochila): SaveManager los busca acá.")]
@@ -119,16 +119,19 @@ namespace FarmIdle
 
         [Header("Progreso offline (B-01)")]
         [SerializeField, Range(0f, 1f), Tooltip("Qué fracción de lo que rendirían las parcelas cosechadas sin parar se acredita por el tiempo fuera (nadie cosecha ni vende).")]
-        private float offlineEfficiency = 0.25f;
+        private float offlineEfficiency = 0.15f;
 
         [SerializeField, Min(0f), Tooltip("Tope base, en segundos, del tiempo fuera que se acredita (7200 = 2 h). Una mejora lo amplía a 4 h.")]
         private float offlineBaseCapSeconds = 7200f;
 
         [SerializeField, Min(0f), Tooltip("Tope de monedas por cada hora fuera que se acredita, antes de Duplicar (con 2 h de tope de tiempo, 25.000 por hora = 50.000). Crece con el Almacén porque cuenta el tiempo acreditado. 0 = sin límite en monedas.")]
-        private float offlineMaxCoinsPerHour = 25000f;
+        private float offlineMaxCoinsPerHour = 15000f;
 
         [SerializeField, Min(0f), Tooltip("Segundos fuera mínimos para que aparezca la tarjeta de bienvenida (evita avisos por cambiar de app un momento).")]
         private float offlineMinSeconds = 120f;
+
+        [SerializeField, Min(60f), Tooltip("B-11: segundos fuera a partir de los cuales lo sembrado se pudre y las parcelas vuelven vacías (86400 = 24 h). Antes de eso, lo sembrado vuelve crecido.")]
+        private float offlineRotSeconds = 86400f;
 
         [Header("Misiones diarias (F-05)")]
         [SerializeField, Tooltip("Las plantillas de misión de las que se sortean las de cada día (MissionManager las busca por Id).")]
@@ -283,6 +286,7 @@ namespace FarmIdle
         public float OfflineBaseCapSeconds => offlineBaseCapSeconds;
         public float OfflineMaxCoinsPerHour => offlineMaxCoinsPerHour;
         public float OfflineMinSeconds => offlineMinSeconds;
+        public float OfflineRotSeconds => offlineRotSeconds;
         public float SaveDelaySeconds => saveDelaySeconds;
         public float WebSaveDelaySeconds => webSaveDelaySeconds;
         public IReadOnlyList<RewardData> Rewards => rewards;

@@ -127,9 +127,9 @@ namespace FarmIdle.Tests
         [Test]
         public void TheConfig_HasPlayableOfflineValues()
         {
-            Assert.AreEqual(0.25f, _config.OfflineEfficiency, 1e-6f, "DEC: 25% de eficiencia.");
+            Assert.AreEqual(0.15f, _config.OfflineEfficiency, 1e-6f, "B-11: 15% de eficiencia (antes 25%).");
             Assert.AreEqual(7200f, _config.OfflineBaseCapSeconds, "DEC-5: 2 h de tope base.");
-            Assert.AreEqual(25000f, _config.OfflineMaxCoinsPerHour, "B-07: 25.000 monedas por hora fuera (provisorio).");
+            Assert.AreEqual(15000f, _config.OfflineMaxCoinsPerHour, "B-11: 15.000 monedas por hora fuera (antes 25.000; provisorio).");
             Assert.Greater(_config.OfflineMinSeconds, 0f);
             Assert.Less(_config.OfflineMinSeconds, _config.OfflineBaseCapSeconds);
 
@@ -154,14 +154,14 @@ namespace FarmIdle.Tests
 
             offline.Resolve();
             Assert.IsTrue(offline.HasPending);
-            Assert.AreEqual(1800L, offline.PendingCoins);
+            Assert.AreEqual(1080L, offline.PendingCoins);
             Assert.AreEqual(3600f, offline.PendingSeconds, 1f);
             Assert.AreEqual(start, economy.Balance, "Nada se acredita solo.");
             Assert.Greater(changes, 0);
 
             // Resolver dos veces no suma dos veces.
             offline.Resolve();
-            Assert.AreEqual(1800L, offline.PendingCoins);
+            Assert.AreEqual(1080L, offline.PendingCoins);
         }
 
         [Test]
@@ -239,7 +239,7 @@ namespace FarmIdle.Tests
             long start = economy.Balance;
 
             Assert.IsTrue(offline.Claim());
-            Assert.AreEqual(start + 1800L, economy.Balance);
+            Assert.AreEqual(start + 1080L, economy.Balance);
             Assert.IsFalse(offline.HasPending);
             Assert.IsFalse(offline.Claim(), "Ya se reclamó.");
             Assert.IsFalse(offline.ClaimDoubled(), "Y no se puede duplicar lo que ya se cobró.");
@@ -247,9 +247,9 @@ namespace FarmIdle.Tests
             offline.Restore(SaveAwayFor(TimeSpan.FromHours(1)));
             offline.Resolve();
             Assert.IsTrue(offline.ClaimDoubled());
-            Assert.AreEqual(start + 1800L + 3600L, economy.Balance, "Duplicado: el doble de lo pendiente.");
+            Assert.AreEqual(start + 1080L + 2160L, economy.Balance, "Duplicado: el doble de lo pendiente.");
 
-            CollectionAssert.AreEqual(new[] { "1800", "3600x2" }, claims);
+            CollectionAssert.AreEqual(new[] { "1080", "2160x2" }, claims);
         }
 
         [Test]
@@ -269,7 +269,7 @@ namespace FarmIdle.Tests
             second.Restore(json);
             second.Resolve();
 
-            Assert.AreEqual(1800L, second.PendingCoins, "Lo pendiente vuelve igual y no se suma nada por los 30 s.");
+            Assert.AreEqual(1080L, second.PendingCoins, "Lo pendiente vuelve igual y no se suma nada por los 30 s.");
         }
 
         [Test]
@@ -351,22 +351,22 @@ namespace FarmIdle.Tests
             ProgressionManager progression = Create<ProgressionManager>();
             progression.Initialize(_config);
 
-            // 400 monedas/s x 2 h x 0,25 serían 720.000: queda en 2 h x 25.000 por hora.
+            // 400 monedas/s x 2 h x 0,15 serían 432.000: queda en 2 h x 15.000 por hora.
             offline.Restore(SaveAwayFor(TimeSpan.FromHours(30)));
             offline.Resolve();
-            Assert.AreEqual(50000L, offline.PendingCoins);
+            Assert.AreEqual(30000L, offline.PendingCoins);
 
-            // Con el Almacén al máximo (4 h) el límite sube a 100.000, no se queda en 50.000.
+            // Con el Almacén al máximo (4 h) el límite sube a 60.000, no se queda en 30.000.
             offline.Claim();
             progression.Restore(new ProgressData { upgradeLevels = new[] { new UpgradeLevelEntry { id = storehouse.Id, level = 2 } } });
             offline.Restore(SaveAwayFor(TimeSpan.FromHours(30)));
             offline.Resolve();
-            Assert.AreEqual(100000L, offline.PendingCoins);
+            Assert.AreEqual(60000L, offline.PendingCoins);
 
             // Duplicar (video) multiplica lo ya limitado.
             long before = economy.Balance;
             Assert.IsTrue(offline.ClaimDoubled());
-            Assert.AreEqual(200000L, economy.Balance - before);
+            Assert.AreEqual(120000L, economy.Balance - before);
         }
 
         [Test]

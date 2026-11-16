@@ -56,12 +56,12 @@ namespace FarmIdle
             }
             else if (_fertilizer.Stock <= 0)
             {
-                _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.no_stock")).Append("</color>");
+                _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.no_stock")).Append("</color>");
             }
             else
             {
                 _text.Append('x').Append(_fertilizer.Stock);
-                if (_fertilizer.GrowingCount <= 0) _text.Append("\n<size=50%><color=#9A9A82>").Append(Loc.Get("pad.nothing_growing")).Append("</color></size>");
+                if (_fertilizer.GrowingCount <= 0) _text.Append("\n<size=50%><color=#DCDCC8>").Append(Loc.Get("pad.nothing_growing")).Append("</color></size>");
             }
 
             return _text.ToString();

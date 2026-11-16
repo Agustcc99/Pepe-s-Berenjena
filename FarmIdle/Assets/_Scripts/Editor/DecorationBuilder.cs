@@ -14,6 +14,9 @@ namespace FarmIdle.EditorTools
         private const string DataFolder = "Assets/ScriptableObjects/Decorations";
         private const string MeshesFolder = "Assets/Meshes/Environment";
 
+        // F-20: las decoraciones se veían chicas al lado de la plaza. Se agrandan en la escena (la malla no cambia).
+        private const float WorldScale = 1.6f;
+
         private sealed class DecorationSpec
         {
             public string Id, Name;
@@ -169,6 +172,7 @@ namespace FarmIdle.EditorTools
                 var mesh = Phase2SceneBuilder.LoadRequired<Mesh>(MeshPath(spec));
                 Transform item = PadBuilder.CreateMeshChild(root.transform, spec.Id, mesh, material, spec.Position);
                 item.rotation = Quaternion.Euler(0f, spec.Yaw, 0f);
+                item.localScale = Vector3.one * WorldScale;
                 item.gameObject.SetActive(false);   // DecorationSet la prende al comprarla
                 items.Add(item.gameObject);
             }

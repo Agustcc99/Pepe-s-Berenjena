@@ -74,12 +74,12 @@ namespace FarmIdle
 
             if (_skins.AllOwned)
             {
-                _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.skins_all")).Append("</color>");
+                _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.skins_all")).Append("</color>");
             }
             else
             {
                 _text.Append("<size=50%>").Append(_skins.Next.DisplayName).Append("</size>\n");
-                _text.Append(_economy.CanAfford(_skins.NextCost) ? "<color=#FFFFFF>" : "<color=#9A9A82>").Append(_skins.NextCost).Append("</color>");
+                _text.Append(_economy.CanAfford(_skins.NextCost) ? "<color=#FFFFFF>" : "<color=#DCDCC8>").Append(_skins.NextCost).Append("</color>");
             }
 
             if (_skins.Owned > 0)

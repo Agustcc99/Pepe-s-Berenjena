@@ -127,7 +127,7 @@ namespace FarmIdle.Tests
                 new Regex(@"Loc\.(?:Get|GetOr|Format|Has)\(\s*""([^""]+)"""),
                 new Regex(@"""@([a-z_]+\.[a-z_]+)"""),
                 new Regex(@"AddLocalizedKey\([^,]+,\s*""([^""]+)"""),
-                new Regex(@"""((?:menu|settings|hud|pad|ad|fmt)\.[a-z_]+)""")   // también las claves dentro de un ternario
+                new Regex(@"""((?:menu|settings|hud|pad|ad|fmt|guide)\.[a-z_]+)""")   // también las claves dentro de un ternario
             };
             var used = new List<string>();
             foreach (string file in Directory.GetFiles(ScriptsFolder, "*.cs", SearchOption.AllDirectories))
@@ -142,6 +142,49 @@ namespace FarmIdle.Tests
             Assert.Greater(used.Count, 40, "El escaneo tiene que encontrar las claves usadas.");
             string[] missing = used.Where(entry => !Loc.Has(entry.Substring(entry.IndexOf(": ", System.StringComparison.Ordinal) + 2))).ToArray();
             Assert.IsEmpty(missing, "Claves usadas en el código que no están en la tabla: " + string.Join(", ", missing));
+        }
+
+        private sealed class FakeGuidePoint : IGuidePoint
+        {
+            public int Priority;
+            public Vector3 Position => Vector3.zero;
+            public int GuidePriority => Priority;
+            public bool WantsGuide => true;
+        }
+
+        // U-10: cada paso de la guía y cada lugar de "conviene ir" tiene su cartel, en los dos idiomas.
+        [Test]
+        public void EveryGuideStepAndPoint_HasAHintInTheTable()
+        {
+            var keys = new List<string>();
+            foreach (TutorialStep step in new[] { TutorialStep.Sow, TutorialStep.Harvest, TutorialStep.Sell, TutorialStep.Buy })
+            {
+                string key = TutorialEdgeArrow.TutorialHintKey(step);
+                Assert.IsNotNull(key, "El paso " + step + " no tiene cartel.");
+                keys.Add(key);
+            }
+
+            Assert.IsNull(TutorialEdgeArrow.TutorialHintKey(TutorialStep.Done), "Terminada la guía no hay cartel.");
+            Assert.IsNull(TutorialEdgeArrow.GuideHintKey(null));
+
+            string sell = TutorialEdgeArrow.GuideHintKey(new FakeGuidePoint { Priority = GuidePoints.SellPriority });
+            string buy = TutorialEdgeArrow.GuideHintKey(new FakeGuidePoint { Priority = GuidePoints.BuyPriority });
+            Assert.AreNotEqual(sell, buy, "Vender y comprar dicen cosas distintas.");
+            keys.Add(sell);
+            keys.Add(buy);
+
+            string fresh = TutorialEdgeArrow.GuideHintKey(new FakeGuidePoint { Priority = GuidePoints.NewItemPriority });
+            Assert.AreNotEqual(sell, fresh, "Lo recién comprado tiene su propio cartel.");
+            keys.Add(fresh);
+
+            foreach (string key in keys)
+            {
+                Assert.IsTrue(Loc.Has(key), "Falta en la tabla: " + key);
+                Loc.SetLanguage(GameLanguage.Spanish);
+                string spanish = Loc.Get(key);
+                Loc.SetLanguage(GameLanguage.English);
+                Assert.AreNotEqual(spanish, Loc.Get(key), "El cartel '" + key + "' tiene que estar en los dos idiomas.");
+            }
         }
 
         [Test]

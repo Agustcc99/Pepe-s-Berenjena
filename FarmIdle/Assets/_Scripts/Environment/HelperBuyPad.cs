@@ -71,13 +71,13 @@ namespace FarmIdle
             }
             else if (_helpers.IsMaxed)
             {
-                _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.helpers_max")).Append("</color>");
+                _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.helpers_max")).Append("</color>");
                 _text.Append("\n<size=50%>").Append(Loc.Format("pad.helpers_bonus", Mathf.RoundToInt(_helpers.Share * 100f))).Append("</size>");
             }
             else
             {
                 _text.Append("<size=50%>").Append(_helpers.Next.DisplayName).Append("</size>\n");
-                _text.Append(_economy.CanAfford(_helpers.NextCost) ? "<color=#FFFFFF>" : "<color=#9A9A82>").Append(_helpers.NextCost).Append("</color>");
+                _text.Append(_economy.CanAfford(_helpers.NextCost) ? "<color=#FFFFFF>" : "<color=#DCDCC8>").Append(_helpers.NextCost).Append("</color>");
                 _text.Append("\n<size=50%>").Append(Loc.Format("pad.helpers_bonus", Mathf.RoundToInt(_helpers.Next.Share * 100f))).Append("</size>");
             }
 

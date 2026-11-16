@@ -113,10 +113,15 @@ namespace FarmIdle.Tests
             var view = hudObject.AddComponent<OrdersHudView>();
             TestReflection.Set(view, "card", card);
             TestReflection.Set(view, "text", text);
+            var done = new GameObject("Done");
+            done.transform.SetParent(hudObject.transform, false);
+            var doneText = done.AddComponent<TextMeshPro>();
+            TestReflection.Set(view, "completedLabel", doneText);
             hudObject.SetActive(true);
             yield return null;
 
             Assert.IsFalse(card.activeSelf, "Sin pedidos la tarjeta queda apagada.");
+            Assert.IsFalse(view.IsNoticeShowing, "El aviso de pedido completado arranca apagado.");
 
             _orders.Tick(0.1f);
             Assert.IsTrue(card.activeSelf);
@@ -125,12 +130,16 @@ namespace FarmIdle.Tests
 
             long reward = _orders.RewardCoins(0);
             Assert.Greater(reward, 0L);
+            string rewardText = "+" + reward.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
+            StringAssert.Contains(rewardText, text.text, "Cada pedido muestra su premio en la tarjeta del HUD.");
             for (int i = 0; i < wanted; i++) _backpack.TryAdd(_crop);
 
             _pad.Interact(null);
             Assert.IsFalse(_orders.IsActive(0), "El pedido completo deja el lugar vacío.");
             Assert.AreEqual(reward, _economy.Balance);
             Assert.IsTrue(card.activeSelf, "Quedan los otros dos pedidos.");
+            Assert.IsTrue(view.IsNoticeShowing, "Al completar un pedido sale el aviso.");
+            StringAssert.Contains(rewardText, view.NoticeText, "Y dice cuánto se ganó.");
         }
     }
 }

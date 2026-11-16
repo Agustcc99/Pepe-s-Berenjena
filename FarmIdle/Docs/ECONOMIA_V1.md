@@ -72,6 +72,8 @@ Perks de nivel (+1 mochila, +1,5% de velocidad por elección), Turbo por video y
 
 Dos compras nuevas de fin de juego (`upgrade_offline`, niveles 1 y 2 a 140.000 y 158.000 monedas). Van al final del plan porque el bot compra siempre lo más barato primero: tienen que costar más que Precio 6 (135.000). Con el ingreso del final (~6,5 a 7 k/min de jugador real) tardan 20 y 24 min, dentro del límite de 25. Resultado del bot: Almacén 1 en el min ~280 y Almacén 2 en el ~303; todo comprado a las ~5 h 5 min. Como cuenta para "todo comprado", el primer prestigio llega recién ahí. Si el factor de 2,5× del jugador real cambia (Q-01/Q-03/N-04), recalibrar con `EconomyCalibration`.
 
+**Actualización 2026-11-16 (B-11):** a pedido del usuario las monedas al volver bajaron: eficiencia 25 % → **15 %** y tope 25.000 → **15.000 por hora fuera** (30.000 con 2 h; 60.000 con el Almacén al máximo; el doble con el video). Además lo sembrado se guarda: vuelve crecido, o podrido si pasaron 24 h. Números provisorios (B-05).
+
 ## B-08 · Fertilizante: el precio sube con las zonas abiertas
 
 El fertilizante termina de crecer todos los campos, así que lo que entrega crece con cada granja y el precio fijo de 1.500 se quedaba corto al final. `GameConfig.FertilizerPriceFor(zonas)` multiplica el precio base (`fertilizerPrice` = 1.500) por `fertilizerPriceStepPerZone` (**×1,8**) con cada zona abierta y redondea a 50:

@@ -29,7 +29,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b27fe800538217c4f8ac98552d535aa3, type: 2}
   - {fileID: 11400000, guid: 7d379ae3c9ede2848ac7684af0e21838, type: 2}
   purchaseSeconds: 1.2
-  purchaseStartDelaySeconds: 0.7
+  purchaseStartDelaySeconds: 1
   crops:
   - {fileID: 11400000, guid: ae8f31126c36b574fbc498588ac0f937, type: 2}
   - {fileID: 11400000, guid: 34c3cf306129d2d4388e7696907c40b9, type: 2}
@@ -131,10 +131,11 @@ MonoBehaviour:
   - cropId: sunflower
     zoneId: zone_northeast
     weight: 3
-  offlineEfficiency: 0.25
+  offlineEfficiency: 0.15
   offlineBaseCapSeconds: 7200
-  offlineMaxCoinsPerHour: 25000
+  offlineMaxCoinsPerHour: 15000
   offlineMinSeconds: 120
+  offlineRotSeconds: 86400
   missions:
   - {fileID: 11400000, guid: 4db8f2748ecd79d4c9a39b215844663a, type: 2}
   - {fileID: 11400000, guid: b3e7e5d2227c9fa42adbff58bb0b7d47, type: 2}
@@ -189,6 +190,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 08d6844f698209f4f813afde6716e243, type: 2}
   - {fileID: 11400000, guid: 818aa9d9d20cb2348b01f7db7781d773, type: 2}
   - {fileID: 11400000, guid: 302c90cdc7636b1458c6018da68a524e, type: 2}
+  helperPayoutSeconds: 5
   skins:
   - {fileID: 11400000, guid: ce02b51d31efb1b4fb5cd8e4d159bd2f, type: 2}
   - {fileID: 11400000, guid: 558bc138cd543674f92c6c13c3ac0d24, type: 2}

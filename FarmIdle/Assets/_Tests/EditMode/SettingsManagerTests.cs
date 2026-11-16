@@ -127,6 +127,29 @@ namespace FarmIdle.Tests
             Assert.IsTrue(_settings.LargeText);
         }
 
+        // U-11: joystick flotante (de fábrica) o fijo.
+        [Test]
+        public void FixedControls_AreOffByDefault_AndSurviveASaveRoundTrip_AndAnOldSaveIsFloating()
+        {
+            Assert.IsFalse(_settings.FixedControls);
+
+            _saveRequests = 0;
+            _settings.SetFixedControls(true);
+            _settings.SetFixedControls(true);
+            Assert.AreEqual(1, _saveRequests, "Cambiar guarda una vez; repetir el mismo valor no.");
+
+            string json = _settings.Capture();
+            _settings.Restore(null);
+            Assert.IsFalse(_settings.FixedControls, "Sin partida vuelve al valor de fábrica.");
+
+            _settings.Restore(json);
+            Assert.IsTrue(_settings.FixedControls);
+
+            _settings.Restore("{\"version\":3,\"vibration\":true,\"language\":1,\"largeText\":true}");
+            Assert.IsFalse(_settings.FixedControls, "Un guardado anterior no traía el control fijo.");
+            Assert.IsTrue(_settings.LargeText);
+        }
+
         [Test]
         public void AVersion2Save_LoadsWithNormalText()
         {

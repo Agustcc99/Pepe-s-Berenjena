@@ -37,7 +37,7 @@ namespace FarmIdle.EditorTools
             backdropButton.transition = Selectable.Transition.None;
 
             Image card = EditorUi.CreateCard(backdrop.transform);   // recibe los toques: no cierra
-            EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860f, 1480f));
+            EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860f, 1600f));
 
             TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@settings.title", 72f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
             EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(600f, 100f));
@@ -55,17 +55,18 @@ namespace FarmIdle.EditorTools
             Button vibration = AddCardButton(card.transform, "VibrationButton", "", new Color(0.30f, 0.50f, 0.78f), -650f, 110f, out TextMeshProUGUI vibrationLabel);
             Button language = AddCardButton(card.transform, "LanguageButton", "", new Color(0.30f, 0.50f, 0.78f), -770f, 110f, out TextMeshProUGUI languageLabel);
             Button textSize = AddCardButton(card.transform, "TextSizeButton", "", new Color(0.30f, 0.50f, 0.78f), -890f, 110f, out TextMeshProUGUI textSizeLabel);   // "Texto grande" (U-04)
-            Button credits = AddCardButton(card.transform, "CreditsButton", "@settings.credits", new Color(0.35f, 0.42f, 0.38f), -1010f, 100f, out _);
+            Button control = AddCardButton(card.transform, "ControlButton", "", new Color(0.30f, 0.50f, 0.78f), -1010f, 110f, out TextMeshProUGUI controlLabel);   // joystick flotante o fijo (U-11)
+            Button credits = AddCardButton(card.transform, "CreditsButton", "@settings.credits", new Color(0.35f, 0.42f, 0.38f), -1130f, 100f, out _);
 
             // "Privacidad": solo se ve si el jugador está en una región que exige el consentimiento (lo decide el servicio de anuncios).
-            Button privacy = AddCardButton(card.transform, "PrivacyButton", "@settings.privacy", new Color(0.35f, 0.42f, 0.38f), -1120f, 96f, out _);
+            Button privacy = AddCardButton(card.transform, "PrivacyButton", "@settings.privacy", new Color(0.35f, 0.42f, 0.38f), -1240f, 96f, out _);
             privacy.gameObject.SetActive(false);
 
             // La política de privacidad: oculta hasta que haya una dirección publicada (ROADMAP M-04; se carga en el campo privacyPolicyUrl).
-            Button policy = AddCardButton(card.transform, "PrivacyPolicyButton", "@settings.privacy_policy", new Color(0.35f, 0.42f, 0.38f), -1224f, 96f, out _);
+            Button policy = AddCardButton(card.transform, "PrivacyPolicyButton", "@settings.privacy_policy", new Color(0.35f, 0.42f, 0.38f), -1344f, 96f, out _);
             policy.gameObject.SetActive(false);
 
-            Button delete = AddCardButton(card.transform, "DeleteSaveButton", "@settings.delete", new Color(0.65f, 0.22f, 0.22f), -1350f, 110f, out _);
+            Button delete = AddCardButton(card.transform, "DeleteSaveButton", "@settings.delete", new Color(0.65f, 0.22f, 0.22f), -1470f, 110f, out _);
 
             // Créditos: un panel encima de la tarjeta.
             Image creditsPanel = EditorUi.CreatePanel("CreditsPanel", card.transform, new Color(0.08f, 0.13f, 0.09f, 0.99f), true);
@@ -110,6 +111,8 @@ namespace FarmIdle.EditorTools
                 ("languageLabel", languageLabel),
                 ("textSizeButton", textSize),
                 ("textSizeLabel", textSizeLabel),
+                ("controlButton", control),
+                ("controlLabel", controlLabel),
                 ("creditsButton", credits),
                 ("creditsPanel", creditsPanel.gameObject),
                 ("creditsCloseButton", creditsClose),
@@ -129,8 +132,44 @@ namespace FarmIdle.EditorTools
             outline.effectDistance = new Vector2(5f, -5f);
             arrow.gameObject.SetActive(false);
 
+            // U-10: el cartel que dice qué hacer; acompaña a la flecha o se pone encima del lugar cuando está a la vista.
+            Image hint = EditorUi.CreatePanel("GuideLabel", arrowHolder, new Color(0.05f, 0.07f, 0.06f, 0.78f), false);
+            EditorUi.Anchor(hint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(780f, 92f));
+            TextMeshProUGUI hintText = EditorUi.CreateText("Text", hint.transform, "", 32f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            // Una sola línea. El ancho y el tamaño están pensados para que los carteles (hasta ~30 letras) entren SIN achicarse aun con
+            // "Texto grande": cuando TextMeshPro achica un texto para que entre, lo deja un par de píxeles pasado y la prueba lo marca.
+            hintText.enableAutoSizing = true;
+            hintText.fontSizeMin = 18f;
+            hintText.fontSizeMax = 32f;
+            hintText.textWrappingMode = TextWrappingModes.NoWrap;
+            hintText.raycastTarget = false;
+            EditorUi.Stretch(hintText.rectTransform);
+            hintText.rectTransform.offsetMin = new Vector2(16f, 8f);
+            hintText.rectTransform.offsetMax = new Vector2(-16f, -8f);
+            hint.gameObject.SetActive(false);
+
             var edge = arrowHolder.gameObject.AddComponent<TutorialEdgeArrow>();
-            EditorUi.Wire(edge, ("area", hud), ("arrow", arrow.rectTransform));
+            EditorUi.Wire(edge, ("area", hud), ("arrow", arrow.rectTransform), ("labelRoot", hint.rectTransform), ("label", hintText));
+
+            // U-11: las cuatro flechas del joystick fijo, dentro del círculo y debajo de la palanca. Se ven solo en ese modo.
+            FloatingJoystick joystick = canvas.GetComponentInChildren<FloatingJoystick>(true);
+            Transform joystickBackground = joystick != null ? joystick.transform.Find("JoystickBackground") : null;
+            if (joystickBackground == null) throw new System.InvalidOperationException("El Canvas no tiene el joystick (TouchArea/JoystickBackground).");
+
+            RectTransform fixedArrows = EditorUi.CreateRect("FixedArrows", joystickBackground);
+            EditorUi.Stretch(fixedArrows);
+            fixedArrows.SetAsFirstSibling();
+            for (int i = 0; i < 4; i++)
+            {
+                float degrees = i * 90f;   // 0 arriba, 90 izquierda, 180 abajo, 270 derecha (la flecha apunta a +Y sin rotar)
+                Vector2 direction = new Vector2(-Mathf.Sin(degrees * Mathf.Deg2Rad), Mathf.Cos(degrees * Mathf.Deg2Rad));
+                Image fixedArrow = EditorUi.CreateImage("Arrow" + i, fixedArrows, arrowSprite, new Color(1f, 1f, 1f, 0.75f), false);
+                EditorUi.Anchor(fixedArrow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), direction * 86f, new Vector2(44f, 44f));
+                fixedArrow.rectTransform.localRotation = Quaternion.Euler(0f, 0f, degrees);
+            }
+
+            fixedArrows.gameObject.SetActive(false);
+            EditorUi.Wire(joystick, ("fixedArrows", fixedArrows.gameObject));
 
             backdrop.gameObject.SetActive(false);   // la tarjeta arranca cerrada
 

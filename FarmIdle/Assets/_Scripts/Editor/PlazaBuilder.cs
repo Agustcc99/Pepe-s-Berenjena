@@ -337,7 +337,7 @@ namespace FarmIdle.EditorTools
                 label.fontSize = 5.5f;
                 label.fontStyle = FontStyles.Bold;
                 label.alignment = TextAlignmentOptions.Center;
-                label.color = new Color(1f, 0.95f, 0.45f);
+                PadBuilder.ApplyWorldLabelStyle(label);   // U-12: borde negro y amarillo claro
                 label.textWrappingMode = TextWrappingModes.NoWrap;
                 label.overflowMode = TextOverflowModes.Overflow;
                 label.rectTransform.sizeDelta = new Vector2(3.4f, 0.7f);

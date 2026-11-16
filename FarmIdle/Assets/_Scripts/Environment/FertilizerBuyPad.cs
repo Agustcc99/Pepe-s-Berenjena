@@ -74,15 +74,15 @@ namespace FarmIdle
             }
             else if (_fertilizer.AtBuyLimit)
             {
-                _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.full")).Append(' ').Append(_fertilizer.Stock).Append('/').Append(_fertilizer.BuyMaxStock).Append("</color>");
+                _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.full")).Append(' ').Append(_fertilizer.Stock).Append('/').Append(_fertilizer.BuyMaxStock).Append("</color>");
             }
             else if (_fertilizer.BuyCooldownRemaining > 0f)
             {
-                _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.wait")).Append(' ').Append(Mathf.CeilToInt(_fertilizer.BuyCooldownRemaining)).Append(" s</color>");
+                _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.wait")).Append(' ').Append(Mathf.CeilToInt(_fertilizer.BuyCooldownRemaining)).Append(" s</color>");
             }
             else
             {
-                _text.Append(_economy.CanAfford(_fertilizer.Price) ? "<color=#FFFFFF>" : "<color=#9A9A82>").Append(_fertilizer.Price).Append("</color>");
+                _text.Append(_economy.CanAfford(_fertilizer.Price) ? "<color=#FFFFFF>" : "<color=#DCDCC8>").Append(_fertilizer.Price).Append("</color>");
                 _text.Append("\n<size=50%>").Append(Loc.Get("pad.you_have")).Append(' ').Append(_fertilizer.Stock).Append('/').Append(_fertilizer.MaxStock).Append("</size>");
             }
 

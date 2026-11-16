@@ -226,8 +226,9 @@ namespace FarmIdle.Tests
             GameConfig config = LoadConfig();
 
             Assert.That(config.PurchaseSeconds, Is.InRange(0.5f, 4f), "Pagar tiene que tardar un rato corto pero visible.");
-            Assert.GreaterOrEqual(config.PurchaseStartDelaySeconds, 0f);
-            Assert.Less(config.PurchaseStartDelaySeconds, 1f, "Una espera de un segundo o más hace pesada cada compra.");
+            // B-10: a pedido del usuario la espera subió de 0,7 a 1,0 s (pasar caminando por un pad no tiene que empezar a pagarlo).
+            // Con 1,2 s el bot de balance quedaba fuera de la tolerancia en la compra 22 (ver DECISIONES.md).
+            Assert.That(config.PurchaseStartDelaySeconds, Is.InRange(1f, 1.5f), "La espera evita compras al pasar, sin hacer pesada cada compra.");
 
             int expected = config.BackpackCapacity;
             foreach (UpgradeData upgrade in config.Upgrades.Where(u => u.Kind == UpgradeKind.BackpackCapacity))

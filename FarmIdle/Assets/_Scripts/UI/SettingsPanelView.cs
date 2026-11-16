@@ -41,6 +41,8 @@ namespace FarmIdle
         [SerializeField] private TMP_Text languageLabel;
         [SerializeField, Tooltip("Texto grande (U-04): alterna entre tamaño normal y ×1,3. Puede faltar.")] private Button textSizeButton;
         [SerializeField] private TMP_Text textSizeLabel;
+        [SerializeField, Tooltip("Control (U-11): alterna entre el joystick flotante y el fijo. Puede faltar.")] private Button controlButton;
+        [SerializeField] private TMP_Text controlLabel;
 
         [Header("Créditos y política")]
         [SerializeField] private Button creditsButton;
@@ -84,6 +86,7 @@ namespace FarmIdle
             Hook(vibrationButton, OnVibrationClicked);
             Hook(languageButton, OnLanguageClicked);
             Hook(textSizeButton, OnTextSizeClicked);
+            Hook(controlButton, OnControlClicked);
             Hook(creditsButton, OpenCredits);
             Hook(creditsCloseButton, CloseCredits);
             Hook(privacyPolicyButton, OnPrivacyPolicyClicked);
@@ -111,6 +114,7 @@ namespace FarmIdle
             Unhook(vibrationButton, OnVibrationClicked);
             Unhook(languageButton, OnLanguageClicked);
             Unhook(textSizeButton, OnTextSizeClicked);
+            Unhook(controlButton, OnControlClicked);
             Unhook(creditsButton, OpenCredits);
             Unhook(creditsCloseButton, CloseCredits);
             Unhook(privacyPolicyButton, OnPrivacyPolicyClicked);
@@ -184,6 +188,11 @@ namespace FarmIdle
             _settings.SetVibration(!_settings.VibrationEnabled);
         }
 
+        private void OnControlClicked()
+        {
+            _settings.SetFixedControls(!_settings.FixedControls);
+        }
+
         private void OnTextSizeClicked()
         {
             _settings.SetLargeText(!_settings.LargeText);
@@ -237,6 +246,7 @@ namespace FarmIdle
             if (vibrationLabel != null) vibrationLabel.text = Loc.Get(_settings.VibrationEnabled ? "settings.vibration_on" : "settings.vibration_off");
             if (languageLabel != null) languageLabel.text = LanguageText(_settings.Language);
             if (textSizeLabel != null) textSizeLabel.text = Loc.Get(_settings.LargeText ? "settings.text_size_large" : "settings.text_size_normal");
+            if (controlLabel != null) controlLabel.text = Loc.Get(_settings.FixedControls ? "settings.control_fixed" : "settings.control_floating");
 
             // "Privacidad" solo aparece si la región del jugador lo exige.
             if (privacyButton != null)

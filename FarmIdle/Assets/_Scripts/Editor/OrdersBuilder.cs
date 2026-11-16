@@ -90,7 +90,7 @@ namespace FarmIdle.EditorTools
         internal static void BuildHud(RectTransform hud)
         {
             RectTransform root = EditorUi.CreateRect("OrdersHud", hud);
-            EditorUi.Anchor(root, new Vector2(0f, 0.5f), new Vector2(0f, 1f), new Vector2(20f, -50f), new Vector2(330f, 190f));
+            EditorUi.Anchor(root, new Vector2(0f, 0.5f), new Vector2(0f, 1f), new Vector2(20f, -50f), new Vector2(450f, 190f));   // más ancha: cada línea trae el premio
 
             Image card = EditorUi.CreatePanel("Card", root, new Color(0.05f, 0.07f, 0.06f, 0.65f), false);
             EditorUi.Stretch(card.rectTransform);
@@ -106,8 +106,21 @@ namespace FarmIdle.EditorTools
 
             card.gameObject.SetActive(false);
 
+            // El aviso de "pedido completado" con lo ganado: arriba del jugador, unos segundos. No recibe toques.
+            Image done = EditorUi.CreatePanel("OrderDone", hud, new Color(0.05f, 0.07f, 0.06f, 0.78f), false);
+            EditorUi.Anchor(done.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -620f), new Vector2(760f, 170f));
+            TextMeshProUGUI doneText = EditorUi.CreateText("Text", done.transform, "", 52f, new Color(1f, 0.88f, 0.4f), TextAlignmentOptions.Center, FontStyles.Bold);
+            doneText.enableAutoSizing = true;
+            doneText.fontSizeMin = 30f;
+            doneText.fontSizeMax = 52f;
+            doneText.raycastTarget = false;
+            EditorUi.Stretch(doneText.rectTransform);
+            doneText.rectTransform.offsetMin = new Vector2(16f, 8f);
+            doneText.rectTransform.offsetMax = new Vector2(-16f, -8f);
+            done.gameObject.SetActive(false);
+
             var view = root.gameObject.AddComponent<OrdersHudView>();
-            EditorUi.Wire(view, ("card", card.gameObject), ("text", text));
+            EditorUi.Wire(view, ("card", card.gameObject), ("text", text), ("completedLabel", doneText), ("completedRoot", done.gameObject));
         }
     }
 }

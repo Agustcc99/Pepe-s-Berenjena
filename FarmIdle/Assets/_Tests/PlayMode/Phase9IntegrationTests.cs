@@ -520,6 +520,116 @@ namespace FarmIdle.Tests
             Object.Destroy(target.gameObject);
         }
 
+        // U-10: la guía dice qué hacer, no solo apunta. El cartel acompaña a la flecha del borde y, con el lugar a la vista, queda
+        // encima de él; sin guía se apaga.
+        [UnityTest]
+        public IEnumerator TheGuideLabel_SaysWhatToDo_NextToTheArrow_AndOverATargetInView()
+        {
+            yield return StartPlaying();
+            TutorialEdgeArrow edge = Object.FindAnyObjectByType<TutorialEdgeArrow>();
+            Assert.IsNotNull(edge);
+
+            foreach (TutorialTargetMarker marker in All<TutorialTargetMarker>()) marker.gameObject.SetActive(false);
+            var target = new GameObject("TestTarget").AddComponent<FarTarget>();
+            TutorialManager.Instance.RegisterTarget(target);
+            Assert.AreSame(target, TutorialManager.Instance.CurrentTarget);
+            string expected = TutorialEdgeArrow.TutorialHintKey(TutorialManager.Instance.Step);
+            Assert.IsNotNull(expected);
+
+            target.transform.position = Player.transform.position + new Vector3(200f, 0f, 0f);
+            yield return null;
+            yield return null;
+            Assert.IsTrue(edge.IsShowing);
+            Assert.IsTrue(edge.IsLabelShowing, "Con la flecha del borde va el cartel.");
+            Assert.AreEqual(expected, edge.CurrentHintKey);
+            Assert.IsTrue(edge.Area.Contains(edge.LabelPosition), "El cartel queda dentro del área del HUD (está en " + edge.LabelPosition + ").");
+            Assert.Less(edge.LabelPosition.x, edge.ArrowPosition.x, "Y del lado de adentro de la flecha.");
+
+            target.transform.position = Player.transform.position + new Vector3(0f, 0f, 2f);
+            yield return null;
+            yield return null;
+            Assert.IsFalse(edge.IsShowing);
+            Assert.IsTrue(edge.IsLabelShowing, "A la vista ya no hay flecha del borde, pero el cartel sigue diciendo qué hacer.");
+            Assert.IsTrue(edge.Area.Contains(edge.LabelPosition));
+
+            TutorialManager.Instance.Skip();
+            yield return null;
+            yield return null;
+            Assert.IsFalse(edge.IsLabelShowing, "Sin guía no hay cartel.");
+
+            TutorialManager.Instance.UnregisterTarget(target);
+            Object.Destroy(target.gameObject);
+        }
+
+        // B-11: lo sembrado se guarda con la partida. Al volver ya creció; pasadas 24 h se pudre y las parcelas vuelven vacías.
+        [UnityTest]
+        public IEnumerator SownPlots_AreSaved_ComeBackGrown_AndRotAfterADay()
+        {
+            yield return StartPlaying();
+            PlotStateManager plots = PlotStateManager.Instance;
+            Assert.IsNotNull(plots, "El Bootstrapper arma el PlotStateManager.");
+
+            PlotField[] fields = Object.FindObjectsByType<PlotField>(FindObjectsInactive.Include);
+            Assert.Greater(fields.Length, 1);
+            CollectionAssert.AllItemsAreUnique(fields.Select(candidate => candidate.StateId).ToList(), "Cada campo tiene su propio id en la partida.");
+
+            PlotField field = fields.First(candidate => candidate.isActiveAndEnabled);
+            foreach (PlotView plot in field.Plots) Assert.IsTrue(plot.TrySow(), "Parcela vacía al empezar.");
+            yield return null;
+            int sown = field.Plots.Count;
+
+            DateTime now = DateTime.UtcNow;
+            plots.Clock = () => now;
+            string json = plots.Capture();
+            StringAssert.Contains(field.StateId, json);
+
+            // Una hora después: todo lo sembrado está listo para cosechar.
+            now += TimeSpan.FromHours(1);
+            plots.Restore(json);
+            yield return null;
+            Assert.IsTrue(field.Plots.All(plot => plot.State == PlotState.Ready), "Al volver, lo sembrado ya creció.");
+            Assert.AreEqual(sown, plots.GrownPlots);
+            Assert.AreEqual(0, plots.RottedPlots);
+
+            // Más de un día después: se pudrió.
+            now += TimeSpan.FromHours(30);
+            plots.Restore(json);
+            yield return null;
+            Assert.IsTrue(field.Plots.All(plot => plot.State == PlotState.Empty), "Pasadas 24 h las parcelas vuelven vacías.");
+            Assert.AreEqual(sown, plots.RottedPlots);
+            Assert.AreEqual(0, plots.GrownPlots);
+        }
+
+        // U-11: el control fijo deja el joystick siempre a la vista; el flotante lo esconde hasta que se toca.
+        [UnityTest]
+        public IEnumerator TheFixedControl_KeepsTheJoystickOnScreen_AndFloatingHidesItAgain()
+        {
+            yield return StartPlaying();
+            FloatingJoystick joystick = Object.FindAnyObjectByType<FloatingJoystick>();
+            Assert.IsNotNull(joystick, "El Canvas tiene el joystick.");
+            yield return null;
+
+            Assert.IsFalse(joystick.IsFixed, "De fábrica es flotante.");
+            Assert.IsFalse(joystick.IsBackgroundShown, "Flotante: escondido hasta que se toca.");
+
+            SettingsManager.Instance.SetFixedControls(true);
+            yield return null;
+            yield return null;
+            Assert.IsTrue(joystick.IsFixed);
+            Assert.IsTrue(joystick.IsBackgroundShown, "Fijo: siempre a la vista.");
+            Transform arrows = joystick.transform.Find("JoystickBackground/FixedArrows");
+            Assert.IsNotNull(arrows, "El builder arma las flechas del joystick fijo.");
+            Assert.IsTrue(arrows.gameObject.activeSelf);
+            Assert.AreEqual(4, arrows.childCount);
+
+            SettingsManager.Instance.SetFixedControls(false);
+            yield return null;
+            yield return null;
+            Assert.IsFalse(joystick.IsFixed);
+            Assert.IsFalse(joystick.IsBackgroundShown);
+            Assert.IsFalse(arrows.gameObject.activeSelf);
+        }
+
         // Un lugar de prueba para la flecha del borde.
         private sealed class FarTarget : MonoBehaviour, ITutorialTarget
         {

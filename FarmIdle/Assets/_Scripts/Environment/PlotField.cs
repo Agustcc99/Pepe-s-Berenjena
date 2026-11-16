@@ -20,15 +20,82 @@ namespace FarmIdle
     //
     // Progreso offline (B-01): el campo también es una IProductionSource, registrada en el OfflineManager con el mismo ciclo (activo =
     // zona abierta), que suma lo que rinde cada parcela según su cultivo.
-    public sealed class PlotField : MonoBehaviour, IFertilizable, IProductionSource
+    //
+    // Lo sembrado se guarda (B-11): el campo es un IPlotStateHolder, registrado en el PlotStateManager con el mismo ciclo. Al arrancar
+    // (Start, con las plantas ya en el pool) pide su foto de la partida: lo sembrado vuelve, crecido con el tiempo que se estuvo fuera.
+    public sealed class PlotField : MonoBehaviour, IFertilizable, IProductionSource, IPlotStateHolder
     {
         [SerializeField] private PlotView[] plots;
 
         private ProgressionManager _progression;
         private FertilizerManager _fertilizer;
         private OfflineManager _offline;
+        private PlotStateManager _plotStates;
 
         public IReadOnlyList<PlotView> Plots => plots;
+
+        // ---------- IPlotStateHolder ----------
+
+        // El nombre del campo y el de su padre (la zona): único dentro del nivel y estable entre sesiones.
+        public string StateId => transform.parent != null ? transform.parent.name + "/" + name : name;
+
+        public int PlotCount => plots.Length;
+
+        public void CaptureState(int[] states, float[] elapsed)
+        {
+            for (int i = 0; i < plots.Length && i < states.Length && i < elapsed.Length; i++)
+            {
+                states[i] = (int)plots[i].State;
+                elapsed[i] = plots[i].ElapsedSeconds;
+            }
+        }
+
+        public int RestoreState(int[] states, float[] elapsed, double awaySeconds)
+        {
+            for (int i = 0; i < plots.Length && i < states.Length && i < elapsed.Length; i++)
+            {
+                int state = states[i];
+                if (state != (int)PlotState.Growing && state != (int)PlotState.Ready) continue;
+
+                plots[i].Restore((PlotState)state, Mathf.Max(0f, elapsed[i]));
+            }
+
+            AdvanceAway(awaySeconds);
+
+            int planted = 0;
+            for (int i = 0; i < plots.Length; i++)
+            {
+                if (plots[i].State != PlotState.Empty) planted++;
+            }
+
+            return planted;
+        }
+
+        public void AdvanceAway(double awaySeconds)
+        {
+            if (!(awaySeconds > 0d)) return;
+
+            float seconds = (float)System.Math.Min(awaySeconds, 1e7) * GrowthFactor();
+            for (int i = 0; i < plots.Length; i++) plots[i].Tick(seconds);
+        }
+
+        public int ClearAll()
+        {
+            int cleared = 0;
+            for (int i = 0; i < plots.Length; i++)
+            {
+                if (plots[i].Rot()) cleared++;
+            }
+
+            return cleared;
+        }
+
+        // La velocidad de crecimiento de hoy: mejoras x tienda de prestigio (1 sin ninguna de las dos).
+        private float GrowthFactor()
+        {
+            if (_progression == null) _progression = ProgressionManager.Instance;
+            return (_progression != null ? _progression.Modifiers.GrowthSpeed : 1f) * PrestigeManager.GrowthFactor;
+        }
 
         private void OnEnable()
         {
@@ -38,10 +105,19 @@ namespace FarmIdle
 
             _offline = OfflineManager.Instance;
             if (_offline != null) _offline.Register(this);
+
+            _plotStates = PlotStateManager.Instance;
+            if (_plotStates != null) _plotStates.Register(this);
         }
 
         private void OnDisable()
         {
+            if (_plotStates != null)
+            {
+                _plotStates.Unregister(this);
+                _plotStates = null;
+            }
+
             if (_fertilizer != null)
             {
                 _fertilizer.Unregister(this);
@@ -74,6 +150,9 @@ namespace FarmIdle
         private void Start()
         {
             PrewarmPlants();
+
+            // Con las plantas ya en el pool y todas las parcelas despiertas: lo sembrado en la partida guardada vuelve a su lugar.
+            if (_plotStates != null) _plotStates.Apply(this);
         }
 
         // IFertilizable

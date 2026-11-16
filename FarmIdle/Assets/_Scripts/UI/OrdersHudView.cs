@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Globalization;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -5,8 +7,11 @@ using UnityEngine;
 namespace FarmIdle
 {
     // F-18 (tanda 2): los pedidos del pueblo en el HUD, para saber qué juntar sin volver al cartel: una línea por pedido activo
-    // (cultivo y entregado/pedido). Solo lee OrdersManager y escucha Changed: no hay Update ni trabajo por cuadro. Con el cartel
-    // cerrado o sin pedidos activos, la tarjeta queda apagada.
+    // (cultivo, entregado/pedido y el PREMIO: monedas y, el grande, la semilla). Solo lee OrdersManager y escucha Changed: no hay
+    // Update ni trabajo por cuadro. Con el cartel cerrado o sin pedidos activos, la tarjeta queda apagada.
+    //   - El premio en monedas es el de OrdersManager.RewardCoins al último cambio del cartel: si después sube el precio de venta
+    //     (una mejora), el número se actualiza con la próxima entrega.
+    //   - Al completarse un pedido (Completed) sale un aviso con lo ganado, unos segundos (reloj sin escala).
     public sealed class OrdersHudView : MonoBehaviour
     {
         [SerializeField, Tooltip("La tarjeta entera (se apaga sin pedidos).")]
@@ -14,14 +19,36 @@ namespace FarmIdle
 
         [SerializeField] private TMP_Text text;
 
+        [SerializeField, Tooltip("El aviso de pedido completado, con lo ganado. Arranca apagado. Puede faltar.")]
+        private TMP_Text completedLabel;
+
+        [SerializeField, Tooltip("Lo que se prende y se apaga con el aviso (el fondo). Si falta, es el texto mismo.")]
+        private GameObject completedRoot;
+
+        [SerializeField, Min(0.1f)] private float completedSeconds = 3f;
+
+        private GameObject Notice => completedRoot != null ? completedRoot : completedLabel.gameObject;
+
         private OrdersManager _orders;
-        private readonly StringBuilder _builder = new StringBuilder(96);
+        private readonly StringBuilder _builder = new StringBuilder(160);
+        private Coroutine _noticeRoutine;
+
+        // Para pruebas y depuración.
+        public bool IsNoticeShowing => completedLabel != null && Notice.activeSelf;
+        public string NoticeText => completedLabel != null ? completedLabel.text : string.Empty;
+        public string CardText => text != null ? text.text : string.Empty;
 
         private void OnEnable()
         {
             _orders = OrdersManager.Instance;
-            if (_orders != null) _orders.Changed += Refresh;
+            if (_orders != null)
+            {
+                _orders.Changed += Refresh;
+                _orders.Completed += OnCompleted;
+            }
+
             Loc.Changed += Refresh;
+            if (completedLabel != null) Notice.SetActive(false);
             Refresh();
         }
 
@@ -31,8 +58,13 @@ namespace FarmIdle
             if (_orders != null)
             {
                 _orders.Changed -= Refresh;
+                _orders.Completed -= OnCompleted;
                 _orders = null;
             }
+
+            // Al desactivarse Unity detiene las corrutinas: el aviso queda apagado.
+            _noticeRoutine = null;
+            if (completedLabel != null) Notice.SetActive(false);
         }
 
         private void Refresh()
@@ -51,12 +83,52 @@ namespace FarmIdle
 
                     if (shown == 0) _builder.Append("<size=70%><color=#FFE066>").Append(Loc.Get("hud.orders")).Append("</color></size>");
                     _builder.Append('\n').Append(crop.DisplayName).Append("  ").Append(_orders.DeliveredOf(i)).Append('/').Append(_orders.QuantityOf(i));
+                    AppendReward(_orders.RewardCoins(i), _orders.RewardSeeds(i));
                     shown++;
                 }
             }
 
             if (card.activeSelf != shown > 0) card.SetActive(shown > 0);
             if (shown > 0) text.text = _builder.ToString();   // una cadena por cambio del cartel (no por cuadro)
+        }
+
+        // "  +1.250" en dorado y, si corresponde, "+1 semilla".
+        private void AppendReward(long coins, int seeds)
+        {
+            _builder.Append("  <size=80%><color=#FFE066>+").Append(coins.ToString("N0", CultureInfo.InvariantCulture));
+            if (seeds > 0) _builder.Append("  ").Append(Loc.Get("pad.order_seed"));
+            _builder.Append("</color></size>");
+        }
+
+        // Se completó un pedido: el aviso dice qué se ganó. Una cadena por pedido completado.
+        private void OnCompleted(int slot, long coins, int seeds)
+        {
+            if (completedLabel == null) return;
+
+            _builder.Clear();
+            _builder.Append(Loc.Get("hud.order_done")).Append('\n');
+            _builder.Append('+').Append(coins.ToString("N0", CultureInfo.InvariantCulture));
+            if (seeds > 0) _builder.Append("   ").Append(Loc.Get("pad.order_seed"));
+            completedLabel.text = _builder.ToString();
+            Notice.SetActive(true);
+
+            if (_noticeRoutine != null) StopCoroutine(_noticeRoutine);
+            _noticeRoutine = StartCoroutine(HideNotice());
+
+            Refresh();   // el builder se compartió con el aviso: la tarjeta se vuelve a escribir
+        }
+
+        private IEnumerator HideNotice()
+        {
+            float elapsed = 0f;
+            while (elapsed < completedSeconds)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+
+            Notice.SetActive(false);
+            _noticeRoutine = null;
         }
     }
 }

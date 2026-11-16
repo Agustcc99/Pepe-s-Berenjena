@@ -23,6 +23,7 @@ namespace FarmIdle
     {
         public const int BuyPriority = 1;
         public const int SellPriority = 2;
+        public const int NewItemPriority = 3;   // F-20: algo recién comprado que hay que mostrarle al jugador (gana a todo, unos segundos)
 
         private static readonly List<IGuidePoint> Points = new List<IGuidePoint>(64);
 

@@ -116,6 +116,10 @@ namespace FarmIdle
             OrdersManager orders = AddService<OrdersManager>(root.transform);
             orders.Initialize(config);
 
+            // Lo sembrado entre sesiones (B-11): los campos se anotan solos; solo necesita el GameConfig.
+            PlotStateManager plotStates = AddService<PlotStateManager>(root.transform);
+            plotStates.Initialize(config);
+
             // Idioma que informa el portal (D-03): antes de los ajustes, que resuelven el idioma "Automático" al iniciar.
             PortalManager.ApplyPortalLocale();
             Loc.AutoIsEnglishOnly = Application.platform == RuntimePlatform.WebGLPlayer;
@@ -150,6 +154,7 @@ namespace FarmIdle
             save.Register(helpers);
             save.Register(skins);
             save.Register(orders);
+            save.Register(plotStates);
             save.Load();
 
             // La guía empieza a escuchar el juego recién ahora: restaurar la partida no cuenta como jugar.
@@ -180,7 +185,7 @@ namespace FarmIdle
             PortalManager portal = AddService<PortalManager>(root.transform);
             portal.Initialize();
 
-            Debug.Log("[FarmIdle] Servicios listos: GameManager, PoolManager, EconomyManager, PlotCensus, BackpackManager, ProgressionManager, BuffManager, FertilizerManager, PrestigeManager, OfflineManager, MissionManager, AchievementManager, DailyRewardManager, DecorationManager, HelperManager, SkinManager, OrdersManager, SettingsManager, TutorialManager, SaveManager, AdsManager, OfferManager, AudioManager, HapticsManager, AnalyticsManager, PortalManager.");
+            Debug.Log("[FarmIdle] Servicios listos: GameManager, PoolManager, EconomyManager, PlotCensus, BackpackManager, ProgressionManager, BuffManager, FertilizerManager, PrestigeManager, OfflineManager, MissionManager, AchievementManager, DailyRewardManager, DecorationManager, HelperManager, SkinManager, OrdersManager, PlotStateManager, SettingsManager, TutorialManager, SaveManager, AdsManager, OfferManager, AudioManager, HapticsManager, AnalyticsManager, PortalManager.");
         }
 
         private static T AddService<T>(Transform parent) where T : Component

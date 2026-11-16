@@ -2,6 +2,24 @@
 
 Roadmap AR-06. Una entrada corta por decisión que no se deduce leyendo el código: **qué**, **por qué** y **cuándo** (con el ID del roadmap). Lo más nuevo, arriba. Una decisión que se revierte no se borra: se agrega una entrada nueva que la reemplaza.
 
+### Lo sembrado se guarda: crece al volver y se pudre a las 24 h (B-11) · 2026-11-16
+- **Qué:** servicio nuevo `PlotStateManager` (sección de guardado `plots`, volátil). Cada `PlotField` es un `IPlotStateHolder` (Core) y pide su foto en `Start`. Al volver, lo sembrado crece el tiempo real que se estuvo fuera (por la velocidad de crecimiento de hoy); con 24 h o más (`GameConfig.OfflineRotSeconds`) las parcelas vuelven vacías. En el celular, al volver de segundo plano pasa lo mismo sin recargar.
+- **Decidido por el usuario:** se pudre **solo lo sembrado**; las monedas del tiempo fuera se siguen cobrando (ya tienen tope de horas). Y las monedas al volver eran demasiadas: eficiencia **25 % → 15 %** y tope **25.000 → 15.000 por hora** (con 2 h: 30.000; con el Almacén al máximo, 60.000). Números provisorios.
+- **Por qué así:** el estado de las parcelas vive en Environment (`PlotLogic`), no en un manager; en vez de moverlo se guarda una foto por campo, identificada por `padre/nombre` del objeto (único en el nivel: lo vigila una prueba). Reloj local: si la hora retrocede, lo sembrado vuelve tal cual.
+- **Límites:** el aviso ("Lo que sembraste ya creció" / "se pudrió") sale en la tarjeta de bienvenida, que solo aparece si hay monedas para cobrar. Un campo de una zona que hoy no está abierta conserva su foto en la partida.
+- **Para qué sirve el Almacén** (pregunta del usuario): sube el tope de horas que cuentan para las monedas al volver, de 2 h a 3 h y 4 h. No guarda cosecha ni tiene que ver con las 24 h.
+
+### Decoración comprada que se nota (F-20) y contraste de carteles (U-12) · 2026-11-16
+- **F-20:** `DecorationSet` es un `IGuidePoint` con prioridad nueva `GuidePoints.NewItemPriority` (3, gana a vender y comprar): 12 s después de comprar, la flecha del borde y su cartel señalan la decoración, que aparece con un salto. En la escena van a ×1,6. **No se cambiaron los modelos**: mejorarlos es trabajo del pack de arte (A-06); esto solo hace que se vean y se encuentren.
+- **U-12:** todos los carteles del mundo usan el material con borde que trae TextMeshPro (`LiberationSans SDF - Outline`, un solo material compartido: no suma draw calls entre carteles) y un amarillo más claro; el gris `#9A9A82` de las líneas secundarias pasó a `#DCDCC8`.
+
+### Tanda de pedidos del usuario: cartel de la guía, control fijo, espera del pad, premio de los pedidos · 2026-11-15
+- **Cartel de la guía (U-10):** la flecha ahora dice qué hacer. Un solo cartel del HUD (`TutorialEdgeArrow`): junto a la flecha del borde o, con el lugar a la vista, encima de él (4,2 unidades de mundo arriba, por encima de la flecha que flota). Solo se ve jugando. El texto sale del paso de la guía o, después, de la prioridad del `IGuidePoint` (vender / comprar): no se agregó nada a la interfaz.
+- **Control fijo (U-11):** ajuste nuevo `SettingsManager.FixedControls` (guardado `settings`, sin subir de versión: un guardado viejo queda en flotante). `FloatingJoystick` lo lee en cada cuadro; en fijo queda abajo al centro con cuatro flechas y la dirección se mide desde su centro, se toque donde se toque. Se eligió un joystick fijo y no cuatro botones sueltos: mantiene el movimiento en cualquier dirección.
+- **Espera del pad (B-10):** `purchaseStartDelaySeconds` pasó de 0,7 a **1,0 s** (pedido: "pararse un poco más"). Con 1,2 s el `BalanceBot` compraba "Crecimiento 6" en el minuto 202,2 contra un límite de 202,3 (238 − 15 %) y la prueba de balance fallaba. **Dato a mirar:** el bot ya viene ~12 % adelantado respecto del `EconomyPlan` en las últimas compras (Crecimiento 6 en el minuto 210 contra 238 del plan); la tabla de `ECONOMIA_V1.md` quedó vieja y conviene recalibrar (B-05).
+- **Pedidos (F-18):** el premio no cambió (venta +25 %, el grande +40 % y 1 semilla). El usuario eligió solo mostrarlo: la tarjeta del HUD lo pone en cada línea y al completar sale un aviso con lo ganado. El premio de la tarjeta se calcula al último cambio del cartel.
+- **Skins con plata real:** el usuario las quiere para el lanzamiento, no ahora. Anotado en M-06; hace falta un SDK de pagos (OK previo) y en CrazyGames las compras son solo por invitación (a verificar).
+
 ### Los ayudantes pagan por tandas (F-19) · 2026-11-15
 - **Qué:** `HelperManager` junta lo que rinden los ayudantes y lo entrega de una cada `GameConfig.HelperPayoutSeconds` (5 s; evento `Paid`). El ingreso total no cambia. Lo juntado y no entregado (hasta 5 s) se pierde al cerrar o al empezar una temporada.
 - **Por qué:** pedido del usuario. Acreditar moneda a moneda cambiaba el saldo casi en cada cuadro, y `CoinCounterView` reinicia su conteo y su latido con cada cambio: el contador quedaba "tildado" (y arrancaba corrutinas en cada cuadro).

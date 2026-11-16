@@ -28,6 +28,7 @@ namespace FarmIdle
         private OfflineManager _offline;
         private AdsManager _ads;
         private GameManager _game;
+        private PlotStateManager _plots;   // B-11: lo sembrado crecio o se pudrio (puede faltar)
         private float _nextCheck;
 
         public bool IsOpen => panel != null && panel.activeSelf;
@@ -51,6 +52,8 @@ namespace FarmIdle
             _game.StateChanged += OnStateChanged;
             if (_ads != null) _ads.AdFinished += OnAdFinished;
             Loc.Changed += Refresh;
+            _plots = PlotStateManager.Instance;
+            if (_plots != null) _plots.NoticeChanged += Refresh;
 
             panel.SetActive(false);
             Refresh();
@@ -66,6 +69,8 @@ namespace FarmIdle
             _game.StateChanged -= OnStateChanged;
             if (_ads != null) _ads.AdFinished -= OnAdFinished;
             Loc.Changed -= Refresh;
+            if (_plots != null) _plots.NoticeChanged -= Refresh;
+            _plots = null;
             _offline = null;
             _ads = null;
             _game = null;
@@ -106,10 +111,19 @@ namespace FarmIdle
             // Detrás del "Tocá para jugar" (Boot/Ready) no se muestra: espera a que el juego esté andando.
             bool started = _game.State != GameState.Boot && _game.State != GameState.Ready;
             bool show = _offline.HasPending && started;
+            bool wasShown = panel.activeSelf;
             panel.SetActive(show);
-            if (!show) return;
+            if (!show)
+            {
+                if (wasShown && _plots != null) _plots.ClearNotice();   // ya se leyo: el aviso de las parcelas no se repite
+                return;
+            }
 
-            bodyLabel.text = Loc.Format("offline.body", FormatCoins(_offline.PendingCoins), FormatAway(_offline.PendingSeconds));
+            // B-11: debajo de las monedas, que paso con lo sembrado (crecio, o se pudrio si paso el plazo).
+            string body = Loc.Format("offline.body", FormatCoins(_offline.PendingCoins), FormatAway(_offline.PendingSeconds));
+            if (_plots != null && _plots.RottedPlots > 0) body += Loc.Format("offline.rotted", _plots.RotHours);
+            else if (_plots != null && _plots.GrownPlots > 0) body += Loc.Get("offline.grown");
+            bodyLabel.text = body;
             RefreshDoubleButton();
         }
 

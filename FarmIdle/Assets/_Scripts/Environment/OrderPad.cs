@@ -81,12 +81,12 @@ namespace FarmIdle
             }
             else if (!_orders.IsUnlocked)
             {
-                _text.Append("<size=50%><color=#9A9A82>").Append(Loc.Format("pad.order_locked", _orders.MinZones)).Append("</color></size>");
+                _text.Append("<size=50%><color=#DCDCC8>").Append(Loc.Format("pad.order_locked", _orders.MinZones)).Append("</color></size>");
             }
             else if (!_orders.IsActive(slot))
             {
                 int wait = WaitShown();
-                _text.Append("<size=50%><color=#9A9A82>").Append(Loc.Get("pad.order_wait")).Append(' ');
+                _text.Append("<size=50%><color=#DCDCC8>").Append(Loc.Get("pad.order_wait")).Append(' ');
                 _text.Append(wait / 60).Append(':').Append((wait % 60) / 10).Append((wait % 60) % 10).Append("</color></size>");
             }
             else

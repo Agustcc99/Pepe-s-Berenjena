@@ -39,6 +39,7 @@ namespace FarmIdle
             public bool vibration = true;
             public int language;
             public bool largeText;
+            public bool fixedControls;   // U-11; un guardado anterior no lo trae y queda en flotante
         }
 
         private readonly AudioSettings _audio = new AudioSettings();
@@ -69,6 +70,18 @@ namespace FarmIdle
             if (enabled == LargeText) return;
 
             LargeText = enabled;
+            OnAudioChanged();
+        }
+
+        // Control fijo (U-11): el joystick queda siempre a la vista en un lugar fijo, en vez de aparecer donde se toca. La UI lo aplica
+        // (FloatingJoystick); acá solo vive el interruptor. Apagado por defecto.
+        public bool FixedControls { get; private set; }
+
+        public void SetFixedControls(bool enabled)
+        {
+            if (enabled == FixedControls) return;
+
+            FixedControls = enabled;
             OnAudioChanged();
         }
 
@@ -132,7 +145,8 @@ namespace FarmIdle
                 muted = _audio.Muted,
                 vibration = VibrationEnabled,
                 language = (int)Language,
-                largeText = LargeText
+                largeText = LargeText,
+                fixedControls = FixedControls
             });
         }
 
@@ -156,7 +170,9 @@ namespace FarmIdle
             bool vibration = save == null || save.vibration;
             LanguagePreference language = save == null ? LanguagePreference.Auto : Sanitize((LanguagePreference)save.language);
             bool largeText = save != null && save.largeText;
-            bool otherChanged = vibration != VibrationEnabled || language != Language || largeText != LargeText;
+            bool fixedControls = save != null && save.fixedControls;
+            bool otherChanged = vibration != VibrationEnabled || language != Language || largeText != LargeText || fixedControls != FixedControls;
+            FixedControls = fixedControls;
             VibrationEnabled = vibration;
             Language = language;
             LargeText = largeText;

@@ -113,10 +113,21 @@ namespace FarmIdle.EditorTools
             label.fontSize = 5.5f;
             label.fontStyle = FontStyles.Bold;
             label.alignment = TextAlignmentOptions.Center;
-            label.color = new Color(1f, 0.95f, 0.45f);
             label.textWrappingMode = TextWrappingModes.NoWrap;
             label.overflowMode = TextOverflowModes.Overflow;
             label.rectTransform.sizeDelta = new Vector2(5f, 2f);
+            ApplyWorldLabelStyle(label);
+        }
+
+        // El material con borde que trae TextMeshPro: uno solo para todos los carteles del mundo.
+        internal const string OutlineMaterialPath = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Outline.mat";
+
+        // U-12 (contraste): los carteles del mundo flotan sobre pasto, piedra y madera, y el amarillo solo se perdía. Van en un
+        // amarillo casi blanco con borde negro, que se lee sobre cualquier fondo.
+        internal static void ApplyWorldLabelStyle(TextMeshPro label)
+        {
+            label.fontSharedMaterial = Phase2SceneBuilder.LoadRequired<Material>(OutlineMaterialPath);
+            label.color = new Color(1f, 0.98f, 0.72f);
         }
     }
 }

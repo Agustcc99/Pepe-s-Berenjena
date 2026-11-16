@@ -72,16 +72,16 @@ namespace FarmIdle
             }
             else if (_decorations.AllOwned)
             {
-                _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.deco_done")).Append("</color>");
+                _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.deco_done")).Append("</color>");
             }
             else if (!_decorations.IsUnlocked)
             {
-                _text.Append("<size=50%><color=#9A9A82>").Append(Loc.Get("pad.deco_locked")).Append("</color></size>");
+                _text.Append("<size=50%><color=#DCDCC8>").Append(Loc.Get("pad.deco_locked")).Append("</color></size>");
             }
             else
             {
                 _text.Append("<size=50%>").Append(_decorations.Next.DisplayName).Append("</size>\n");
-                _text.Append(_economy.CanAfford(_decorations.NextCost) ? "<color=#FFFFFF>" : "<color=#9A9A82>").Append(_decorations.NextCost).Append("</color>");
+                _text.Append(_economy.CanAfford(_decorations.NextCost) ? "<color=#FFFFFF>" : "<color=#DCDCC8>").Append(_decorations.NextCost).Append("</color>");
                 _text.Append("\n<size=50%>").Append(_decorations.Owned).Append('/').Append(_decorations.Total).Append("</size>");
             }
 

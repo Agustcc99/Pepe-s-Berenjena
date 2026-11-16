@@ -85,23 +85,23 @@ namespace FarmIdle
                     break;
 
                 case AdRequestStatus.RewardCooldown:
-                    _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.in")).Append(' ').Append(Mathf.CeilToInt(_ads.RewardCooldownRemaining(reward))).Append(" s</color>");
+                    _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.in")).Append(' ').Append(Mathf.CeilToInt(_ads.RewardCooldownRemaining(reward))).Append(" s</color>");
                     break;
 
                 case AdRequestStatus.Cooldown:
-                    _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.wait")).Append(' ').Append(Mathf.CeilToInt(_ads.AdCooldownRemaining())).Append(" s</color>");
+                    _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.wait")).Append(' ').Append(Mathf.CeilToInt(_ads.AdCooldownRemaining())).Append(" s</color>");
                     break;
 
                 case AdRequestStatus.NotUseful:
-                    _text.Append("<color=#9A9A82>").Append(Loc.Get(reward.Kind == RewardKind.Fertilizer ? "pad.stock_full" : "pad.already_active")).Append("</color>");
+                    _text.Append("<color=#DCDCC8>").Append(Loc.Get(reward.Kind == RewardKind.Fertilizer ? "pad.stock_full" : "pad.already_active")).Append("</color>");
                     break;
 
                 case AdRequestStatus.NoAd:
-                    _text.Append("<color=#9A9A82>").Append(Loc.Get("pad.no_ad")).Append("</color>");
+                    _text.Append("<color=#DCDCC8>").Append(Loc.Get("pad.no_ad")).Append("</color>");
                     break;
 
                 default:
-                    _text.Append("<color=#9A9A82>...</color>");   // menú, pausa o anuncio en pantalla
+                    _text.Append("<color=#DCDCC8>...</color>");   // menú, pausa o anuncio en pantalla
                     break;
             }
 

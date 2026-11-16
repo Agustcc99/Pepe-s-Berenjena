@@ -155,7 +155,7 @@ namespace FarmIdle
             else
             {
                 _text.Append("<size=60%>").Append(perk.DescribePick()).Append(" (").Append(picks).Append('/').Append(perk.MaxPicks).Append(")</size>").Append(newLine);
-                _text.Append(points > 0 ? "<color=#FFFFFF>" : "<color=#9A9A82>").Append(Loc.Get("pad.points")).Append(' ').Append(points).Append("</color>");
+                _text.Append(points > 0 ? "<color=#FFFFFF>" : "<color=#DCDCC8>").Append(Loc.Get("pad.points")).Append(' ').Append(points).Append("</color>");
             }
 
             label.text = _text.ToString();   // una cadena corta por cambio (unas decenas por partida): no pesa
