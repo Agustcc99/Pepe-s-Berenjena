@@ -71,6 +71,30 @@
         updateBannerVisibility();
       }
 
+      // Calor en celulares (iPhone con DPR 3 renderizaba ~1170x2532 px a 60 FPS): se limita la resolucion del canvas y la tasa de cuadros.
+      // Por defecto: en pantallas tactiles DPR <= 2 y 30 FPS; en PC DPR <= 2 y 60 FPS. Para probar sin recompilar: ?dpr=1.5&fps=45 en la URL.
+      var params = new URLSearchParams(window.location.search);
+      var isTouch = (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      var dprParam = parseFloat(params.get("dpr"));
+      var fpsParam = parseFloat(params.get("fps"));
+      var renderDpr = Math.max(0.5, Math.min(window.devicePixelRatio || 1, dprParam > 0 ? dprParam : 2));
+      var fpsCap = fpsParam > 0 ? fpsParam : (isTouch ? 30 : 60);
+
+      // Tope de FPS: Unity (emscripten) pide cada cuadro con requestAnimationFrame; se saltean los cuadros que sobran
+      // (sin timers: se mantiene la sincronia con la pantalla). Con 60 o mas no se toca nada.
+      if (fpsCap < 58) {
+        var nativeRaf = window.requestAnimationFrame.bind(window);
+        var minGap = 1000 / fpsCap - 4;
+        var lastFrame = 0;
+        window.requestAnimationFrame = function(callback) {
+          return nativeRaf(function tick(time) {
+            if (time - lastFrame < minGap) { nativeRaf(tick); return; }
+            lastFrame = time;
+            callback(time);
+          });
+        };
+      }
+
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
       var config = {
@@ -84,6 +108,7 @@
         productName: "{{{ PRODUCT_NAME }}}",
         productVersion: "{{{ PRODUCT_VERSION }}}",
         showBanner: unityShowBanner,
+        devicePixelRatio: renderDpr,
       };
 
       var script = document.createElement("script");

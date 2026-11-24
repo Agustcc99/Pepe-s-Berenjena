@@ -15,6 +15,15 @@ namespace FarmIdle
         private float _upgradeMultiplier = 1f;
         private float _buffMultiplier = 1f;
         private float _prestigeMultiplier = 1f;
+        private float _charmMultiplier = 1f;
+
+        // Multiplicador del encanto de las decoraciones compradas (1 = ninguna). Lo fija DecorationManager.
+        public float CharmMultiplier => _charmMultiplier;
+
+        public void SetCharmMultiplier(float multiplier)
+        {
+            _charmMultiplier = Validate(multiplier, nameof(multiplier));
+        }
 
         // Multiplicador de las mejoras compradas (1 = sin mejoras).
         public float UpgradeMultiplier => _upgradeMultiplier;
@@ -43,7 +52,7 @@ namespace FarmIdle
         // El precio de una unidad con los multiplicadores actuales.
         public long FinalPrice(int basePrice)
         {
-            return FinalPrice(basePrice, _upgradeMultiplier, _buffMultiplier, _prestigeMultiplier);
+            return FinalPrice(basePrice, _upgradeMultiplier, _buffMultiplier, _prestigeMultiplier * _charmMultiplier);
         }
 
         // La cuenta sola, sin estado: sirve para mostrar "cuánto pagaría" con otros multiplicadores (por ejemplo, el

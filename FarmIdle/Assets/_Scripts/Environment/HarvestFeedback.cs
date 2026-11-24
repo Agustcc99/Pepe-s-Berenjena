@@ -83,6 +83,7 @@ namespace FarmIdle
 
             PlotView.Harvested += OnHarvested;
             PlotView.RareHarvested += OnRareHarvested;
+            DecorationSet.Placed += OnDecorationPlaced;
             _wired = true;
         }
 
@@ -92,6 +93,7 @@ namespace FarmIdle
 
             PlotView.Harvested -= OnHarvested;
             PlotView.RareHarvested -= OnRareHarvested;
+            DecorationSet.Placed -= OnDecorationPlaced;
             _wired = false;
 
             // Los textos viven en el pool, no en esta escena: tienen que volver antes de que la escena se descargue.
@@ -117,7 +119,18 @@ namespace FarmIdle
             Show(position, RareExtraHeight, bonus, 1f);
         }
 
-        private void Show(Vector3 position, float extraHeight, long bonus, float scale)
+        // F-22: decoración nueva. Un cartel dorado y grande, "+2 % ventas", sobre ella (pasa pocas veces: puede armar el texto).
+        private void OnDecorationPlaced(Vector3 position, int charmPercent)
+        {
+            if (charmPercent <= 0) return;
+
+            Show(position, DecorationPopupHeight, -1L, DecorationPopupScale, "+" + charmPercent + "% " + Loc.Get("pad.deco_charm"));
+        }
+
+        private const float DecorationPopupHeight = 2.6f;
+        private const float DecorationPopupScale = 1.4f;
+
+        private void Show(Vector3 position, float extraHeight, long bonus, float scale, string customText = null)
         {
             LastPopupScale = scale;
 
@@ -137,7 +150,12 @@ namespace FarmIdle
                 }
 
                 // El objeto vuelve del pool con lo que le dejó el último uso: se pone siempre texto y color.
-                if (bonus >= 0L)
+                if (customText != null)
+                {
+                    label.text = customText;
+                    label.color = RareColor;
+                }
+                else if (bonus >= 0L)
                 {
                     label.text = "+" + bonus;
                     label.color = RareColor;

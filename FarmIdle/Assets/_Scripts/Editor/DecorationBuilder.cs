@@ -59,6 +59,14 @@ namespace FarmIdle.EditorTools
             ("skin_gold", "Oro", 190000, new Color(0.95f, 0.78f, 0.20f), new Color(0.6f, 0.3f, 0.1f)),
         };
 
+        // Piezas sueltas que se mueven (F-21): aspas, tela, bichitos. Cuelgan de la decoración y se apagan con ella.
+        private static readonly string[] PartIds =
+        {
+            "part_windmill_blades", "part_flag_cloth", "part_butterfly", "part_firefly", "part_duck", "part_bird", "part_chicken",
+        };
+
+        private static string PartMeshPath(string id) { return MeshesFolder + "/SM_" + id + ".asset"; }
+
         private static string SkinPath(string id) { return DataFolder + "/" + id + ".asset"; }
 
         private static string HelperPath(string id) { return DataFolder + "/" + id + ".asset"; }
@@ -88,6 +96,8 @@ namespace FarmIdle.EditorTools
 
                 Phase3SceneBuilder.SaveMesh(BuildMesh(spec.Id).ToMesh("SM_" + spec.Id), MeshPath(spec));
             }
+
+            foreach (string partId in PartIds) Phase3SceneBuilder.SaveMesh(BuildMesh(partId).ToMesh("SM_" + partId), PartMeshPath(partId));
 
             foreach ((string id, string name, int cost, float share) helper in Helpers)
             {
@@ -173,11 +183,107 @@ namespace FarmIdle.EditorTools
                 Transform item = PadBuilder.CreateMeshChild(root.transform, spec.Id, mesh, material, spec.Position);
                 item.rotation = Quaternion.Euler(0f, spec.Yaw, 0f);
                 item.localScale = Vector3.one * WorldScale;
+                AddLife(item, spec.Id, material);
                 item.gameObject.SetActive(false);   // DecorationSet la prende al comprarla
                 items.Add(item.gameObject);
             }
 
             EditorUi.WireArray(set, "items", items);
+        }
+
+        // ---------- Vida (F-21) ----------
+
+        // Lo que se mueve en cada decoración. Posiciones en el espacio de la malla (el ×1,6 de la escena las acompaña).
+        private static void AddLife(Transform item, string id, Material material)
+        {
+            switch (id)
+            {
+                case "deco_lamp":   // luciérnagas que dan vueltas al farol
+                    Orbiter(item, "Firefly_A", "part_firefly", material, new Vector3(0f, 2.9f, 0f), 0.55f, 0.35f, 0.25f, 0f, 1.2f);
+                    Orbiter(item, "Firefly_B", "part_firefly", material, new Vector3(0f, 2.7f, 0f), 0.7f, 0.25f, 0.3f, 2.1f, 0.9f);
+                    Orbiter(item, "Firefly_C", "part_firefly", material, new Vector3(0f, 3.1f, 0f), 0.45f, 0.45f, 0.2f, 4.2f, 1.5f);
+                    break;
+
+                case "deco_scarecrow":
+                    Motion(item.gameObject, DecorationMotionKind.Sway, Vector3.forward, 3f, 0.25f, 0f, 0f);
+                    break;
+
+                case "deco_bench":   // un pajarito en el respaldo
+                    Hopper(item, "Bird", "part_bird", material, new Vector3(0.55f, 1.25f, 0.27f), 0.1f, 0.5f);
+                    break;
+
+                case "deco_flowers":   // flores al viento y mariposas
+                    Motion(item.gameObject, DecorationMotionKind.Sway, Vector3.right, 1.5f, 0.35f, 0f, 0f);
+                    Orbiter(item, "Butterfly_A", "part_butterfly", material, new Vector3(0f, 1.1f, 0f), 1.0f, 0.18f, 0.2f, 0f, 3.5f, 0.8f);
+                    Orbiter(item, "Butterfly_B", "part_butterfly", material, new Vector3(0f, 1.4f, 0f), 0.7f, 0.13f, 0.25f, 3f, 4.2f, 0.8f);
+                    break;
+
+                case "deco_pond":   // dos patos nadando despacio
+                    Orbiter(item, "Duck_A", "part_duck", material, new Vector3(0f, 0.15f, 0f), 0.9f, 0.1f, 0.015f, 0f, 0f, 0f);
+                    Orbiter(item, "Duck_B", "part_duck", material, new Vector3(0f, 0.15f, 0f), 0.5f, 0.07f, 0.015f, 3.4f, 0f, 0f);
+                    break;
+
+                case "deco_windmill":
+                    Spinner(item, "Blades", "part_windmill_blades", material, new Vector3(0f, 3f, -1f), 35f);
+                    break;
+
+                case "deco_flag":
+                    Transform cloth = Part(item, "Cloth", "part_flag_cloth", material, new Vector3(0f, 3.2f, 0f));
+                    Motion(cloth.gameObject, DecorationMotionKind.Sway, Vector3.up, 14f, 0.4f, 0f, 0f);
+                    break;
+
+                case "deco_haystack":   // una gallina picoteando
+                    Hopper(item, "Chicken", "part_chicken", material, new Vector3(0.5f, 0f, -1.3f), 0.08f, 0.9f);
+                    break;
+            }
+        }
+
+        private static Transform Part(Transform parent, string name, string partId, Material material, Vector3 localPosition)
+        {
+            return PadBuilder.CreateMeshChild(parent, name, Phase2SceneBuilder.LoadRequired<Mesh>(PartMeshPath(partId)), material, localPosition);
+        }
+
+        private static void Spinner(Transform item, string name, string partId, Material material, Vector3 position, float degreesPerSecond)
+        {
+            Transform part = Part(item, name, partId, material, position);
+            Motion(part.gameObject, DecorationMotionKind.Spin, Vector3.forward, degreesPerSecond, 0f, 0f, 0f);
+        }
+
+        private static void Hopper(Transform item, string name, string partId, Material material, Vector3 position, float height, float speed)
+        {
+            Transform part = Part(item, name, partId, material, position);
+            Motion(part.gameObject, DecorationMotionKind.Hop, Vector3.up, height, speed, 0f, position.x * 3f);
+        }
+
+        // Un bicho que da vueltas: un pivote que orbita (mira hacia donde va) con la malla adentro. Con 'pulseSpeed' > 0 la malla
+        // además aletea (mariposa: achica el ancho) o brilla (luciérnaga: achica todo) según 'pulseAmount'.
+        private static void Orbiter(Transform item, string name, string partId, Material material, Vector3 center, float radius, float turnsPerSecond,
+            float bob, float phase, float pulseSpeed, float pulseAmount = 0.5f)
+        {
+            var pivot = new GameObject(name);
+            pivot.transform.SetParent(item, false);
+            pivot.transform.localPosition = center;
+            Motion(pivot, DecorationMotionKind.Orbit, Vector3.up, radius, turnsPerSecond, bob, phase);
+
+            Transform part = Part(pivot.transform, "Mesh", partId, material, Vector3.zero);
+            if (pulseSpeed > 0f)
+            {
+                Vector3 axes = partId == "part_butterfly" ? Vector3.right : Vector3.one;
+                Motion(part.gameObject, DecorationMotionKind.Pulse, axes, pulseAmount, pulseSpeed, 0f, phase);
+            }
+        }
+
+        private static void Motion(GameObject target, DecorationMotionKind kind, Vector3 axis, float amount, float speed, float bob, float phase)
+        {
+            var motion = target.AddComponent<DecorationMotion>();
+            var serialized = new SerializedObject(motion);
+            serialized.FindProperty("kind").enumValueIndex = (int)kind;
+            serialized.FindProperty("axis").vector3Value = axis;
+            serialized.FindProperty("amount").floatValue = amount;
+            serialized.FindProperty("speed").floatValue = speed;
+            serialized.FindProperty("bob").floatValue = bob;
+            serialized.FindProperty("phase").floatValue = phase;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         // El dibujo del pad de compra (sobre la plataforma común de Phase8SceneBuilder): un mástil con una banderola roja y, al pie,
@@ -277,22 +383,63 @@ namespace FarmIdle.EditorTools
                     mesh.AddCylinder(new Vector3(0f, 1.5f, 0f), 0.95f, 3f, 8, none, Palette.Cream);
                     mesh.AddCone(new Vector3(0f, 3f, 0f), 1.1f, new Vector3(0f, 4.1f, 0f), 8, Palette.TomatoRed);
                     mesh.AddBox(new Vector3(0f, 0.55f, -0.93f), new Vector3(0.6f, 1.1f, 0.06f), none, Palette.Wood);
-                    var hub = new Vector3(0f, 3.0f, -1.0f);
+                    mesh.AddBox(new Vector3(-0.55f, 1.7f, -0.8f), new Vector3(0.34f, 0.4f, 0.06f), none, Palette.Water);   // ventanitas
+                    mesh.AddBox(new Vector3(0.55f, 1.7f, -0.8f), new Vector3(0.34f, 0.4f, 0.06f), none, Palette.Water);
+                    mesh.AddCylinder(new Vector3(0f, 0.08f, 0f), 1.15f, 0.16f, 8, none, Palette.Stone);   // base de piedra
+                    mesh.AddSphere(new Vector3(0f, 3.0f, -1.0f), 0.2f, Palette.Wood);   // el eje; las aspas son una pieza aparte que gira
+                    break;
+
+                case "part_windmill_blades":   // origen en el eje
                     for (int blade = 0; blade < 4; blade++)
                     {
                         Quaternion spin = Quaternion.Euler(0f, 0f, blade * 90f + 20f);
-                        mesh.AddBox(hub + spin * new Vector3(0f, 0.95f, -0.04f), new Vector3(0.3f, 1.8f, 0.06f), spin, Palette.White);
+                        mesh.AddBox(spin * new Vector3(0f, 0.95f, -0.04f), new Vector3(0.3f, 1.8f, 0.06f), spin, Palette.White);
+                        mesh.AddBox(spin * new Vector3(0f, 1.45f, -0.04f), new Vector3(0.34f, 0.7f, 0.07f), spin, Palette.TomatoRed);   // la punta, de color
                     }
 
-                    mesh.AddSphere(hub, 0.2f, Palette.Wood);
+                    break;
+
+                case "part_flag_cloth":   // origen en el mástil, la tela sale hacia +x
+                    mesh.AddBox(new Vector3(0.6f, 0f, 0f), new Vector3(1.1f, 0.7f, 0.05f), none, Palette.TomatoRed);
+                    mesh.AddBox(new Vector3(0.6f, 0f, -0.03f), new Vector3(1.1f, 0.2f, 0.03f), none, Palette.White);
+                    break;
+
+                case "part_butterfly":   // alas a los lados (x), mira hacia +z
+                    mesh.AddBox(new Vector3(0f, 0f, 0f), new Vector3(0.05f, 0.05f, 0.22f), none, Palette.Wood);
+                    mesh.AddBox(new Vector3(-0.15f, 0f, 0f), new Vector3(0.28f, 0.02f, 0.22f), Quaternion.Euler(0f, 0f, 8f), Palette.Flower);
+                    mesh.AddBox(new Vector3(0.15f, 0f, 0f), new Vector3(0.28f, 0.02f, 0.22f), Quaternion.Euler(0f, 0f, -8f), Palette.Flower);
+                    break;
+
+                case "part_firefly":
+                    mesh.AddSphere(Vector3.zero, 0.07f, Palette.WheatGold);
+                    break;
+
+                case "part_duck":   // mira hacia +z
+                    mesh.AddSphere(new Vector3(0f, 0.12f, 0f), 0.2f, Palette.WheatStraw);
+                    mesh.AddSphere(new Vector3(0f, 0.34f, 0.14f), 0.12f, Palette.WheatStraw);
+                    mesh.AddCone(new Vector3(0f, 0.33f, 0.24f), 0.05f, new Vector3(0f, 0.32f, 0.38f), 6, Palette.CarrotOrange);
+                    mesh.AddBox(new Vector3(0f, 0.2f, -0.17f), new Vector3(0.12f, 0.1f, 0.16f), none, Palette.WheatGold);   // la colita
+                    break;
+
+                case "part_bird":   // mira hacia -z (a la cámara)
+                    mesh.AddSphere(new Vector3(0f, 0.12f, 0f), 0.13f, Palette.Water);
+                    mesh.AddSphere(new Vector3(0f, 0.24f, -0.07f), 0.08f, Palette.Water);
+                    mesh.AddCone(new Vector3(0f, 0.24f, -0.13f), 0.03f, new Vector3(0f, 0.23f, -0.25f), 5, Palette.CarrotOrange);
+                    mesh.AddBox(new Vector3(0f, 0.14f, 0.15f), new Vector3(0.07f, 0.04f, 0.2f), none, Palette.Purple);
+                    break;
+
+                case "part_chicken":   // mira hacia -z
+                    mesh.AddSphere(new Vector3(0f, 0.25f, 0f), 0.24f, Palette.White);
+                    mesh.AddSphere(new Vector3(0f, 0.52f, -0.12f), 0.13f, Palette.White);
+                    mesh.AddBox(new Vector3(0f, 0.66f, -0.12f), new Vector3(0.04f, 0.1f, 0.12f), none, Palette.TomatoRed);   // la cresta
+                    mesh.AddCone(new Vector3(0f, 0.5f, -0.23f), 0.04f, new Vector3(0f, 0.48f, -0.37f), 5, Palette.CarrotOrange);
+                    mesh.AddBox(new Vector3(0f, 0.3f, 0.22f), new Vector3(0.08f, 0.22f, 0.1f), Quaternion.Euler(-25f, 0f, 0f), Palette.Cream);   // la cola
                     break;
 
                 case "deco_flag":
                     mesh.AddCylinder(new Vector3(0f, 0.1f, 0f), 0.45f, 0.2f, 10, none, Palette.Stone);
                     mesh.AddStanding(new Vector3(0f, 0.2f, 0f), new Vector3(0.1f, 3.5f, 0.1f), none, Palette.Stone);
-                    mesh.AddBox(new Vector3(0.6f, 3.2f, 0f), new Vector3(1.1f, 0.7f, 0.05f), none, Palette.TomatoRed);
-                    mesh.AddBox(new Vector3(0.6f, 3.2f, -0.03f), new Vector3(1.1f, 0.2f, 0.03f), none, Palette.White);
-                    mesh.AddSphere(new Vector3(0f, 3.75f, 0f), 0.12f, Palette.WheatGold);
+                    mesh.AddSphere(new Vector3(0f, 3.75f, 0f), 0.12f, Palette.WheatGold);   // la tela es una pieza aparte que se mece
                     break;
 
                 case "deco_haystack":

@@ -58,6 +58,7 @@ namespace FarmIdle
         private AdsManager _ads;
         private OfferManager _offers;
         private TutorialManager _tutorial;
+        private DecorationManager _decorations;
 
         // Para pruebas y depuración.
         public int VoiceCount => _voices != null ? _voices.Length : 0;
@@ -174,6 +175,13 @@ namespace FarmIdle
             _tutorial = TutorialManager.Instance;
             if (_tutorial != null) _tutorial.StepChanged += OnTutorialStep;
 
+            _decorations = DecorationManager.Instance;
+            if (_decorations != null)
+            {
+                _decorations.Bought += OnDecorationBought;
+                _decorations.Refused += OnRefused;
+            }
+
             if (_settings != null) _settings.Changed += OnSettingsChanged;
         }
 
@@ -210,7 +218,20 @@ namespace FarmIdle
 
             if (_offers != null) _offers.OfferStarted -= OnOfferStarted;
             if (_tutorial != null) _tutorial.StepChanged -= OnTutorialStep;
+
+            if (_decorations != null)
+            {
+                _decorations.Bought -= OnDecorationBought;
+                _decorations.Refused -= OnRefused;
+            }
+
             if (_settings != null) _settings.Changed -= OnSettingsChanged;
+        }
+
+        // F-22: comprar una decoración suena a festejo (el mismo sonido que elegir un perk).
+        private void OnDecorationBought(int index)
+        {
+            Play(SoundCue.Perk);
         }
 
         private void OnBackpackChanged(InventoryChange change)

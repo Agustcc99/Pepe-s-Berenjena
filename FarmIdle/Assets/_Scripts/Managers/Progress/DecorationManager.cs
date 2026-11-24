@@ -8,7 +8,9 @@ namespace FarmIdle
     //   - Se compran en el orden de GameConfig.Decorations: el pad vende siempre la siguiente (TryBuyNext), por EconomyManager.TrySpend.
     //     Por eso alcanza con guardar CUÁNTAS tiene (Owned).
     //   - Se desbloquean al abrir todas las zonas (así no compiten con la economía temprana).
-    //   - Son cosméticas y permanentes: una nueva temporada (prestigio) no las quita.
+    //   - Dan "encanto" (DecorationData.Charm, hoy +2 % cada una, +16 % las ocho): un multiplicador permanente del precio de venta
+    //     (PriceCalculator.CharmMultiplier). Así el sumidero de monedas del final también hace producir más.
+    //   - Son permanentes: una nueva temporada (prestigio) no las quita.
     //   - Environment las muestra escuchando Changed; Managers no conoce a Environment.
     //   - Partida guardada: ISaveable "decorations" con la cantidad. Restaurar no cobra nada; una partida sin la sección arranca en 0.
     public sealed class DecorationManager : MonoBehaviour, ISaveable
@@ -82,6 +84,24 @@ namespace FarmIdle
             return index >= 0 && index < _owned;
         }
 
+        // Encanto total: la suma del encanto de las decoraciones que tiene (0,16 = +16 % al precio de venta).
+        public float Charm
+        {
+            get
+            {
+                float total = 0f;
+                for (int i = 0; i < _owned && i < Total; i++) total += _config.Decorations[i].Charm;
+                return total;
+            }
+        }
+
+        // Pasa el encanto al precio de venta. Se llama en cada cambio (compra, partida cargada).
+        private void ApplyCharm()
+        {
+            EconomyManager economy = EconomyManager.Instance;
+            if (economy != null) economy.Pricing.SetCharmMultiplier(1f + Charm);
+        }
+
         public bool TryBuyNext()
         {
             if (AllOwned || !IsUnlocked) return false;
@@ -90,6 +110,7 @@ namespace FarmIdle
             if (economy == null || !economy.TrySpend(NextCost)) return false;
 
             _owned++;
+            ApplyCharm();
             Changed?.Invoke();
             Bought?.Invoke(_owned - 1);
             SaveRequested?.Invoke();
@@ -99,6 +120,7 @@ namespace FarmIdle
         public void DebugGiveAll()
         {
             _owned = Total;
+            ApplyCharm();
             Changed?.Invoke();
             SaveRequested?.Invoke();
         }
@@ -131,6 +153,7 @@ namespace FarmIdle
             }
 
             _owned = save != null ? Mathf.Clamp(save.owned, 0, Total) : 0;
+            ApplyCharm();
             Changed?.Invoke();
         }
 

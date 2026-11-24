@@ -80,7 +80,10 @@ namespace FarmIdle
             }
             else
             {
-                _text.Append("<size=50%>").Append(_decorations.Next.DisplayName).Append("</size>\n");
+                _text.Append("<size=50%>").Append(_decorations.Next.DisplayName);
+                int charm = Mathf.RoundToInt(_decorations.Next.Charm * 100f);
+                if (charm > 0) _text.Append(" <color=#FFE066>+").Append(charm).Append("% ").Append(Loc.Get("pad.deco_charm")).Append("</color>");
+                _text.Append("</size>\n");
                 _text.Append(_economy.CanAfford(_decorations.NextCost) ? "<color=#FFFFFF>" : "<color=#DCDCC8>").Append(_decorations.NextCost).Append("</color>");
                 _text.Append("\n<size=50%>").Append(_decorations.Owned).Append('/').Append(_decorations.Total).Append("</size>");
             }

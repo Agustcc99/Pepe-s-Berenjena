@@ -46,6 +46,7 @@ namespace FarmIdle
         private ProgressionManager _progression;
         private FertilizerManager _fertilizer;
         private BuffManager _buffs;
+        private DecorationManager _decorations;
 
         public IVibrator Vibrator => _vibrator;
 
@@ -104,6 +105,9 @@ namespace FarmIdle
 
             _buffs = BuffManager.Instance;
             if (_buffs != null) _buffs.BuffStarted += OnBuffStarted;
+
+            _decorations = DecorationManager.Instance;
+            if (_decorations != null) _decorations.Bought += OnDecorationBought;
         }
 
         private void Unsubscribe()
@@ -122,6 +126,13 @@ namespace FarmIdle
 
             if (_fertilizer != null) _fertilizer.Used -= OnFertilizerUsed;
             if (_buffs != null) _buffs.BuffStarted -= OnBuffStarted;
+            if (_decorations != null) _decorations.Bought -= OnDecorationBought;
+        }
+
+        // F-22: comprar una decoración vibra como elegir un perk.
+        private void OnDecorationBought(int index)
+        {
+            DoPulse(Perk);
         }
 
         private void DoPulse(Pulse pulse)

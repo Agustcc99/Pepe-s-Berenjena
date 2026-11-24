@@ -108,7 +108,7 @@ namespace FarmIdle
             get
             {
                 EconomyManager economy = EconomyManager.Instance;
-                double price = economy != null ? (double)economy.Pricing.UpgradeMultiplier * economy.Pricing.PrestigeMultiplier : 1d;
+                double price = economy != null ? (double)economy.Pricing.UpgradeMultiplier * economy.Pricing.PrestigeMultiplier * economy.Pricing.CharmMultiplier : 1d;
 
                 ProgressionManager progression = ProgressionManager.Instance;
                 double growth = (progression != null ? progression.Modifiers.GrowthSpeed : 1d) * PrestigeManager.GrowthFactor;
@@ -150,7 +150,7 @@ namespace FarmIdle
         private long CoinsFor(double seconds)
         {
             EconomyManager economy = EconomyManager.Instance;
-            double price = economy != null ? (double)economy.Pricing.UpgradeMultiplier * economy.Pricing.PrestigeMultiplier : 1d;
+            double price = economy != null ? (double)economy.Pricing.UpgradeMultiplier * economy.Pricing.PrestigeMultiplier * economy.Pricing.CharmMultiplier : 1d;
 
             ProgressionManager progression = ProgressionManager.Instance;
             double growth = (progression != null ? progression.Modifiers.GrowthSpeed : 1d) * PrestigeManager.GrowthFactor;

@@ -27,6 +27,10 @@ namespace FarmIdle
         private Vector3 _restScale = Vector3.one;
         private Coroutine _popRoutine;
 
+        // F-22: aviso de festejo (posición de la decoración recién comprada, su encanto en %). Lo escuchan BurstFeedback (estallido
+        // dorado) y HarvestFeedback (cartel "+2 % ventas"); Environment no necesita conocerlos.
+        public static event System.Action<Vector3, int> Placed;
+
         // Para pruebas y depuración.
         public int NewIndex => _newIndex;
 
@@ -79,6 +83,9 @@ namespace FarmIdle
             _guideUntil = Time.unscaledTime + guideSeconds;
             _restScale = items[index].transform.localScale;
             _popRoutine = StartCoroutine(Pop(items[index].transform));
+
+            DecorationData data = _decorations.At(index);
+            Placed?.Invoke(items[index].transform.position, data != null ? Mathf.RoundToInt(data.Charm * 100f) : 0);
         }
 
         private IEnumerator Pop(Transform item)

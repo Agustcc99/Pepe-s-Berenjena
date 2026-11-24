@@ -83,6 +83,39 @@ namespace FarmIdle.Tests
         }
 
         [Test]
+        public void EachDecoration_AddsCharm_ToTheSellPrice_AndASavedGameRestoresIt()
+        {
+            DecorationManager decorations = CreateServices(out EconomyManager economy);
+            economy.AddCoins(2000000L);
+
+            Assert.AreEqual(1f, economy.Pricing.CharmMultiplier, 1e-4f, "Sin decoraciones no hay encanto.");
+            Assert.AreEqual(100L, economy.Pricing.FinalPrice(100));
+
+            Assert.IsTrue(decorations.TryBuyNext());
+            Assert.AreEqual(1f + _config.Decorations[0].Charm, economy.Pricing.CharmMultiplier, 1e-4f);
+            Assert.Greater(economy.Pricing.FinalPrice(100), 100L, "La primera decoración ya sube el precio.");
+
+            while (decorations.TryBuyNext()) { }
+
+            float expected = 1f;
+            foreach (DecorationData data in _config.Decorations) expected += data.Charm;
+            Assert.AreEqual(expected, economy.Pricing.CharmMultiplier, 1e-4f);
+            Assert.AreEqual(1.16f, economy.Pricing.CharmMultiplier, 1e-3f, "F-21: +2 % cada una, +16 % las ocho.");
+
+            // Una partida con 3 decoraciones recupera el encanto de esas 3 (restaurar no cobra ni suma de más).
+            string save = decorations.Capture();
+            DecorationManager other = Create<DecorationManager>();
+            other.Initialize(_config);
+            economy.Pricing.SetCharmMultiplier(1f);
+            other.Restore("{\"version\":1,\"owned\":3}");
+            Assert.AreEqual(1f + _config.Decorations[0].Charm + _config.Decorations[1].Charm + _config.Decorations[2].Charm, economy.Pricing.CharmMultiplier, 1e-4f);
+            Assert.IsNotEmpty(save);
+
+            other.Restore(null);
+            Assert.AreEqual(1f, economy.Pricing.CharmMultiplier, 1e-4f, "Sin sección guardada vuelve a 1.");
+        }
+
+        [Test]
         public void WithoutCoins_NothingIsBoughtAndNothingIsCharged()
         {
             DecorationManager decorations = CreateServices(out EconomyManager economy);

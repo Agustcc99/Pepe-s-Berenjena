@@ -74,6 +74,7 @@ namespace FarmIdle.Tests
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            DecorationSet.Placed -= OnPlaced;
             foreach (Object item in _objects)
             {
                 if (item != null) Object.Destroy(item);
@@ -110,6 +111,34 @@ namespace FarmIdle.Tests
 
             yield return new WaitForSecondsRealtime(0.8f);
             Assert.IsFalse(_set.WantsGuide, "Pasado el rato, la guía la suelta.");
+        }
+
+        private int _placedCount;
+        private int _placedPercent;
+        private Vector3 _placedAt;
+
+        private void OnPlaced(Vector3 position, int percent)
+        {
+            _placedCount++;
+            _placedAt = position;
+            _placedPercent = percent;
+        }
+
+        // F-22: la compra avisa para el festejo (estallido y cartel); cargar una partida no.
+        [UnityTest]
+        public IEnumerator BuyingADecoration_AnnouncesTheCelebration_ButLoadingASaveDoesNot()
+        {
+            DecorationSet.Placed += OnPlaced;
+
+            _decorations.Restore("{\"version\":1,\"owned\":1}");
+            yield return null;
+            Assert.AreEqual(0, _placedCount, "Cargar la partida no festeja.");
+
+            _economy.AddCoins(1000);
+            Assert.IsTrue(_decorations.TryBuyNext());
+            Assert.AreEqual(1, _placedCount);
+            Assert.AreEqual(_items[1].transform.position, _placedAt, "El festejo sale donde apareció la segunda.");
+            Assert.AreEqual(2, _placedPercent, "Lleva su encanto en % (2 por defecto).");
         }
 
         [UnityTest]

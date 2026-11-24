@@ -67,6 +67,7 @@ namespace FarmIdle
             PlotView.Harvested += OnHarvested;
             PlotView.RareHarvested += OnRareHarvested;
             PurchasePad.PurchaseCompleted += OnPurchased;
+            DecorationSet.Placed += OnDecorationPlaced;
             _wired = true;
         }
 
@@ -77,6 +78,7 @@ namespace FarmIdle
             PlotView.Harvested -= OnHarvested;
             PlotView.RareHarvested -= OnRareHarvested;
             PurchasePad.PurchaseCompleted -= OnPurchased;
+            DecorationSet.Placed -= OnDecorationPlaced;
             _wired = false;
 
             for (int i = 0; i < _chips.Length; i++) Release(ref _chips[i]);
@@ -98,6 +100,14 @@ namespace FarmIdle
         {
             Spawn(purchaseChip, position + Vector3.up * purchaseHeight, purchasePieces);
         }
+
+        // F-22: una decoración nueva estalla en dorado, con el doble de trocitos que una compra común (tope: los que hay en el pool).
+        private void OnDecorationPlaced(Vector3 position, int charmPercent)
+        {
+            Spawn(purchaseChip, position + Vector3.up * DecorationBurstHeight, purchasePieces * 2);
+        }
+
+        private const float DecorationBurstHeight = 1.2f;
 
         private void Spawn(GameObject prefab, Vector3 origin, int count)
         {
