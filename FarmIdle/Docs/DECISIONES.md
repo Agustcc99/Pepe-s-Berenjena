@@ -2,6 +2,22 @@
 
 Roadmap AR-06. Una entrada corta por decisión que no se deduce leyendo el código: **qué**, **por qué** y **cuándo** (con el ID del roadmap). Lo más nuevo, arriba. Una decisión que se revierte no se borra: se agrega una entrada nueva que la reemplaza.
 
+### Tema visual de la UI: `UiTheme` (V-03) · 2026-11-24
+- **Qué:** los colores de paneles y botones salen de `Editor/UiTheme.cs` (tarjeta verde bosque con borde dorado, botones dorado/verde hoja/madera/gris verdoso/tomate, letra crema). El azul genérico de Unity (0,30/0,50/0,78) desapareció de `HudBuilder`. Botones con sombra inferior (relieve) y tarjetas con borde + sombra, todo con `Outline`/`Shadow` de uGUI (vértices, sin draw calls ni materiales nuevos).
+- **Por qué:** el azul desentonaba con la paleta de granja y los colores estaban repetidos a mano en cada builder; con un tema único el estilo se cambia en un solo archivo.
+- **Segunda tanda:** misiones, logros, premio diario, pedidos, nivel y contador de monedas también usan el tema (`Pill`, `Row`, `BarBack`, `BarFill`, `Gold`, `Reward`, `BodyText`). Quedan fuera a propósito: botones de debug, colores de buffs del HUD, el velo del anuncio y los colores de skins (`SkinLooks`), que son diseño de juego y no de UI.
+- **Tercera tanda (2026-11-24):** esquinas redondeadas. `UiTheme.RoundedSprite()` genera `Assets/Sprites/UI/rounded.png` (96 px, radio 36, 9-slice de 40, blanco con alfa) y `EditorUi.CreatePanel` lo usa para todo menos los velos de pantalla completa (`*Backdrop`, `AdOverlay`, `Menu`), que siguen con el sprite recto de Unity porque con esquinas redondas dejarían huecos en los bordes. Perilla de los deslizadores dorada.
+- **Herramienta:** `UiPreviewRenderer.Render` (batch, `FI_OUT`) pasa los Canvas a "Screen Space - Camera" en memoria y saca PNG del mundo, del HUD, de "Tocá para jugar" y de cada panel `*Backdrop`. Ojo: en edición los textos que se llenan en juego salen vacíos (misiones, tienda, premios).
+- **Pendiente:** verlo en un dispositivo.
+
+### Pasto con variación (V-06) · 2026-11-24
+- **Qué:** `Phase1SceneBuilder.CreateCheckerTexture` genera `T_GroundChecker.png` de 32×32 (antes 2×2): cada texel sigue la paridad del damero pero 20 % sale más claro y 14 % más oscuro, con un generador congruencial de semilla fija (la textura es idéntica en cada `BuildAll`). El tiling del material pasa a `50 / 32` para conservar los cuadros de 2 unidades y su alineación con parcelas y pads.
+- **Por qué:** el damero de dos tonos se leía como tablero; la variación da pasto sin sumar materiales, texturas extra ni draw calls. Se repite cada 64 unidades, tapado por la niebla.
+
+### Camino de arena y plaza adoquinada (V-07) · 2026-11-24
+- **Qué:** en `PlazaBuilder.BuildPlazaDecor` la avenida y las rutas de sector usan arena (`SceneryBuilder.RoadSand`) en vez de `SoilLight` (que con la luz se veía marrón oscuro y pesaba como una "T" gigante); la avenida suma un borde más oscuro y 46 piedritas con semilla fija. El piso de la plaza es una base clara (juntas) con baldosas de 2×2 más oscuras en damero, igual que el pasto.
+- **Paleta:** 4 colores nuevos (`RoadSand`, `RoadEdge`, `PaverLight`, `PaverDark`) registrados al final de `SceneryBuilder.Prepare`, así los índices anteriores no se mueven. Sigue siendo una malla y un material (la plaza suma ~80 cajas, sin draw calls nuevos).
+
 ### Cultivo del día y camión mejorable (F-25 = IN-02, F-26) · 2026-11-24
 - **Cuál sale:** `DailyCropRules.Pick` baraja TODOS los cultivos de `GameConfig.OrderCrops` con una semilla mezclada del `DayKey` y gana el primero cuya zona está abierta. Así cada cultivo abierto sale con la misma probabilidad (no sale siempre el más caro; el peso de `OrderCropRule` no se usa, porque crece con el precio) y no hace falta guardar nada. Abrir una zona durante el día solo lo cambia si el cultivo nuevo cae antes en el orden del día.
 - **Cuánto:** +25 % (`DailyCropBonus`). Con +50 % el bot terminaba el juego ~20 % antes y rompía el plan de ritmo; el usuario eligió bajar a +25 % y correr los minutos del `EconomyPlan` desde la compra 18 (143→122, 166→140,5, 190→159, 214→179, 238→199, 262→219, 280→234,5, 303→252). Pendiente recalibrar costos con datos reales (B-05).
@@ -197,3 +213,11 @@ Roadmap AR-06. Una entrada corta por decisión que no se deduce leyendo el códi
 
 ## F-27 · Sombreros y diseños en las skins; perks Regateo y Mano verde en una segunda fila (2026-11-24)
 **Qué**: (1) Una skin ya no es solo un color: `SkinData` suma sombrero (`SkinHat`), diseño (`SkinPattern`) y dos colores (sombrero y detalle). Las piezas son grupos apagados bajo el cuerpo del jugador (`Hat_*`, `Pat_*`) que `PlayerSkinView` prende y pinta con `MaterialPropertyBlock` al cambiar de skin: sin `Instantiate`, sin materiales nuevos, nada por cuadro. (2) Los perks nuevos NO usan un panel de elección: se eligió una segunda fila de pads en el sector Puntos (el sector crece 3,8 al sur; `PlazaSouthZ` -27 a -30,8, `EastDividerZ` -22 a -25,8, `StoreRowZ` -25 a -28,8; el mundo (`SceneryBuilder.SouthZ`) pasa de -30,5 a -34,5). **Por qué**: mantiene la regla "las compras viven en los pads" y no agrega UI; cuesta un poco de bosque al sur. Regateo y Mano verde son un multiplicador APARTE (+1 % por elección, 10 elecciones, +10 % al máximo): no entra en los topes de la tienda de prestigio (`PrestigeShopTests`) ni en el de las mejoras. Suerte ya existía (F-24, +0,5 puntos): no se tocó. **Pendiente**: valores PROVISORIOS (B-05); no se verificó a ojo el aspecto de los sombreros en pantalla.
+
+## F-27b · Espera de 1,6 s en los pads de perk y pedidos plegables (2026-11-24)
+**Qué**: `PerkPad.startDelaySeconds` 0,35 a 1,6 s con el pad creciendo mientras carga (`chargeScale`); la segunda fila de perks queda a 1,2 de la primera y para llegar hay que cruzar los pads de adelante, así que la espera evita gastar puntos de casualidad (no se agregó un pasillo ni otra puerta). `OrdersHudView` plegable por defecto. **Por qué**: pedido del usuario tras probar el preview de CrazyGames. **Pendiente**: si 1,6 s se siente largo o corto en el celular, es un solo valor.
+
+## V-05 · La web arranca sola, sin "Tap to Play" (2026-11-24)
+**Qué**: `TapToPlayOverlay.AutoStart` (true en WebGL, false en editor y Android): al llegar a `Ready` el juego pasa solo a `Playing` un cuadro después, el overlay no se muestra en `Ready` y no pide el toque. Como el navegador no deja sonar audio sin un gesto, al primer toque o tecla `AudioManager.RestartMusicAfterGesture()` reinicia la música.
+**Por qué**: el portal mide la carga hasta el primer `gameplayStart`, y el toque lo atrasaba lo que tardara el jugador (el usuario midió hasta 40 s sin tocar).
+**Riesgo / a verificar en el build web**: si la música entra callada hasta el primer gesto (esperado) o a tiempo; si el portal acepta empezar sin clic. Para volver al toque, `AutoStart` en false.

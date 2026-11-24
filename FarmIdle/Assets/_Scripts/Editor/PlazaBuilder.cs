@@ -151,19 +151,48 @@ namespace FarmIdle.EditorTools
             float centerZ = (PlazaNorthZ + PlazaSouthZ) * 0.5f;
             float depth = PlazaNorthZ - PlazaSouthZ;
 
-            mesh.AddBox(new Vector3(0f, 0.025f, centerZ), new Vector3(PlazaHalfWidth * 2f, 0.05f, depth), Quaternion.identity, Palette.Stone);
+            // V-07: piso adoquinado. Una base clara (las juntas) y encima baldosas de 2 x 2 más oscuras, en damero y un poco más chicas.
+            mesh.AddBox(new Vector3(0f, 0.025f, centerZ), new Vector3(PlazaHalfWidth * 2f, 0.05f, depth), Quaternion.identity, SceneryBuilder.PaverLight);
+            const float tile = 2f, inset = 0.07f;
+            int tilesX = Mathf.CeilToInt(PlazaHalfWidth * 2f / tile), tilesZ = Mathf.CeilToInt(depth / tile);
+            for (int i = 0; i < tilesX; i++)
+            {
+                for (int j = 0; j < tilesZ; j++)
+                {
+                    if ((i + j) % 2 != 0) continue;
+                    float x0 = -PlazaHalfWidth + i * tile, x1 = Mathf.Min(x0 + tile, PlazaHalfWidth);
+                    float z0 = PlazaSouthZ + j * tile, z1 = Mathf.Min(z0 + tile, PlazaNorthZ);
+                    mesh.AddBox(new Vector3((x0 + x1) * 0.5f, 0.0255f, (z0 + z1) * 0.5f), new Vector3(x1 - x0 - inset * 2f, 0.051f, z1 - z0 - inset * 2f), Quaternion.identity, SceneryBuilder.PaverDark);
+                }
+            }
 
-            // La avenida de tierra: del borde sur del pad de venta (z = -5) hasta el fondo de la plaza.
+            // La avenida: del borde sur del pad de venta (z = -5) hasta el fondo de la plaza. Arena clara con un borde más oscuro a cada lado.
             const float pathNorthZ = -5.2f;
-            // (Por encima del piso de piedra, que llega a 0,05: si no, la tierra queda tapada.)
-            mesh.AddBox(new Vector3(0f, 0.055f, (pathNorthZ + PlazaSouthZ) * 0.5f), new Vector3(AvenueHalfWidth * 2f, 0.02f, pathNorthZ - PlazaSouthZ), Quaternion.identity, Palette.SoilLight);
+            float pathCenterZ = (pathNorthZ + PlazaSouthZ) * 0.5f, pathLength = pathNorthZ - PlazaSouthZ;
+            // (Por encima del piso de piedra, que llega a 0,05: si no, la arena queda tapada.)
+            mesh.AddBox(new Vector3(0f, 0.055f, pathCenterZ), new Vector3(AvenueHalfWidth * 2f, 0.02f, pathLength), Quaternion.identity, SceneryBuilder.RoadSand);
+            const float edge = 0.16f;
+            foreach (float side in new[] { -1f, 1f })
+            {
+                mesh.AddBox(new Vector3(side * (AvenueHalfWidth - edge * 0.5f), 0.056f, pathCenterZ), new Vector3(edge, 0.022f, pathLength), Quaternion.identity, SceneryBuilder.RoadEdge);
+            }
 
-            // Una ruta de tierra desde la avenida hasta el fondo de cada sector, por su puerta.
+            // Piedritas sueltas (siempre las mismas: semilla fija) sobre la avenida.
+            var random = new System.Random(4242);
+            for (int p = 0; p < 46; p++)
+            {
+                float px = ((float)random.NextDouble() * 2f - 1f) * (AvenueHalfWidth - 0.4f);
+                float pz = PlazaSouthZ + 0.6f + (float)random.NextDouble() * (pathLength - 1.2f);
+                float size = 0.11f + (float)random.NextDouble() * 0.12f;
+                mesh.AddBox(new Vector3(px, 0.07f, pz), new Vector3(size, 0.05f, size * 0.75f), Quaternion.Euler(0f, (float)random.NextDouble() * 180f, 0f), SceneryBuilder.PaverDark);
+            }
+
+            // Una ruta de arena desde la avenida hasta el fondo de cada sector, por su puerta.
             foreach (SectorSpec sector in Sectors)
             {
                 float side = sector.West ? -1f : 1f;
                 float from = side * AvenueHalfWidth;
-                mesh.AddBox(new Vector3((from + sector.FarX) * 0.5f, 0.055f, sector.DoorZ), new Vector3(Mathf.Abs(sector.FarX - from), 0.02f, 1.6f), Quaternion.identity, Palette.SoilLight);
+                mesh.AddBox(new Vector3((from + sector.FarX) * 0.5f, 0.055f, sector.DoorZ), new Vector3(Mathf.Abs(sector.FarX - from), 0.02f, 1.6f), Quaternion.identity, SceneryBuilder.RoadSand);
             }
 
             // Valla: postes cada ~2 y dos travesaños.

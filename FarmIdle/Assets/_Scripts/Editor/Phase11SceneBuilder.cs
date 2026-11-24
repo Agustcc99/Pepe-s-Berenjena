@@ -96,11 +96,10 @@ namespace FarmIdle.EditorTools
             RectTransform holder = EditorUi.CreateRect("AchievementHud", hud);
             EditorUi.Stretch(holder);
 
-            Button open = EditorUi.CreateButton("AchievementButton", holder, "@achievement.button", new Color(0.30f, 0.50f, 0.78f), out TextMeshProUGUI openLabel);
-            openLabel.fontSize = 40f;
-            EditorUi.Anchor((RectTransform)open.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -290f), new Vector2(250f, 90f));
+            Button open = EditorUi.CreateHudPill("AchievementButton", holder, "@achievement.button", out TextMeshProUGUI openLabel);
+            EditorUi.Anchor((RectTransform)open.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -290f), new Vector2(250f, 84f));
 
-            Image backdrop = EditorUi.CreatePanel("AchievementBackdrop", canvas, new Color(0.02f, 0.05f, 0.03f, 0.70f), true);
+            Image backdrop = EditorUi.CreatePanel("AchievementBackdrop", canvas, UiTheme.Backdrop, true);
             backdrop.sprite = null;
             backdrop.type = Image.Type.Simple;
             EditorUi.Stretch(backdrop.rectTransform);
@@ -111,10 +110,10 @@ namespace FarmIdle.EditorTools
             Image card = EditorUi.CreateCard(backdrop.transform);   // recibe los toques: no cierra
             EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900f, 1560f));
 
-            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@achievement.title", 72f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@achievement.title", 72f, UiTheme.Title, TextAlignmentOptions.Center, FontStyles.Bold);
             EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(600f, 100f));
 
-            Button close = EditorUi.CreateButton("AchievementCloseButton", card.transform, "X", new Color(0.75f, 0.25f, 0.25f), out TextMeshProUGUI closeLabel);
+            Button close = EditorUi.CreateButton("AchievementCloseButton", card.transform, "X", UiTheme.Danger, out TextMeshProUGUI closeLabel);
             closeLabel.fontSize = 56f;
             EditorUi.Anchor((RectTransform)close.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -24f), new Vector2(110f, 110f));
 
@@ -153,7 +152,7 @@ namespace FarmIdle.EditorTools
         // Una fila: el texto del logro, la barra con su "N / meta", el premio y el botón de reclamar.
         private static AchievementPanelView.Row BuildRow(Transform content, int index)
         {
-            Image root = EditorUi.CreatePanel("Row" + index, content, new Color(0.08f, 0.13f, 0.09f, 0.95f), false);
+            Image root = EditorUi.CreatePanel("Row" + index, content, UiTheme.Row, false);
             EditorUi.Anchor(root.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -10f - index * RowPitch), new Vector2(820f, RowHeight));
 
             TextMeshProUGUI text = EditorUi.CreateText("Title", root.transform, "", 44f, Color.white, TextAlignmentOptions.Left, FontStyles.Bold);
@@ -162,10 +161,10 @@ namespace FarmIdle.EditorTools
             text.fontSizeMax = 44f;
             EditorUi.Anchor(text.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(24f, -40f), new Vector2(770f, 60f));
 
-            Image back = EditorUi.CreatePanel("BarBack", root.transform, new Color(0.02f, 0.03f, 0.02f, 0.9f), false);
+            Image back = EditorUi.CreatePanel("BarBack", root.transform, UiTheme.BarBack, false);
             EditorUi.Anchor(back.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(24f, -100f), new Vector2(520f, 32f));
 
-            Image fill = EditorUi.CreatePanel("Fill", back.transform, new Color(0.45f, 0.85f, 0.30f, 1f), false);
+            Image fill = EditorUi.CreatePanel("Fill", back.transform, UiTheme.BarFill, false);
             RectTransform fillRect = fill.rectTransform;
             fillRect.anchorMin = new Vector2(0f, 0f);
             fillRect.anchorMax = new Vector2(1f, 1f);
@@ -173,21 +172,21 @@ namespace FarmIdle.EditorTools
             fillRect.offsetMin = new Vector2(3f, 3f);
             fillRect.offsetMax = new Vector2(-3f, -3f);
 
-            TextMeshProUGUI progress = EditorUi.CreateText("Progress", root.transform, "", 34f, new Color(0.9f, 0.95f, 0.85f), TextAlignmentOptions.Left, FontStyles.Bold);
+            TextMeshProUGUI progress = EditorUi.CreateText("Progress", root.transform, "", 34f, UiTheme.BodyText, TextAlignmentOptions.Left, FontStyles.Bold);
             progress.enableAutoSizing = true;
             progress.fontSizeMin = 22f;
             progress.fontSizeMax = 34f;
             EditorUi.Anchor(progress.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(560f, -100f), new Vector2(240f, 50f));
 
-            TextMeshProUGUI reward = EditorUi.CreateText("Reward", root.transform, "", 36f, new Color(1f, 0.85f, 0.3f), TextAlignmentOptions.Left, FontStyles.Bold);
+            TextMeshProUGUI reward = EditorUi.CreateText("Reward", root.transform, "", 36f, UiTheme.Reward, TextAlignmentOptions.Left, FontStyles.Bold);
             reward.enableAutoSizing = true;
             reward.fontSizeMin = 22f;
             reward.fontSizeMax = 36f;
             EditorUi.Anchor(reward.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0.5f), new Vector2(24f, 44f), new Vector2(500f, 52f));
 
-            Button claim = EditorUi.CreateButton("ClaimButton", root.transform, "", new Color(0.93f, 0.68f, 0.12f), out TextMeshProUGUI claimLabel);
+            Button claim = EditorUi.CreateButton("ClaimButton", root.transform, "", UiTheme.Primary, out TextMeshProUGUI claimLabel);
             claimLabel.fontSize = 38f;
-            claimLabel.color = new Color(0.20f, 0.12f, 0.02f);
+            claimLabel.color = UiTheme.OnPrimary;
             EditorUi.Anchor((RectTransform)claim.transform, new Vector2(1f, 0f), new Vector2(1f, 0.5f), new Vector2(-24f, 52f), new Vector2(250f, 76f));
             claim.gameObject.SetActive(false);
 

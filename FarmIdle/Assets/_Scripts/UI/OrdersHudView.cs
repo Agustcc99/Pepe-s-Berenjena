@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace FarmIdle
 {
@@ -19,6 +20,19 @@ namespace FarmIdle
 
         [SerializeField] private TMP_Text text;
 
+        [SerializeField, Tooltip("Plegable: el encabezado \"Pedidos del pueblo (N)\", que al tocarlo muestra u oculta el detalle. Puede faltar (el detalle queda siempre a la vista).")]
+        private TMP_Text header;
+
+        [SerializeField, Tooltip("Lo que se toca para plegar y desplegar.")]
+        private Button toggleButton;
+
+        [SerializeField, Tooltip("La tarjeta se achica a este alto plegada y crece 'lineHeight' por pedido desplegada.")]
+        private RectTransform sizedRect;
+
+        [SerializeField, Min(10f)] private float collapsedHeight = 76f;
+        [SerializeField, Min(10f)] private float headerHeight = 76f;
+        [SerializeField, Min(10f)] private float lineHeight = 46f;
+
         [SerializeField, Tooltip("El aviso de pedido completado, con lo ganado. Arranca apagado. Puede faltar.")]
         private TMP_Text completedLabel;
 
@@ -32,8 +46,18 @@ namespace FarmIdle
         private OrdersManager _orders;
         private readonly StringBuilder _builder = new StringBuilder(160);
         private Coroutine _noticeRoutine;
+        private bool _expanded;   // arranca plegada: solo el encabezado
 
         // Para pruebas y depuración.
+        public bool IsExpanded => _expanded;
+        public string HeaderText => header != null ? header.text : string.Empty;
+
+        public void Toggle()
+        {
+            _expanded = !_expanded;
+            Refresh();
+        }
+
         public bool IsNoticeShowing => completedLabel != null && Notice.activeSelf;
         public string NoticeText => completedLabel != null ? completedLabel.text : string.Empty;
         public string CardText => text != null ? text.text : string.Empty;
@@ -48,6 +72,7 @@ namespace FarmIdle
             }
 
             Loc.Changed += Refresh;
+            if (toggleButton != null) toggleButton.onClick.AddListener(Toggle);
             if (completedLabel != null) Notice.SetActive(false);
             Refresh();
         }
@@ -55,6 +80,7 @@ namespace FarmIdle
         private void OnDisable()
         {
             Loc.Changed -= Refresh;
+            if (toggleButton != null) toggleButton.onClick.RemoveListener(Toggle);
             if (_orders != null)
             {
                 _orders.Changed -= Refresh;
@@ -81,15 +107,26 @@ namespace FarmIdle
                     CropData crop = _orders.CropOf(i);
                     if (crop == null) continue;
 
-                    if (shown == 0) _builder.Append("<size=70%><color=#FFE066>").Append(Loc.Get("hud.orders")).Append("</color></size>");
-                    _builder.Append('\n').Append(crop.DisplayName).Append("  ").Append(_orders.DeliveredOf(i)).Append('/').Append(_orders.QuantityOf(i));
+                    if (shown == 0 && header == null) _builder.Append("<size=70%><color=#FFE066>").Append(Loc.Get("hud.orders")).Append("</color></size>\n");
+                    else if (shown > 0) _builder.Append('\n');
+                    _builder.Append(crop.DisplayName).Append("  ").Append(_orders.DeliveredOf(i)).Append('/').Append(_orders.QuantityOf(i));
                     AppendReward(_orders.RewardCoins(i), _orders.RewardSeeds(i));
                     shown++;
                 }
             }
 
             if (card.activeSelf != shown > 0) card.SetActive(shown > 0);
-            if (shown > 0) text.text = _builder.ToString();   // una cadena por cambio del cartel (no por cuadro)
+            if (shown == 0) return;
+
+            text.text = _builder.ToString();   // una cadena por cambio del cartel (no por cuadro)
+            if (header == null) return;
+
+            // Plegable: encabezado con la cantidad y un "+"/"-", y el detalle solo desplegado.
+            _builder.Clear();
+            _builder.Append(Loc.Get("hud.orders")).Append(" (").Append(shown).Append(")  ").Append(_expanded ? '-' : '+');
+            header.text = _builder.ToString();
+            text.gameObject.SetActive(_expanded);
+            if (sizedRect != null) sizedRect.sizeDelta = new Vector2(sizedRect.sizeDelta.x, _expanded ? headerHeight + lineHeight * shown + 14f : collapsedHeight);
         }
 
         // "  +1.250" en dorado y, si corresponde, "+1 semilla".

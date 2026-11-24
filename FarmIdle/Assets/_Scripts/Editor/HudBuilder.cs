@@ -19,7 +19,7 @@ namespace FarmIdle.EditorTools
             Sprite arrowSprite = Phase2SceneBuilder.LoadRequired<Sprite>(Phase9SceneBuilder.ArrowSpritePath);
 
             // Ícono de sonido: un círculo oscuro con el parlante.
-            Image iconBack = EditorUi.CreatePanel("SoundButton", hud, new Color(0.05f, 0.07f, 0.06f, 0.65f), true);
+            Image iconBack = EditorUi.CreatePanel("SoundButton", hud, UiTheme.Pill, true);
             EditorUi.Anchor(iconBack.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-30f, -160f), new Vector2(110f, 110f));
             var openButton = iconBack.gameObject.AddComponent<Button>();
             openButton.targetGraphic = iconBack;
@@ -28,7 +28,7 @@ namespace FarmIdle.EditorTools
             EditorUi.Anchor(icon.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(84f, 84f));
 
             // La tarjeta de ajustes.
-            Image backdrop = EditorUi.CreatePanel("SettingsBackdrop", canvas, new Color(0.02f, 0.05f, 0.03f, 0.70f), true);
+            Image backdrop = EditorUi.CreatePanel("SettingsBackdrop", canvas, UiTheme.Backdrop, true);
             backdrop.sprite = null;
             backdrop.type = Image.Type.Simple;
             EditorUi.Stretch(backdrop.rectTransform);
@@ -39,10 +39,10 @@ namespace FarmIdle.EditorTools
             Image card = EditorUi.CreateCard(backdrop.transform);   // recibe los toques: no cierra
             EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860f, 1600f));
 
-            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@settings.title", 72f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@settings.title", 72f, UiTheme.Title, TextAlignmentOptions.Center, FontStyles.Bold);
             EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(600f, 100f));
 
-            Button close = EditorUi.CreateButton("CloseButton", card.transform, "X", new Color(0.75f, 0.25f, 0.25f), out TextMeshProUGUI closeLabel);
+            Button close = EditorUi.CreateButton("CloseButton", card.transform, "X", UiTheme.Danger, out TextMeshProUGUI closeLabel);
             closeLabel.fontSize = 56f;
             EditorUi.Anchor((RectTransform)close.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24f, -24f), new Vector2(110f, 110f));
 
@@ -51,42 +51,42 @@ namespace FarmIdle.EditorTools
 
             // Los botones van apilados bajo los deslizadores (y medido desde el borde de arriba de la tarjeta).
             // Mute, vibración e idioma cambian de texto según el estado: los escribe SettingsPanelView (por eso arrancan vacíos y sin clave).
-            Button mute = AddCardButton(card.transform, "MuteButton", "", new Color(0.30f, 0.50f, 0.78f), -530f, 110f, out TextMeshProUGUI muteLabel);
-            Button vibration = AddCardButton(card.transform, "VibrationButton", "", new Color(0.30f, 0.50f, 0.78f), -650f, 110f, out TextMeshProUGUI vibrationLabel);
-            Button language = AddCardButton(card.transform, "LanguageButton", "", new Color(0.30f, 0.50f, 0.78f), -770f, 110f, out TextMeshProUGUI languageLabel);
-            Button textSize = AddCardButton(card.transform, "TextSizeButton", "", new Color(0.30f, 0.50f, 0.78f), -890f, 110f, out TextMeshProUGUI textSizeLabel);   // "Texto grande" (U-04)
-            Button control = AddCardButton(card.transform, "ControlButton", "", new Color(0.30f, 0.50f, 0.78f), -1010f, 110f, out TextMeshProUGUI controlLabel);   // joystick flotante o fijo (U-11)
-            Button credits = AddCardButton(card.transform, "CreditsButton", "@settings.credits", new Color(0.35f, 0.42f, 0.38f), -1130f, 100f, out _);
+            Button mute = AddCardButton(card.transform, "MuteButton", "", UiTheme.Secondary, -530f, 110f, out TextMeshProUGUI muteLabel);
+            Button vibration = AddCardButton(card.transform, "VibrationButton", "", UiTheme.Secondary, -650f, 110f, out TextMeshProUGUI vibrationLabel);
+            Button language = AddCardButton(card.transform, "LanguageButton", "", UiTheme.Secondary, -770f, 110f, out TextMeshProUGUI languageLabel);
+            Button textSize = AddCardButton(card.transform, "TextSizeButton", "", UiTheme.Secondary, -890f, 110f, out TextMeshProUGUI textSizeLabel);   // "Texto grande" (U-04)
+            Button control = AddCardButton(card.transform, "ControlButton", "", UiTheme.Secondary, -1010f, 110f, out TextMeshProUGUI controlLabel);   // joystick flotante o fijo (U-11)
+            Button credits = AddCardButton(card.transform, "CreditsButton", "@settings.credits", UiTheme.Neutral, -1130f, 100f, out _);
 
             // "Privacidad": solo se ve si el jugador está en una región que exige el consentimiento (lo decide el servicio de anuncios).
-            Button privacy = AddCardButton(card.transform, "PrivacyButton", "@settings.privacy", new Color(0.35f, 0.42f, 0.38f), -1240f, 96f, out _);
+            Button privacy = AddCardButton(card.transform, "PrivacyButton", "@settings.privacy", UiTheme.Neutral, -1240f, 96f, out _);
             privacy.gameObject.SetActive(false);
 
             // La política de privacidad: oculta hasta que haya una dirección publicada (ROADMAP M-04; se carga en el campo privacyPolicyUrl).
-            Button policy = AddCardButton(card.transform, "PrivacyPolicyButton", "@settings.privacy_policy", new Color(0.35f, 0.42f, 0.38f), -1344f, 96f, out _);
+            Button policy = AddCardButton(card.transform, "PrivacyPolicyButton", "@settings.privacy_policy", UiTheme.Neutral, -1344f, 96f, out _);
             policy.gameObject.SetActive(false);
 
-            Button delete = AddCardButton(card.transform, "DeleteSaveButton", "@settings.delete", new Color(0.65f, 0.22f, 0.22f), -1470f, 110f, out _);
+            Button delete = AddCardButton(card.transform, "DeleteSaveButton", "@settings.delete", UiTheme.Danger, -1470f, 110f, out _);
 
             // Créditos: un panel encima de la tarjeta.
-            Image creditsPanel = EditorUi.CreatePanel("CreditsPanel", card.transform, new Color(0.08f, 0.13f, 0.09f, 0.99f), true);
+            Image creditsPanel = EditorUi.CreatePanel("CreditsPanel", card.transform, UiTheme.SubPanel, true);
             EditorUi.Stretch(creditsPanel.rectTransform);
             TextMeshProUGUI creditsBody = EditorUi.CreateText("Body", creditsPanel.transform, "@settings.credits_body", 46f, Color.white, TextAlignmentOptions.Center);
             creditsBody.textWrappingMode = TextWrappingModes.Normal;
             EditorUi.Anchor(creditsBody.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 80f), new Vector2(740f, 800f));
-            Button creditsClose = AddCardButton(creditsPanel.transform, "CreditsCloseButton", "@settings.close", new Color(0.30f, 0.50f, 0.78f), -1330f, 110f, out _);
+            Button creditsClose = AddCardButton(creditsPanel.transform, "CreditsCloseButton", "@settings.close", UiTheme.Secondary, -1330f, 110f, out _);
             creditsPanel.gameObject.SetActive(false);
 
             // Confirmación de "Borrar partida": nada se borra hasta tocar "Sí, borrar".
-            Image confirmPanel = EditorUi.CreatePanel("DeleteConfirmPanel", card.transform, new Color(0.08f, 0.13f, 0.09f, 0.99f), true);
+            Image confirmPanel = EditorUi.CreatePanel("DeleteConfirmPanel", card.transform, UiTheme.SubPanel, true);
             EditorUi.Stretch(confirmPanel.rectTransform);
             TextMeshProUGUI confirmBody = EditorUi.CreateText("Body", confirmPanel.transform, "@settings.delete_confirm", 56f, Color.white, TextAlignmentOptions.Center);
             confirmBody.textWrappingMode = TextWrappingModes.Normal;
             EditorUi.Anchor(confirmBody.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(740f, 300f));
-            Button confirmYes = EditorUi.CreateButton("DeleteConfirmYesButton", confirmPanel.transform, "@settings.delete_yes", new Color(0.75f, 0.25f, 0.25f), out TextMeshProUGUI yesLabel);
+            Button confirmYes = EditorUi.CreateButton("DeleteConfirmYesButton", confirmPanel.transform, "@settings.delete_yes", UiTheme.Danger, out TextMeshProUGUI yesLabel);
             yesLabel.fontSize = 52f;
             EditorUi.Anchor((RectTransform)confirmYes.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -40f), new Vector2(560f, 120f));
-            Button confirmNo = EditorUi.CreateButton("DeleteConfirmNoButton", confirmPanel.transform, "@settings.cancel", new Color(0.30f, 0.50f, 0.78f), out TextMeshProUGUI noLabel);
+            Button confirmNo = EditorUi.CreateButton("DeleteConfirmNoButton", confirmPanel.transform, "@settings.cancel", UiTheme.Secondary, out TextMeshProUGUI noLabel);
             noLabel.fontSize = 52f;
             EditorUi.Anchor((RectTransform)confirmNo.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -200f), new Vector2(560f, 120f));
             confirmPanel.gameObject.SetActive(false);
@@ -133,9 +133,9 @@ namespace FarmIdle.EditorTools
             arrow.gameObject.SetActive(false);
 
             // U-10: el cartel que dice qué hacer; acompaña a la flecha o se pone encima del lugar cuando está a la vista.
-            Image hint = EditorUi.CreatePanel("GuideLabel", arrowHolder, new Color(0.05f, 0.07f, 0.06f, 0.78f), false);
+            Image hint = EditorUi.CreatePanel("GuideLabel", arrowHolder, UiTheme.Pill, false);
             EditorUi.Anchor(hint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(780f, 92f));
-            TextMeshProUGUI hintText = EditorUi.CreateText("Text", hint.transform, "", 32f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI hintText = EditorUi.CreateText("Text", hint.transform, "", 32f, UiTheme.Title, TextAlignmentOptions.Center, FontStyles.Bold);
             // Una sola línea. El ancho y el tamaño están pensados para que los carteles (hasta ~30 letras) entren SIN achicarse aun con
             // "Texto grande": cuando TextMeshPro achica un texto para que entre, lo deja un par de píxeles pasado y la prueba lo marca.
             hintText.enableAutoSizing = true;
@@ -192,13 +192,13 @@ namespace FarmIdle.EditorTools
             RectTransform holder = EditorUi.CreateRect("SeasonHud", hud);
             EditorUi.Stretch(holder);
 
-            Button open = EditorUi.CreateButton("SeasonButton", holder, "@season.button", new Color(0.93f, 0.68f, 0.12f), out TextMeshProUGUI openLabel);
+            Button open = EditorUi.CreateButton("SeasonButton", holder, "@season.button", UiTheme.Primary, out TextMeshProUGUI openLabel);
             openLabel.fontSize = 44f;
-            openLabel.color = new Color(0.20f, 0.12f, 0.02f);
+            openLabel.color = UiTheme.OnPrimary;
             EditorUi.Anchor((RectTransform)open.transform, new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(20f, -420f), new Vector2(560f, 110f));
             open.gameObject.SetActive(false);
 
-            Image backdrop = EditorUi.CreatePanel("SeasonBackdrop", canvas, new Color(0.02f, 0.05f, 0.03f, 0.70f), true);
+            Image backdrop = EditorUi.CreatePanel("SeasonBackdrop", canvas, UiTheme.Backdrop, true);
             backdrop.sprite = null;
             backdrop.type = Image.Type.Simple;
             EditorUi.Stretch(backdrop.rectTransform);
@@ -207,16 +207,16 @@ namespace FarmIdle.EditorTools
             Image card = EditorUi.CreateCard(backdrop.transform);
             EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900f, 1320f));
 
-            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@season.title", 72f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@season.title", 72f, UiTheme.Title, TextAlignmentOptions.Center, FontStyles.Bold);
             EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -90f), new Vector2(800f, 100f));
 
             TextMeshProUGUI body = EditorUi.CreateText("Body", card.transform, "", 38f, Color.white, TextAlignmentOptions.Center);
             body.textWrappingMode = TextWrappingModes.Normal;
             EditorUi.Anchor(body.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -200f), new Vector2(800f, 820f));
 
-            Button yes = AddCardButton(card.transform, "SeasonYesButton", "@season.yes", new Color(0.93f, 0.68f, 0.12f), -1090f, 120f, out TextMeshProUGUI yesLabel);
-            yesLabel.color = new Color(0.20f, 0.12f, 0.02f);
-            Button no = AddCardButton(card.transform, "SeasonNoButton", "@season.no", new Color(0.30f, 0.50f, 0.78f), -1230f, 110f, out _);
+            Button yes = AddCardButton(card.transform, "SeasonYesButton", "@season.yes", UiTheme.Primary, -1090f, 120f, out TextMeshProUGUI yesLabel);
+            yesLabel.color = UiTheme.OnPrimary;
+            Button no = AddCardButton(card.transform, "SeasonNoButton", "@season.no", UiTheme.Secondary, -1230f, 110f, out _);
 
             var view = holder.gameObject.AddComponent<SeasonPanelView>();
             EditorUi.Wire(view,
@@ -259,7 +259,7 @@ namespace FarmIdle.EditorTools
             Image card = EditorUi.CreateCard(backdrop.transform);
             EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900f, cardHeight));
 
-            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@shop.title", 60f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@shop.title", 60f, UiTheme.Title, TextAlignmentOptions.Center, FontStyles.Bold);
             EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -70f), new Vector2(800f, 90f));
 
             TextMeshProUGUI seeds = EditorUi.CreateText("Seeds", card.transform, "", 44f, Color.white, TextAlignmentOptions.Center);
@@ -269,7 +269,7 @@ namespace FarmIdle.EditorTools
             var labels = new System.Collections.Generic.List<UnityEngine.Object>();
             for (int i = 0; i < rows; i++)
             {
-                Button row = EditorUi.CreateButton("ShopRow" + i, card.transform, "", new Color(0.30f, 0.50f, 0.78f), out TextMeshProUGUI label);
+                Button row = EditorUi.CreateButton("ShopRow" + i, card.transform, "", UiTheme.Secondary, out TextMeshProUGUI label);
                 label.fontSize = 32f;
                 label.textWrappingMode = TextWrappingModes.Normal;
                 EditorUi.Anchor((RectTransform)row.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0f, firstRowY - i * rowStep), new Vector2(820f, rowHeight));
@@ -277,8 +277,8 @@ namespace FarmIdle.EditorTools
                 labels.Add(label);
             }
 
-            Button close = AddCardButton(card.transform, "ShopCloseButton", "@shop.close", new Color(0.93f, 0.68f, 0.12f), closeY, 110f, out TextMeshProUGUI closeLabel);
-            closeLabel.color = new Color(0.20f, 0.12f, 0.02f);
+            Button close = AddCardButton(card.transform, "ShopCloseButton", "@shop.close", UiTheme.Primary, closeY, 110f, out TextMeshProUGUI closeLabel);
+            closeLabel.color = UiTheme.OnPrimary;
 
             var view = holder.gameObject.AddComponent<PrestigeShopView>();
             EditorUi.Wire(view, ("openButton", open), ("panel", backdrop.gameObject), ("seedsLabel", seeds), ("closeButton", close));
@@ -298,7 +298,7 @@ namespace FarmIdle.EditorTools
             RectTransform holder = EditorUi.CreateRect("OfflineCard", canvas);
             EditorUi.Stretch(holder);
 
-            Image backdrop = EditorUi.CreatePanel("OfflineBackdrop", holder, new Color(0.02f, 0.05f, 0.03f, 0.70f), true);
+            Image backdrop = EditorUi.CreatePanel("OfflineBackdrop", holder, UiTheme.Backdrop, true);
             backdrop.sprite = null;
             backdrop.type = Image.Type.Simple;
             EditorUi.Stretch(backdrop.rectTransform);
@@ -306,16 +306,16 @@ namespace FarmIdle.EditorTools
             Image card = EditorUi.CreateCard(backdrop.transform);
             EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860f, 840f));
 
-            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@offline.title", 72f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@offline.title", 72f, UiTheme.Title, TextAlignmentOptions.Center, FontStyles.Bold);
             EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -90f), new Vector2(760f, 100f));
 
             TextMeshProUGUI body = EditorUi.CreateText("Body", card.transform, "", 52f, Color.white, TextAlignmentOptions.Center);
             body.textWrappingMode = TextWrappingModes.Normal;
             EditorUi.Anchor(body.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 90f), new Vector2(760f, 360f));
 
-            Button claim = AddCardButton(card.transform, "OfflineClaimButton", "@offline.claim", new Color(0.35f, 0.70f, 0.30f), -560f, 120f, out _);
-            Button doubleIt = AddCardButton(card.transform, "OfflineDoubleButton", "@offline.double", new Color(0.93f, 0.68f, 0.12f), -700f, 120f, out TextMeshProUGUI doubleLabel);
-            doubleLabel.color = new Color(0.20f, 0.12f, 0.02f);
+            Button claim = AddCardButton(card.transform, "OfflineClaimButton", "@offline.claim", UiTheme.Positive, -560f, 120f, out _);
+            Button doubleIt = AddCardButton(card.transform, "OfflineDoubleButton", "@offline.double", UiTheme.Primary, -700f, 120f, out TextMeshProUGUI doubleLabel);
+            doubleLabel.color = UiTheme.OnPrimary;
 
             var view = holder.gameObject.AddComponent<OfflineRewardView>();
             EditorUi.Wire(view,
@@ -358,7 +358,7 @@ namespace FarmIdle.EditorTools
             fillArea.anchorMin = new Vector2(0f, 0.5f);
             fillArea.anchorMax = new Vector2(1f, 0.5f);
             fillArea.sizeDelta = new Vector2(-50f, 26f);
-            Image fill = EditorUi.CreatePanel("Fill", fillArea, new Color(0.45f, 0.85f, 0.30f, 1f), false);
+            Image fill = EditorUi.CreatePanel("Fill", fillArea, UiTheme.BarFill, false);
             fill.rectTransform.anchorMin = Vector2.zero;
             fill.rectTransform.anchorMax = new Vector2(0f, 1f);
             fill.rectTransform.sizeDelta = new Vector2(10f, 0f);
@@ -367,10 +367,13 @@ namespace FarmIdle.EditorTools
             EditorUi.Stretch(handleArea);
             handleArea.offsetMin = new Vector2(25f, 0f);
             handleArea.offsetMax = new Vector2(-25f, 0f);
-            Image handle = EditorUi.CreatePanel("Handle", handleArea, Color.white, true);
+            Image handle = EditorUi.CreatePanel("Handle", handleArea, UiTheme.Primary, true);   // perilla dorada
+            var handleLip = handle.gameObject.AddComponent<Shadow>();
+            handleLip.effectColor = UiTheme.Shadow;
+            handleLip.effectDistance = new Vector2(0f, -6f);
             handle.rectTransform.anchorMin = new Vector2(0f, 0.5f);
             handle.rectTransform.anchorMax = new Vector2(0f, 0.5f);
-            handle.rectTransform.sizeDelta = new Vector2(50f, 62f);
+            handle.rectTransform.sizeDelta = new Vector2(54f, 54f);
 
             var slider = go.GetComponent<Slider>();
             slider.fillRect = fill.rectTransform;

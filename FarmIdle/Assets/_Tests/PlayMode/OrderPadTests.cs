@@ -101,6 +101,43 @@ namespace FarmIdle.Tests
             Assert.AreEqual(5, _orders.DeliveredOf(0));
         }
 
+        // IN-05: la tarjeta de pedidos arranca plegada (solo "Pedidos del pueblo (N) +") y al tocarla muestra el detalle.
+        [UnityTest]
+        public IEnumerator TheHudCard_StartsCollapsed_AndTappingItShowsTheDetail()
+        {
+            var hudObject = new GameObject("OrdersHud");
+            _objects.Add(hudObject);
+            hudObject.SetActive(false);
+            var card = new GameObject("Card");
+            card.transform.SetParent(hudObject.transform, false);
+            var headerObject = new GameObject("Header");
+            headerObject.transform.SetParent(card.transform, false);
+            var header = headerObject.AddComponent<TextMeshPro>();
+            var bodyObject = new GameObject("Body");
+            bodyObject.transform.SetParent(card.transform, false);
+            var body = bodyObject.AddComponent<TextMeshPro>();
+            var view = hudObject.AddComponent<OrdersHudView>();
+            TestReflection.Set(view, "card", card);
+            TestReflection.Set(view, "text", body);
+            TestReflection.Set(view, "header", header);
+            hudObject.SetActive(true);
+            yield return null;
+
+            _orders.Tick(0.1f);
+            Assert.IsFalse(view.IsExpanded);
+            StringAssert.Contains("(3)", header.text, "El encabezado cuenta los pedidos.");
+            StringAssert.EndsWith("+", header.text);
+            Assert.IsFalse(bodyObject.activeSelf, "Plegada no muestra el detalle.");
+
+            view.Toggle();
+            Assert.IsTrue(bodyObject.activeSelf);
+            StringAssert.EndsWith("-", header.text);
+            StringAssert.Contains("0/" + _orders.QuantityOf(0), body.text);
+
+            view.Toggle();
+            Assert.IsFalse(bodyObject.activeSelf);
+        }
+
         [UnityTest]
         public IEnumerator CompletingTheOrder_Pays_AndTheHudCardListsOnlyActiveOrders()
         {

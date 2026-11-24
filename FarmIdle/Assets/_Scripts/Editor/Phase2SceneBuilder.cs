@@ -377,7 +377,7 @@ namespace FarmIdle.EditorTools
 
         private static void BuildCoinCounter(RectTransform hud, Sprite coinSprite)
         {
-            Image pill = EditorUi.CreatePanel("CoinCounter", hud, new Color(0.05f, 0.07f, 0.06f, 0.65f), false);
+            Image pill = EditorUi.CreatePanel("CoinCounter", hud, UiTheme.Pill, false);
             RectTransform root = pill.rectTransform;
 
             // Arriba a la derecha. El pivote va al centro para que el "latido" escale desde el medio.
@@ -453,14 +453,14 @@ namespace FarmIdle.EditorTools
             title.fontSizeMax = 150f;
             EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(960f, 320f));
 
-            TextMeshProUGUI prompt = EditorUi.CreateText("Prompt", dim.transform, "@menu.tap_to_play", 80f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI prompt = EditorUi.CreateText("Prompt", dim.transform, "@menu.tap_to_play", 80f, UiTheme.Title, TextAlignmentOptions.Center, FontStyles.Bold);
             EditorUi.Anchor(prompt.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -140f), new Vector2(960f, 140f));
 
             TextMeshProUGUI hint = EditorUi.CreateText("KeyboardHint", dim.transform, "@menu.keyboard_hint", 44f, new Color(0.9f, 0.95f, 0.9f), TextAlignmentOptions.Center, FontStyles.Normal);
             EditorUi.Anchor(hint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -290f), new Vector2(960f, 150f));
 
             // Cambio de idioma sin entrar a Ajustes: el rótulo muestra el otro idioma (clave menu.language_switch).
-            Button language = EditorUi.CreateButton("MenuLanguageButton", dim.transform, "@menu.language_switch", new Color(0.2f, 0.4f, 0.65f, 0.95f), out TextMeshProUGUI languageLabel);
+            Button language = EditorUi.CreateButton("MenuLanguageButton", dim.transform, "@menu.language_switch", UiTheme.Secondary, out TextMeshProUGUI languageLabel);
             EditorUi.Anchor((RectTransform)language.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -480f), new Vector2(440f, 110f));
             language.gameObject.AddComponent<LanguageSwitchButton>();
 

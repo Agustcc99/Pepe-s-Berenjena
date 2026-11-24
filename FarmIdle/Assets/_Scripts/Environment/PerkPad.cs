@@ -24,8 +24,10 @@ namespace FarmIdle
         [SerializeField, Tooltip("Lo que \"late\" al elegir (el modelo del pad). Puede faltar.")]
         private Transform padVisual;
 
-        [SerializeField, Min(0f), Tooltip("Segundos que hay que estar parado antes de gastar el primer punto.")]
-        private float startDelaySeconds = 0.35f;
+        [SerializeField, Min(0f), Tooltip("Segundos que hay que estar parado antes de gastar el primer punto. Mientras tanto el pad \"se carga\" (crece de a poco). 1,6 s para poder cruzar los pads (están juntos) sin gastar un punto de casualidad.")]
+        private float startDelaySeconds = 1.6f;
+
+        [SerializeField, Min(1f)] private float chargeScale = 1.12f;
 
         [SerializeField, Min(0.05f), Tooltip("Segundos entre un punto y el siguiente si el jugador se queda y hay más puntos (usa el tiempo del juego).")]
         private float intervalSeconds = 0.45f;
@@ -177,6 +179,18 @@ namespace FarmIdle
             float k = (Time.unscaledTime - _pulseAt) / 0.22f;
             if (k >= 1f)
             {
+                // Parado encima el pad "se carga": crece de a poco hasta gastar el punto (y queda así mientras el jugador se quede).
+                float charge = _arrivedAt >= 0f && _progression != null && startDelaySeconds > 0f
+                    ? Mathf.Clamp01((Time.time - _arrivedAt) / startDelaySeconds)
+                    : 0f;
+                if (charge > 0f)
+                {
+                    float grow = 1f + (chargeScale - 1f) * charge;
+                    padVisual.localScale = new Vector3(grow, 1f, grow);
+                    _pulsing = true;
+                    return;
+                }
+
                 // En reposo no se toca el transform.
                 if (_pulsing)
                 {

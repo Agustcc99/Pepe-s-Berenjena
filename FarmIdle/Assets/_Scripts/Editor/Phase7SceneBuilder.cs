@@ -302,7 +302,7 @@ namespace FarmIdle.EditorTools
         // "¡Nivel N!" (más abajo todavía).
         internal static void BuildLevelBar(RectTransform hud)
         {
-            Image pill = EditorUi.CreatePanel("LevelBar", hud, new Color(0.05f, 0.07f, 0.06f, 0.65f), false);
+            Image pill = EditorUi.CreatePanel("LevelBar", hud, UiTheme.Pill, false);
             RectTransform root = pill.rectTransform;
             EditorUi.Anchor(root, new Vector2(0f, 1f), new Vector2(0.5f, 0.5f), new Vector2(330f, -85f), new Vector2(600f, 110f));
 
@@ -313,10 +313,10 @@ namespace FarmIdle.EditorTools
             EditorUi.Anchor(level.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(22f, 0f), new Vector2(180f, 90f));
 
             // Barra: fondo oscuro y relleno que escala en X desde su borde izquierdo.
-            Image back = EditorUi.CreatePanel("BarBack", root, new Color(0.02f, 0.03f, 0.02f, 0.85f), false);
+            Image back = EditorUi.CreatePanel("BarBack", root, UiTheme.BarBack, false);
             EditorUi.Anchor(back.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(210f, 16f), new Vector2(370f, 34f));
 
-            Image fill = EditorUi.CreatePanel("Fill", back.transform, new Color(0.45f, 0.85f, 0.30f, 1f), false);
+            Image fill = EditorUi.CreatePanel("Fill", back.transform, UiTheme.BarFill, false);
             RectTransform fillRect = fill.rectTransform;
             fillRect.anchorMin = new Vector2(0f, 0f);
             fillRect.anchorMax = new Vector2(1f, 1f);
@@ -324,7 +324,7 @@ namespace FarmIdle.EditorTools
             fillRect.offsetMin = new Vector2(3f, 3f);
             fillRect.offsetMax = new Vector2(-3f, -3f);
 
-            TextMeshProUGUI xp = EditorUi.CreateText("Xp", root, "", 26f, new Color(0.9f, 0.95f, 0.85f), TextAlignmentOptions.Left);
+            TextMeshProUGUI xp = EditorUi.CreateText("Xp", root, "", 26f, UiTheme.BodyText, TextAlignmentOptions.Left);
             EditorUi.Anchor(xp.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(214f, -26f), new Vector2(370f, 34f));
 
             TextMeshProUGUI points = EditorUi.CreateText("Points", root, "", 34f, new Color(1f, 0.92f, 0.45f), TextAlignmentOptions.Left, FontStyles.Bold);

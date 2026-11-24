@@ -21,6 +21,7 @@ namespace FarmIdle.Tests
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            TapToPlayOverlay.ResetAutoStart();
             yield return CleanUp();
         }
 
@@ -82,6 +83,32 @@ namespace FarmIdle.Tests
             EconomyManager.Instance.AddCoins(1500);
             yield return new WaitForSecondsRealtime(0.7f);
             Assert.AreEqual("1,506", label.text);
+        }
+
+        // Web (CrazyGames): el portal mide la carga hasta el primer gameplayStart, así que el juego arranca solo al quedar listo.
+        [UnityTest]
+        public IEnumerator AutoStart_ReachesPlaying_WithoutAnyTap_AndHidesThePrompt()
+        {
+            TapToPlayOverlay.AutoStart = true;   // se restablece en TearDown
+            var storage = new MemorySaveStorage();
+            SaveManager.StorageForNextBoot = storage;
+            Loc.SystemLanguageOverride = SystemLanguage.Spanish;
+            Loc.SetLanguage(GameLanguage.Spanish);
+            SceneManager.LoadScene(SceneNames.Bootstrap);
+
+            float start = Time.realtimeSinceStartup;
+            do
+            {
+                yield return null;
+            }
+            while ((GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) && Time.realtimeSinceStartup - start < 30f);
+
+            Assert.IsNotNull(GameManager.Instance, "El Bootstrap no creó el GameManager.");
+            Assert.AreEqual(GameState.Playing, GameManager.Instance.State, "Con arranque automático el juego tenía que pasar solo a Playing.");
+
+            var overlay = Object.FindAnyObjectByType<TapToPlayOverlay>();
+            Assert.IsNotNull(overlay, "No está el overlay Tap to Play.");
+            Assert.IsFalse(overlay.IsVisible, "El overlay no tiene que quedar a la vista.");
         }
 
         [UnityTest]

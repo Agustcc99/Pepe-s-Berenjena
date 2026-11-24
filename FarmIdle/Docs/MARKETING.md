@@ -9,7 +9,7 @@ Entregadas en `../Marketing/covers/` (borrador de Claude; el diseño final lo ap
 1. Render sin texto desde MainLevel (planta un cultivo maduro por parcela solo en memoria, no guarda la escena). Con Unity cerrado:
    `FI_OUT=<carpeta>` y `FI_SHOTS="nombre,ancho,alto,px,py,pz,rx,ry,rz,fov;..."`, luego
    `Unity -batchmode -projectPath FarmIdle -executeMethod FarmIdle.EditorTools.CoverRenderer.Render -quit`.
-   Tomas usadas: `cover_16x9,1920,1080,0,4.5,-4,32,0,0,50` · `cover_2x3,800,1200,0,7,-3.5,41,0,0,50` · `cover_1x1,800,800,0,6.6,-3.6,41,0,0,48` (con `FI_HIDE_MARKERS=1` para ocultar la flecha del tutorial; la primera versión quedaba dentro de la flecha).
+   Tomas usadas: `cover_16x9,1920,1080,0,4.5,-4,29,0,0,36` (V-04; usar también `FI_HIDE_LOCKS=1` para ocultar los terrenos cerrados) · `cover_2x3,800,1200,0,7,-3.5,41,0,0,50` · `cover_1x1,800,800,0,6.6,-3.6,41,0,0,48` (con `FI_HIDE_MARKERS=1` para ocultar la flecha del tutorial; la primera versión quedaba dentro de la flecha).
 2. Título encima: `python -I FarmIdle/Tools/make_covers.py <renders> <salida>` (Liberation Sans, OFL; el texto está en `TITLE`).
 
 ## Pendiente de K-01 (tuyo)

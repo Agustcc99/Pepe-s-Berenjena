@@ -363,6 +363,16 @@ namespace FarmIdle
             AudioListener.pause = _gameSilenced || !_focused;
         }
 
+        // Con el arranque automático de la web la música se pide antes de que el jugador toque nada, y el navegador la deja muda hasta
+        // un gesto. Al primer toque o tecla la vista avisa y la música se reinicia desde el principio (no queda desfasada ni callada).
+        public void RestartMusicAfterGesture()
+        {
+            if (_musicSource == null || !_musicSource.isPlaying) return;
+
+            _musicSource.Stop();
+            _musicSource.Play();
+        }
+
         private void StartMusic()
         {
             if (!_sourcesActive || _musicSource == null || _musicSource.clip == null || _musicSource.isPlaying) return;

@@ -18,7 +18,7 @@ Juego hipercasual "arcade idle" de granja, vertical, Android + WebGL. Unity 6000
 - Todo texto visible al jugador debe poder localizarse (ROADMAP U-03): todo texto nuevo va en `Assets/Resources/Localization.csv` (clave, es, en) y se usa con `Loc.Get("clave")` o `"@clave"` en los builders; un test falla si queda texto escrito a mano en UI/Environment/Player/Data o en los builders (DebugPanel exento).
 
 ## Pruebas
-- Línea base: **EditMode 540 y PlayMode 282 en verde** (más 2 pruebas explícitas que la suite saltea) (`StabilityTests.TheMonkey_...(n)` es al azar: a veces falló en la corrida completa y pasó sola; repetirlo antes de dar la suite por rota). Una tarea no se marca `Hecho` si baja esa cifra o hay fallos. Si la línea base cambia, actualizar este número.
+- Línea base: **EditMode 540 y PlayMode 284 en verde** (más 2 pruebas explícitas que la suite saltea) (`StabilityTests.TheMonkey_...(n)` es al azar: a veces falló en la corrida completa y pasó sola; repetirlo antes de dar la suite por rota). Una tarea no se marca `Hecho` si baja esa cifra o hay fallos. Si la línea base cambia, actualizar este número.
 - Para correr Unity en modo batch, builds y pruebas, leer antes la memoria `reference-unity-batch-workflow` (rutas, banderas, trampas). Resumen de las trampas que más duelen:
   - **Nunca usar `cd`** (cambia el directorio primario de la sesión). Rutas absolutas.
   - Solo una instancia de Unity puede abrir el proyecto; no matar un Unity que no inició esta sesión.

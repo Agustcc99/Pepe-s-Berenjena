@@ -90,10 +90,19 @@ namespace FarmIdle.EditorTools
         internal static void BuildHud(RectTransform hud)
         {
             RectTransform root = EditorUi.CreateRect("OrdersHud", hud);
-            EditorUi.Anchor(root, new Vector2(0f, 0.5f), new Vector2(0f, 1f), new Vector2(20f, -50f), new Vector2(450f, 190f));   // más ancha: cada línea trae el premio
+            EditorUi.Anchor(root, new Vector2(0f, 0.5f), new Vector2(0f, 1f), new Vector2(20f, -50f), new Vector2(450f, 76f));   // más ancha: cada línea trae el premio; plegada mide 76 y la vista la agranda
 
-            Image card = EditorUi.CreatePanel("Card", root, new Color(0.05f, 0.07f, 0.06f, 0.65f), false);
+            // Plegable (IN-05): plegada solo dice "Pedidos del pueblo (N) +"; al tocarla muestra los pedidos con su premio.
+            Image card = EditorUi.CreatePanel("Card", root, UiTheme.Pill, true);
             EditorUi.Stretch(card.rectTransform);
+            var toggle = card.gameObject.AddComponent<Button>();
+            toggle.targetGraphic = card;
+
+            TextMeshProUGUI header = EditorUi.CreateText("Header", card.transform, "", 34f, UiTheme.Gold, TextAlignmentOptions.Left, FontStyles.Bold);
+            header.enableAutoSizing = true;
+            header.fontSizeMin = 20f;
+            header.fontSizeMax = 34f;
+            EditorUi.Anchor(header.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(18f, 0f), new Vector2(414f, 76f));
 
             TextMeshProUGUI text = EditorUi.CreateText("Text", card.transform, "", 32f, Color.white, TextAlignmentOptions.TopLeft, FontStyles.Bold);
             text.enableAutoSizing = true;
@@ -102,14 +111,14 @@ namespace FarmIdle.EditorTools
             text.raycastTarget = false;
             EditorUi.Stretch(text.rectTransform);
             text.rectTransform.offsetMin = new Vector2(16f, 10f);
-            text.rectTransform.offsetMax = new Vector2(-12f, -10f);
+            text.rectTransform.offsetMax = new Vector2(-12f, -70f);   // debajo del encabezado
 
             card.gameObject.SetActive(false);
 
             // El aviso de "pedido completado" con lo ganado: arriba del jugador, unos segundos. No recibe toques.
-            Image done = EditorUi.CreatePanel("OrderDone", hud, new Color(0.05f, 0.07f, 0.06f, 0.78f), false);
+            Image done = EditorUi.CreatePanel("OrderDone", hud, UiTheme.Pill, false);
             EditorUi.Anchor(done.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -620f), new Vector2(760f, 170f));
-            TextMeshProUGUI doneText = EditorUi.CreateText("Text", done.transform, "", 52f, new Color(1f, 0.88f, 0.4f), TextAlignmentOptions.Center, FontStyles.Bold);
+            TextMeshProUGUI doneText = EditorUi.CreateText("Text", done.transform, "", 52f, UiTheme.Gold, TextAlignmentOptions.Center, FontStyles.Bold);
             doneText.enableAutoSizing = true;
             doneText.fontSizeMin = 30f;
             doneText.fontSizeMax = 52f;
@@ -120,7 +129,7 @@ namespace FarmIdle.EditorTools
             done.gameObject.SetActive(false);
 
             var view = root.gameObject.AddComponent<OrdersHudView>();
-            EditorUi.Wire(view, ("card", card.gameObject), ("text", text), ("completedLabel", doneText), ("completedRoot", done.gameObject));
+            EditorUi.Wire(view, ("card", card.gameObject), ("text", text), ("header", header), ("toggleButton", toggle), ("sizedRect", root), ("completedLabel", doneText), ("completedRoot", done.gameObject));
         }
     }
 }

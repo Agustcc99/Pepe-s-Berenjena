@@ -24,6 +24,7 @@ namespace FarmIdle.EditorTools
 
         // Colores nuevos de la paleta (se registran en Prepare, después de los de Kenney).
         private static int _pine, _pineLight, _lime, _rock, _bark, _petal;
+        internal static int RoadSand, RoadEdge, PaverLight, PaverDark;
 
         private static PaletteMeshBuilder[] _forest;
         private static PaletteMeshBuilder _meadow;
@@ -41,6 +42,12 @@ namespace FarmIdle.EditorTools
             _rock = Palette.Register(new Color32(0x6E, 0x74, 0x7C, 255));
             _bark = Palette.Register(new Color32(0x6B, 0x45, 0x29, 255));
             _petal = Palette.Register(new Color32(0xFF, 0xD8, 0x4D, 255));
+
+            // V-07: caminos de arena y plaza adoquinada (PlazaBuilder.BuildPlazaDecor). Van al final para no mover los índices de arriba.
+            RoadSand = Palette.Register(new Color32(0xCF, 0xAE, 0x76, 255));
+            RoadEdge = Palette.Register(new Color32(0xA9, 0x82, 0x52, 255));
+            PaverLight = Palette.Register(new Color32(0xBC, 0xB5, 0xA6, 255));
+            PaverDark = Palette.Register(new Color32(0xA6, 0xA0, 0x92, 255));
 
             var random = new System.Random(Seed);
 

@@ -36,6 +36,14 @@ namespace FarmIdle.EditorTools
                 GameObject markers = GameObject.Find("TutorialMarkers");
                 if (markers != null) markers.SetActive(false);
             }
+            // V-04: sin los terrenos cerrados ni sus pads con candado (en la portada parecen un juego "bloqueado").
+            if (Environment.GetEnvironmentVariable("FI_HIDE_LOCKS") == "1")
+            {
+                foreach (var pad in UnityEngine.Object.FindObjectsByType<FarmIdle.ZoneUnlockPad>(FindObjectsInactive.Exclude))
+                    pad.gameObject.SetActive(false);
+                foreach (var r in UnityEngine.Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude))
+                    if (r.name == "Locked") r.gameObject.SetActive(false);
+            }
             var mover = UnityEngine.Object.FindFirstObjectByType<FarmIdle.PlayerMovement>();
             if (mover != null) mover.gameObject.SetActive(false);
             var cm = Camera.main;
@@ -55,7 +63,7 @@ namespace FarmIdle.EditorTools
         }
 
         // Solo en memoria (la escena no se guarda): una planta madura en cada parcela, para que las portadas no muestren tierra pelada.
-        private static void PlantCrops()
+        internal static void PlantCrops()
         {
             string[] names = { "Eggplant", "Carrot", "Tomato", "Pumpkin", "Corn", "Wheat", "Sunflower", "Watermelon" };
             var plots = UnityEngine.Object.FindObjectsByType<FarmIdle.PlotView>(FindObjectsInactive.Exclude);

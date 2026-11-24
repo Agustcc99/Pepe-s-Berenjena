@@ -8,7 +8,7 @@ Fuente: Liberation Sans (OFL, ya en el proyecto), con trazo grueso para que se l
 import os
 import sys
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 TITLE = "Pepe's Berenjena"
 FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Assets", "TextMesh Pro", "Fonts", "LiberationSans.ttf")
@@ -34,20 +34,41 @@ def compose(src, dst, w, h, lines, size, cy):
     line_h = int(size * 1.08)
     top = int(h * cy - line_h * len(lines) / 2)
 
-    shadow = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    sd = ImageDraw.Draw(shadow)
-    draw = ImageDraw.Draw(img)
+    # V-04: oscurece apenas el borde inferior y los costados para que el titulo despegue y la mirada vaya al centro
+    ramp = Image.linear_gradient("L").resize((w, h))
+    dark = ramp.point(lambda v: int(max(0, v - 110) * 0.75))
+    img = Image.composite(Image.new("RGB", img.size, (22, 40, 18)), img, dark)
+
+    probe = ImageDraw.Draw(img)
+    fill_mask = Image.new("L", img.size, 0)
+    full_mask = Image.new("L", img.size, 0)
+    fd, ud = ImageDraw.Draw(fill_mask), ImageDraw.Draw(full_mask)
     for i, text in enumerate(lines):
-        width = draw.textlength(text, font=font)
-        x = (w - width) / 2
-        y = top + i * line_h
-        sd.text((x + stroke * 0.5, y + stroke * 0.8), text, font=font, fill=SHADOW, stroke_width=stroke, stroke_fill=SHADOW)
-    img = Image.alpha_composite(img.convert("RGBA"), shadow).convert("RGB")
-    draw = ImageDraw.Draw(img)
-    for i, text in enumerate(lines):
-        width = draw.textlength(text, font=font)
-        draw.text(((w - width) / 2, top + i * line_h), text, font=font, fill=FILL, stroke_width=stroke, stroke_fill=STROKE)
-    img.save(dst, "PNG", optimize=True)
+        pos = ((w - probe.textlength(text, font=font)) / 2, top + i * line_h)
+        fd.text(pos, text, font=font, fill=255)
+        ud.text(pos, text, font=font, fill=255, stroke_width=stroke)
+
+    # sombra suave y sombra "de relieve" (trazo desplazado hacia abajo)
+    base = img.convert("RGBA")
+    drop = ImageChops.offset(full_mask, int(stroke * 0.3), int(stroke * 0.9))
+    base.paste(Image.new("RGBA", img.size, (30, 14, 6, 190)), (0, 0), drop.filter(ImageFilter.GaussianBlur(stroke * 0.35)))
+    base.paste(Image.new("RGBA", img.size, STROKE + (255,)), (0, 0), full_mask)
+    # letra con degradado crema -> dorado (arriba claro, abajo calido)
+    grad = Image.linear_gradient("L").resize((w, h))
+    grad = grad.point(lambda v: int(v))
+    top_c, bot_c = (255, 250, 214), (255, 190, 58)
+    chans = [grad.point(lambda v, a=a, b=b: int(a + (b - a) * v / 255)) for a, b in zip(top_c, bot_c)]
+    gold = Image.merge("RGB", chans)
+    # el degradado ocupa solo el alto del bloque de texto, no toda la imagen
+    block_h = int(line_h * len(lines))
+    band = Image.linear_gradient("L").resize((w, block_h))
+    gold_layer = Image.new("RGB", img.size, bot_c)
+    gold_layer.paste(Image.merge("RGB", [band.point(lambda v, a=a, b=b: int(a + (b - a) * v / 255)) for a, b in zip(top_c, bot_c)]), (0, top))
+    base.paste(gold_layer.convert("RGBA"), (0, 0), fill_mask)
+    # brillo fino arriba de cada letra
+    shine = ImageChops.multiply(fill_mask, ImageChops.offset(fill_mask, 0, int(size * 0.045)).point(lambda v: 255 - v))
+    base.paste(Image.new("RGBA", img.size, (255, 255, 255, 150)), (0, 0), shine.filter(ImageFilter.GaussianBlur(1.2)))
+    base.convert("RGB").save(dst, "PNG", optimize=True)
     return os.path.getsize(dst)
 
 

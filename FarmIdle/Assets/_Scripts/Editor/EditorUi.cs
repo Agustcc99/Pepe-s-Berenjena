@@ -28,10 +28,15 @@ namespace FarmIdle.EditorTools
             return image;
         }
 
-        // Rectángulo redondeado (sprite 9-slice incluido en Unity) que se estira sin deformar las esquinas.
+        // Rectángulo redondeado (sprite 9-slice propio, ver UiTheme.RoundedPath) que se estira sin deformar las esquinas.
+        // Los velos de pantalla completa usan el sprite recto de Unity: con esquinas redondas se verían huecos en los bordes.
         internal static Image CreatePanel(string name, Transform parent, Color color, bool raycastTarget)
         {
-            Image image = CreateImage(name, parent, AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"), color, raycastTarget);
+            bool fullScreen = name.EndsWith("Backdrop", System.StringComparison.Ordinal) || name == "AdOverlay" || name == "Menu";
+            Sprite sprite = fullScreen
+                ? AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd")
+                : UiTheme.RoundedSprite();
+            Image image = CreateImage(name, parent, sprite, color, raycastTarget);
             image.type = Image.Type.Sliced;
             return image;
         }
@@ -39,8 +44,17 @@ namespace FarmIdle.EditorTools
         // La tarjeta de un panel modal (ajustes, misiones, logros...): mismo color en todos y "salta" al abrirse (PopInOnEnable).
         internal static Image CreateCard(Transform backdrop)
         {
-            Image card = CreatePanel("Card", backdrop, new Color(0.13f, 0.20f, 0.14f, 0.98f), true);
+            Image card = CreatePanel("Card", backdrop, UiTheme.Card, true);
+            card.gameObject.AddComponent<CanvasGroup>();   // lo usa PopInOnEnable para el fundido
             card.gameObject.AddComponent<PopInOnEnable>();
+
+            // Borde dorado fino y sombra suave: la tarjeta se despega del fondo (efectos de vértices, sin draw calls extra).
+            var border = card.gameObject.AddComponent<Outline>();
+            border.effectColor = UiTheme.CardBorder;
+            border.effectDistance = new Vector2(4f, -4f);
+            var drop = card.gameObject.AddComponent<Shadow>();
+            drop.effectColor = UiTheme.Shadow;
+            drop.effectDistance = new Vector2(0f, -14f);
             return card;
         }
 
@@ -91,8 +105,25 @@ namespace FarmIdle.EditorTools
             button.targetGraphic = background;
             background.gameObject.AddComponent<ButtonPressFeedback>();   // se hunde y rebota al tocarlo
 
+            // Relieve: sombra inferior marcada que hace que el botón parezca una pieza que se puede apretar.
+            var lip = background.gameObject.AddComponent<Shadow>();
+            lip.effectColor = new Color(0f, 0f, 0f, 0.38f);
+            lip.effectDistance = new Vector2(0f, -8f);
+
             labelText = CreateText("Label", background.transform, label, 40f, Color.white, TextAlignmentOptions.Center, FontStyles.Bold);
             Stretch(labelText.rectTransform);
+            return button;
+        }
+
+        // Botón del HUD (Misiones, Logros): píldora oscura translúcida con letras doradas, igual que la barra de nivel y la tarjeta de
+        // pedidos, en vez de un rectángulo azul que desentonaba con el resto.
+        internal static Button CreateHudPill(string name, Transform parent, string label, out TextMeshProUGUI labelText)
+        {
+            Button button = CreateButton(name, parent, label, UiTheme.Pill, out labelText);
+            labelText.color = UiTheme.Gold;
+            labelText.enableAutoSizing = true;
+            labelText.fontSizeMin = 24f;
+            labelText.fontSizeMax = 40f;
             return button;
         }
 

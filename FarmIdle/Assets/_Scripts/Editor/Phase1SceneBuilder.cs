@@ -13,6 +13,7 @@ namespace FarmIdle.EditorTools
     internal static class Phase1SceneBuilder
     {
         internal const string MaterialsFolder = "Assets/Materials";
+        private const int GroundTexels = 32;
 
         // Agrega el mundo de la Fase 1 a la escena abierta (que tiene que traer la Main Camera por defecto)
         // y devuelve el Canvas con el joystick, para colgarle más UI.
@@ -21,7 +22,9 @@ namespace FarmIdle.EditorTools
             EnsureFolder(MaterialsFolder);
 
             Texture2D checker = CreateCheckerTexture();
-            Material groundMat = CreateMaterial("M_Ground", Color.white, checker, new Vector2(25f, 25f));   // cuadros de 2 unidades
+            // Cuadros de 2 unidades: el plano mide 100, o sea 50 texels, y la textura tiene GroundTexels por lado.
+            float groundTiling = 50f / GroundTexels;
+            Material groundMat = CreateMaterial("M_Ground", Color.white, checker, new Vector2(groundTiling, groundTiling));
             Material playerMat = CreateMaterial("M_Player", new Color(0.95f, 0.55f, 0.15f), null, Vector2.one);
             Material noseMat = CreateMaterial("M_PlayerNose", Color.white, null, Vector2.one);
 
@@ -257,16 +260,36 @@ namespace FarmIdle.EditorTools
         {
             const string path = MaterialsFolder + "/T_GroundChecker.png";
 
-            if (!File.Exists(path))
+            // V-06: damero con variación. Cada texel (2 unidades en el mundo) sigue la paridad del damero, pero una parte sale
+            // más clara o más oscura, con un generador fijo: el pasto deja de verse como un tablero y la textura es siempre la misma.
+            var shades = new[]
             {
-                var colorA = new Color32(112, 168, 84, 255);
-                var colorB = new Color32(98, 152, 72, 255);
+                new Color32(112, 168, 84, 255), new Color32(98, 152, 72, 255),    // damero base
+                new Color32(124, 180, 90, 255), new Color32(88, 142, 66, 255),    // más claro / más oscuro
+            };
+            var pixels = new Color32[GroundTexels * GroundTexels];
+            uint seed = 12345u;
+            for (int y = 0; y < GroundTexels; y++)
+            {
+                for (int x = 0; x < GroundTexels; x++)
+                {
+                    seed = seed * 1664525u + 1013904223u;
+                    float roll = (seed >> 8 & 0xFFFF) / 65535f;
+                    int index = (x + y) % 2;                   // paridad del damero
+                    if (roll > 0.80f) index = 2;               // 20 %: parche claro
+                    else if (roll < 0.14f) index = 3;          // 14 %: parche oscuro
+                    pixels[y * GroundTexels + x] = shades[index];
+                }
+            }
 
-                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                texture.SetPixels32(new[] { colorA, colorB, colorB, colorA });
-                texture.Apply();
-                File.WriteAllBytes(path, texture.EncodeToPNG());
-                Object.DestroyImmediate(texture);
+            var texture = new Texture2D(GroundTexels, GroundTexels, TextureFormat.RGBA32, false);
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            byte[] png = texture.EncodeToPNG();
+            Object.DestroyImmediate(texture);
+            if (!File.Exists(path) || !System.Linq.Enumerable.SequenceEqual(File.ReadAllBytes(path), png))
+            {
+                File.WriteAllBytes(path, png);
                 AssetDatabase.ImportAsset(path);
             }
 

@@ -412,7 +412,7 @@ namespace FarmIdle.EditorTools
             EditorUi.Anchor(root, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(20f, 80f), new Vector2(430f, 220f));
 
             RewardHudView.Row[] buffRows = { CreateHudRow(root, "BuffRow1", 0, new Color(0.25f, 0.65f, 0.95f)), CreateHudRow(root, "BuffRow2", 1, new Color(0.25f, 0.65f, 0.95f)) };
-            RewardHudView.Row fertilizerRow = CreateHudRow(root, "FertilizerRow", 2, new Color(0.45f, 0.85f, 0.30f));
+            RewardHudView.Row fertilizerRow = CreateHudRow(root, "FertilizerRow", 2, UiTheme.BarFill);
             fertilizerRow.fill.gameObject.SetActive(false);   // el fertilizante no vence: sin barra
 
             var view = root.gameObject.AddComponent<RewardHudView>();
@@ -436,7 +436,7 @@ namespace FarmIdle.EditorTools
 
         private static RewardHudView.Row CreateHudRow(RectTransform parent, string name, int index, Color barColor)
         {
-            Image pill = EditorUi.CreatePanel(name, parent, new Color(0.05f, 0.07f, 0.06f, 0.65f), false);
+            Image pill = EditorUi.CreatePanel(name, parent, UiTheme.Pill, false);
             EditorUi.Anchor(pill.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -index * 76f), new Vector2(430f, 66f));
 
             TextMeshProUGUI text = EditorUi.CreateText("Text", pill.transform, "", 34f, Color.white, TextAlignmentOptions.Left, FontStyles.Bold);
@@ -445,7 +445,7 @@ namespace FarmIdle.EditorTools
             text.fontSizeMax = 34f;
             EditorUi.Anchor(text.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(18f, 5f), new Vector2(395f, 48f));
 
-            Image back = EditorUi.CreatePanel("BarBack", pill.transform, new Color(0.02f, 0.03f, 0.02f, 0.85f), false);
+            Image back = EditorUi.CreatePanel("BarBack", pill.transform, UiTheme.BarBack, false);
             EditorUi.Anchor(back.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(14f, 6f), new Vector2(402f, 10f));
 
             Image fill = EditorUi.CreatePanel("Fill", back.transform, barColor, false);
