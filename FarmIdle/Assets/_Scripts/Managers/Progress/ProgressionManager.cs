@@ -83,6 +83,17 @@ namespace FarmIdle
             return zone != null && _progress.IsZoneUnlocked(zone.Id);
         }
 
+        // F-24: una granja de temporada (ZoneData.RequiredSeason > 0) existe para comprarla recién desde esa temporada. Sin
+        // PrestigeManager (pruebas sueltas) rige la temporada 0.
+        public bool IsZoneAvailable(ZoneData zone)
+        {
+            if (zone == null) return false;
+            if (zone.RequiredSeason <= 0) return true;
+
+            PrestigeManager prestige = PrestigeManager.Instance;
+            return prestige != null && prestige.Seasons >= zone.RequiredSeason;
+        }
+
         public int LevelOf(UpgradeData upgrade)
         {
             return upgrade != null ? _progress.LevelOf(upgrade.Id) : 0;
@@ -115,6 +126,22 @@ namespace FarmIdle
             return upgrade != null ? _progress.PaidOf(PlayerProgress.UpgradeKey(upgrade.Id)) : 0L;
         }
 
+        // Las zonas que existen ahora (sin las granjas de temporada que todavía no aparecieron, F-24): el "total" de la temporada.
+        public int AvailableZoneCount
+        {
+            get
+            {
+                int count = 0;
+                IReadOnlyList<ZoneData> zones = _config.Zones;
+                for (int i = 0; i < zones.Count; i++)
+                {
+                    if (IsZoneAvailable(zones[i])) count++;
+                }
+
+                return count;
+            }
+        }
+
         public int UnlockedZoneCount
         {
             get
@@ -139,7 +166,7 @@ namespace FarmIdle
                 IReadOnlyList<ZoneData> zones = _config.Zones;
                 for (int i = 0; i < zones.Count; i++)
                 {
-                    if (zones[i] != null && !_progress.IsZoneUnlocked(zones[i].Id)) return false;
+                    if (zones[i] != null && IsZoneAvailable(zones[i]) && !_progress.IsZoneUnlocked(zones[i].Id)) return false;
                 }
 
                 IReadOnlyList<UpgradeData> upgrades = _config.Upgrades;
@@ -245,7 +272,7 @@ namespace FarmIdle
         public long TryPay(ZoneData zone, long coins)
         {
             if (zone == null) throw new ArgumentNullException(nameof(zone));
-            if (_progress.IsZoneUnlocked(zone.Id)) return 0L;
+            if (_progress.IsZoneUnlocked(zone.Id) || !IsZoneAvailable(zone)) return 0L;
 
             string id = zone.Id;
             return Contribute(PlayerProgress.ZoneKey(id), zone.UnlockCost, coins, () => _progress.UnlockZone(id));
@@ -359,7 +386,11 @@ namespace FarmIdle
             _modifiers = next;
 
             EconomyManager economy = EconomyManager.Instance;
-            if (economy != null) economy.Pricing.SetUpgradeMultiplier(next.SellPrice);
+            if (economy != null)
+            {
+                economy.Pricing.SetUpgradeMultiplier(next.SellPrice);
+                economy.SetRareChanceBonus(next.RareChanceBonus);
+            }
 
             BackpackManager backpack = BackpackManager.Instance;
             if (backpack != null) backpack.SetCapacityBonus(next.BackpackBonus, allowShrink);
@@ -370,7 +401,7 @@ namespace FarmIdle
         private static bool SameModifiers(ProgressionModifiers a, ProgressionModifiers b)
         {
             return a.BackpackBonus == b.BackpackBonus && a.MoveSpeed == b.MoveSpeed && a.SellPrice == b.SellPrice && a.GrowthSpeed == b.GrowthSpeed
-                && a.OfflineCapBonusSeconds == b.OfflineCapBonusSeconds;
+                && a.OfflineCapBonusSeconds == b.OfflineCapBonusSeconds && a.RareChanceBonus == b.RareChanceBonus;
         }
 
         private void OnDestroy()

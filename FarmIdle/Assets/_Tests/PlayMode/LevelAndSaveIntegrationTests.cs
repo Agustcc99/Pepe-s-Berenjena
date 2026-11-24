@@ -232,14 +232,14 @@ namespace FarmIdle.Tests
         // ---------- Los pads de perk ----------
 
         [UnityTest]
-        public IEnumerator Level_HasTheTwoPerkPads_WiredUp_AndNotOverlappingAnythingElse()
+        public IEnumerator Level_HasThePerkPads_WiredUp_AndNotOverlappingAnythingElse()
         {
             yield return GameBoot.BootToReady();
             yield return null;
 
             PerkPad[] pads = All<PerkPad>();
-            Assert.AreEqual(2, pads.Length, "Fuerza y Velocidad.");
-            CollectionAssert.AreEquivalent(new[] { PerkKind.BackpackCapacity, PerkKind.MoveSpeed }, pads.Select(pad => pad.Perk.Kind));
+            Assert.AreEqual(5, pads.Length, "Fuerza, Velocidad y Suerte (F-24), Regateo y Mano verde (IN-04).");
+            CollectionAssert.AreEquivalent(new[] { PerkKind.BackpackCapacity, PerkKind.MoveSpeed, PerkKind.RareChance, PerkKind.SellPrice, PerkKind.GrowthSpeed }, pads.Select(pad => pad.Perk.Kind));
             foreach (PerkPad pad in pads)
             {
                 Assert.IsTrue(pad.GetComponent<BoxCollider>().isTrigger);

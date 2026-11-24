@@ -7,7 +7,10 @@ namespace FarmIdle
     public enum PerkKind
     {
         BackpackCapacity,   // 'valuePerPick' lugares extra en la mochila por elección (Fuerza: +1)
-        MoveSpeed           // 'valuePerPick' se SUMA al multiplicador de velocidad por elección (Velocidad: +0,015 = +1,5 %)
+        MoveSpeed,          // 'valuePerPick' se SUMA al multiplicador de velocidad por elección (Velocidad: +0,015 = +1,5 %)
+        RareChance,         // F-24: 'valuePerPick' se SUMA a la probabilidad de cosecha dorada por elección (Suerte: +0,005 = +0,5 puntos)
+        SellPrice,          // IN-04: 'valuePerPick' se SUMA al bono de precio de venta por elección (Regateo: +0,01 = +1 %); multiplicador aparte de las mejoras
+        GrowthSpeed         // IN-04: 'valuePerPick' se SUMA al bono de velocidad de crecimiento por elección (Mano verde: +0,01 = +1 %)
     }
 
     // Un perk de nivel: lo que el jugador elige gastando un punto (se gana un punto por cada nivel que sube). Datos de
@@ -25,7 +28,7 @@ namespace FarmIdle
 
         [SerializeField] private PerkKind kind;
 
-        [SerializeField, Tooltip("Cuánto da cada elección: lugares de mochila (1) o fracción de velocidad (0,015 = +1,5 %).")]
+        [SerializeField, Tooltip("Cuánto da cada elección: lugares de mochila (1), fracción de velocidad (0,015 = +1,5 %) o probabilidad de cosecha dorada (0,005 = +0,5 %).")]
         private float valuePerPick = 1f;
 
         [SerializeField, Min(1), Tooltip("Cuántas veces se puede elegir. Al llegar, el pad deja de gastar puntos.")]

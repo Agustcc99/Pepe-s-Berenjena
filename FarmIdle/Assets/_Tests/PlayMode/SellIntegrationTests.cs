@@ -94,6 +94,7 @@ namespace FarmIdle.Tests
             IReadOnlyInventory backpack = BackpackManager.Instance.Backpack;
             EconomyManager economy = EconomyManager.Instance;
             economy.RareRoll = () => 1f;   // sin cosecha rara (J-04): paga al cosechar y esta prueba cuenta monedas; con azar real fallaba seguido
+            economy.Pricing.SetDailyCrop("", 0f);   // sin cultivo del día (IN-02): la prueba cuenta monedas y el cultivo de hoy depende de la fecha
             int capacity = backpack.Capacity;
             Assert.GreaterOrEqual(capacity, 10, "Esta prueba supone una mochila de al menos 10.");
             long startBalance = economy.Balance;

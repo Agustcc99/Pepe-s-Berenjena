@@ -426,6 +426,7 @@ namespace FarmIdle.EditorTools
 
             var plotField = field.AddComponent<PlotField>();
             EditorUi.WireArray(plotField, "plots", views);
+            DailyCropBuilder.AddMarkers(field.transform, views);   // IN-02
         }
 
         internal static PlotView CreatePlot(Transform field, int row, int column, CropData crop, Mesh soilMesh, Material material)

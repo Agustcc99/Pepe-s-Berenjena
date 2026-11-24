@@ -219,6 +219,41 @@ namespace FarmIdle.Tests
             }
         }
 
+        // IN-04: Regateo y Mano verde dan +1 % por elección, como un multiplicador APARTE del de las mejoras de monedas.
+        [Test]
+        public void BarterAndGreenThumb_MultiplyPriceAndGrowth_OnTopOfTheCoinUpgrades()
+        {
+            PerkData barter = ProgressionTestData.Perk("barter", PerkKind.SellPrice, 0.01f, 10);
+            PerkData green = ProgressionTestData.Perk("green", PerkKind.GrowthSpeed, 0.01f, 10);
+            UpgradeData price = ProgressionTestData.Upgrade("price", UpgradeKind.SellPrice, (100L, 1.5f));
+            UpgradeData growth = ProgressionTestData.Upgrade("growth", UpgradeKind.GrowthSpeed, (100L, 2f));
+
+            try
+            {
+                var progress = new PlayerProgress();
+                progress.SetLevel("price", 1);
+                progress.SetLevel("growth", 1);
+                for (int i = 0; i < 4; i++) progress.AddPerkPick("barter");
+                for (int i = 0; i < 10; i++) progress.AddPerkPick("green");
+
+                ProgressionModifiers m = Compute(progress, new[] { price, growth }, new[] { barter, green });
+
+                Assert.AreEqual(1.5f * 1.04f, m.SellPrice, 1e-5f);
+                Assert.AreEqual(2f * 1.10f, m.GrowthSpeed, 1e-5f);
+
+                ProgressionModifiers none = Compute(new PlayerProgress(), null, new[] { barter, green });
+                Assert.AreEqual(1f, none.SellPrice, "Sin elecciones no cambia nada.");
+                Assert.AreEqual(1f, none.GrowthSpeed);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(barter);
+                UnityEngine.Object.DestroyImmediate(green);
+                UnityEngine.Object.DestroyImmediate(price);
+                UnityEngine.Object.DestroyImmediate(growth);
+            }
+        }
+
         [Test]
         public void Perks_NeverGoPastTheirMaxPicks_EvenIfTheSaveSaysMore()
         {

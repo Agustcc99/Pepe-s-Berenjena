@@ -114,6 +114,7 @@ namespace FarmIdle.EditorTools
             Phase7SceneBuilder.CreateAssets();   // perks y cultivos en el GameConfig, mallas de los pads de perk
             Phase8SceneBuilder.CreateAssets();   // recompensas de anuncio en el GameConfig, mallas de los pads del fertilizante y prefab del símbolo de oferta
             OrdersBuilder.CreateAssets();        // cartel de los pedidos del pueblo (F-18)
+            DailyCropBuilder.CreateAssets();     // estrella del cultivo del día (IN-02)
             Phase9SceneBuilder.CreateAssets();   // audio (importación, banco y enganche al GameConfig), íconos del HUD y flecha de la guía
             Phase10SceneBuilder.CreateAssets();  // plantillas de las misiones diarias (F-05), enganchadas al GameConfig
             Phase11SceneBuilder.CreateAssets();  // plantillas de los logros (F-06), enganchadas al GameConfig

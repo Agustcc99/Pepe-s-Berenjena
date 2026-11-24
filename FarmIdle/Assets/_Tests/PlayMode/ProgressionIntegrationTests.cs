@@ -60,16 +60,18 @@ namespace FarmIdle.Tests
 
             ProgressionManager progression = ProgressionManager.Instance;
             Assert.IsNotNull(progression, "Falta el ProgressionManager: ¿corriste FarmIdle > Fase 2 > Construir assets y escenas?");
-            Assert.AreEqual(5, progression.Zones.Count);
+            Assert.AreEqual(8, progression.Zones.Count);   // 5 desde el principio + 3 granjas de temporada (F-24)
             Assert.AreEqual(5, progression.Upgrades.Count);
             Assert.AreEqual(0, progression.UnlockedZoneCount);
 
-            // Cinco zonas cerradas: se ve el terreno vallado y el campo (9 parcelas) espera apagado.
+            // Las cinco zonas de la temporada 0, cerradas: se ve el terreno vallado y el campo (9 parcelas) espera apagado. Las tres
+            // granjas de temporada todavía no aparecen (ni terreno ni portón).
             ZoneController[] zones = All<ZoneController>();
-            Assert.AreEqual(5, zones.Length);
+            Assert.AreEqual(8, zones.Length);
             foreach (ZoneController zone in zones)
             {
-                Assert.IsTrue(zone.LockedRoot.activeSelf, zone.name + ": cerrada, se ve el terreno vallado.");
+                bool seasonal = zone.Zone.RequiredSeason > 0;
+                Assert.AreEqual(!seasonal, zone.LockedRoot.activeSelf, zone.name + (seasonal ? ": granja de temporada, todavía no aparece." : ": cerrada, se ve el terreno vallado."));
                 Assert.IsFalse(zone.UnlockedRoot.activeSelf, zone.name + ": cerrada, el campo no está.");
 
                 var field = zone.UnlockedRoot.GetComponent<PlotField>();
@@ -78,12 +80,15 @@ namespace FarmIdle.Tests
             }
             Assert.AreEqual(9, PlotCensus.Instance.Total, "Solo cuentan las parcelas del campo inicial.");
 
-            // Cada zona tiene su portón, con su costo a la vista.
+            // Cada zona tiene su portón, con su costo a la vista (el de una granja de temporada está apagado hasta que aparece).
             foreach (ZoneController zone in zones)
             {
                 ZoneUnlockPad gate = GateOf(zone.Zone.Id);
+                Assert.AreEqual(zone.Zone.RequiredSeason == 0, gate.gameObject.activeSelf, zone.name + ": portón.");
                 Assert.IsTrue(gate.GetComponent<BoxCollider>().isTrigger);
                 Assert.IsNotNull(gate.GetComponent<InteractionTrigger>());
+                if (zone.Zone.RequiredSeason > 0) continue;   // apagado: todavía no armó su cartel
+
                 StringAssert.Contains(zone.Zone.UnlockCost.ToString(), gate.Label.text);
                 StringAssert.Contains(zone.Zone.DisplayName, gate.Label.text);
             }

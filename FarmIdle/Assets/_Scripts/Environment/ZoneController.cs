@@ -28,6 +28,7 @@ namespace FarmIdle
         private float backStrength = 1.7f;
 
         private ProgressionManager _progression;
+        private PrestigeManager _prestige;
         private Coroutine _reveal;
 
         public ZoneData Zone => zone;
@@ -48,6 +49,8 @@ namespace FarmIdle
             }
 
             _progression.Changed += OnProgressChanged;
+            _prestige = PrestigeManager.Instance;
+            if (_prestige != null) _prestige.Changed += OnSeasonChanged;
             ApplyState(_progression.IsZoneUnlocked(zone));
         }
 
@@ -56,6 +59,8 @@ namespace FarmIdle
             if (_progression != null)
             {
                 _progression.Changed -= OnProgressChanged;
+                if (_prestige != null) _prestige.Changed -= OnSeasonChanged;
+                _prestige = null;
 
                 // Al desactivarse Unity detiene la corrutina: la zona queda en su estado final, sin efecto a medias.
                 _reveal = null;
@@ -86,21 +91,40 @@ namespace FarmIdle
             }
         }
 
+        // F-24: cambió la temporada (se empezó una o se cargó la partida): una granja de temporada puede haber aparecido o
+        // desaparecido. Si justo se está abriendo, el efecto sigue su curso.
+        private void OnSeasonChanged()
+        {
+            if (_progression == null || _reveal != null) return;
+
+            bool unlocked = _progression.IsZoneUnlocked(zone);
+            ApplyState(unlocked);
+            if (!unlocked) SetGates(_progression.IsZoneAvailable(zone));
+        }
+
         // Una zona que vuelve a cerrarse (nueva temporada, F-03) necesita su portón otra vez: el pad se apagó al abrirse y apagado no
         // escucha al progreso, así que lo reactiva este componente, que sigue activo. Solo pasa al restaurar el progreso.
         private void ReopenGate()
         {
+            SetGates(_progression.IsZoneAvailable(zone));
+        }
+
+        // Prende o apaga el portón de esta zona (una granja que todavía no apareció no tiene portón).
+        private void SetGates(bool active)
+        {
             ZoneUnlockPad[] gates = GetComponentsInChildren<ZoneUnlockPad>(true);
             for (int i = 0; i < gates.Length; i++)
             {
-                if (gates[i].Zone == zone && !gates[i].gameObject.activeSelf) gates[i].gameObject.SetActive(true);
+                if (gates[i].Zone == zone && gates[i].gameObject.activeSelf != active) gates[i].gameObject.SetActive(active);
             }
         }
 
-        // El estado final de cada mitad, sin efectos.
+        // El estado final de cada mitad, sin efectos. Una granja de temporada que todavía no apareció no muestra ni el terreno ni el portón.
         private void ApplyState(bool unlocked)
         {
-            lockedRoot.SetActive(!unlocked);
+            bool available = _progression == null || _progression.IsZoneAvailable(zone);
+            lockedRoot.SetActive(!unlocked && available);
+            if (!available) SetGates(false);
             lockedRoot.transform.localScale = Vector3.one;
 
             unlockedRoot.SetActive(unlocked);

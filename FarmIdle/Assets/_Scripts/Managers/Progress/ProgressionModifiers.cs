@@ -18,14 +18,16 @@ namespace FarmIdle
         public readonly float SellPrice;         // multiplicador del precio de venta (entra en PriceCalculator)
         public readonly float GrowthSpeed;       // multiplicador de la velocidad de crecimiento
         public readonly int OfflineCapBonusSeconds;   // segundos extra sobre el tope base del progreso offline (B-01)
+        public readonly float RareChanceBonus;        // F-24: probabilidad extra de cosecha dorada (suma a GameConfig.RareHarvestChance)
 
-        public ProgressionModifiers(int backpackBonus, float moveSpeed, float sellPrice, float growthSpeed, int offlineCapBonusSeconds = 0)
+        public ProgressionModifiers(int backpackBonus, float moveSpeed, float sellPrice, float growthSpeed, int offlineCapBonusSeconds = 0, float rareChanceBonus = 0f)
         {
             BackpackBonus = backpackBonus;
             MoveSpeed = moveSpeed;
             SellPrice = sellPrice;
             GrowthSpeed = growthSpeed;
             OfflineCapBonusSeconds = offlineCapBonusSeconds;
+            RareChanceBonus = rareChanceBonus;
         }
 
         // Sin mejoras.
@@ -63,9 +65,12 @@ namespace FarmIdle
                 }
             }
 
+            float rareChance = 0f;
             if (perks != null)
             {
                 float perkSpeed = 0f;
+                float perkSell = 0f;
+                float perkGrowth = 0f;
                 for (int i = 0; i < perks.Count; i++)
                 {
                     PerkData perk = perks[i];
@@ -76,15 +81,20 @@ namespace FarmIdle
                     {
                         case PerkKind.BackpackCapacity: backpackBonus += Math.Max(0, (int)Math.Round(total)); break;
                         case PerkKind.MoveSpeed: perkSpeed += total; break;
+                        case PerkKind.RareChance: rareChance += total; break;
+                        case PerkKind.SellPrice: perkSell += total; break;
+                        case PerkKind.GrowthSpeed: perkGrowth += total; break;
                     }
                 }
 
                 moveSpeed *= 1f + perkSpeed;
+                sellPrice *= 1f + perkSell;       // IN-04: un multiplicador aparte de las mejoras de monedas (+10 % al máximo)
+                growthSpeed *= 1f + perkGrowth;
             }
 
             if (maxMoveSpeed > 0f) moveSpeed = Math.Min(moveSpeed, maxMoveSpeed);
 
-            return new ProgressionModifiers(backpackBonus, moveSpeed, sellPrice, growthSpeed, offlineCapBonus);
+            return new ProgressionModifiers(backpackBonus, moveSpeed, sellPrice, growthSpeed, offlineCapBonus, rareChance);
         }
     }
 }

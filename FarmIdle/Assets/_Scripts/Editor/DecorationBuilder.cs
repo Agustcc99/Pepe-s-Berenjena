@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 namespace FarmIdle.EditorTools
 {
     // F-17 (tanda 1): las 8 decoraciones cosméticas de la granja. Genera los datos (DecorationData), las mallas (todas con el material
-    // de paleta único) y las coloca APAGADAS en el terreno libre a los lados de la plaza; DecorationSet las prende según lo comprado.
+    // de paleta único) y las coloca APAGADAS en el terreno libre alrededor de las granjas (F-23); DecorationSet las prende según lo comprado.
     // El pad de compra lo arma Phase8SceneBuilder (comparte el molde de los pads de espera).
     internal static class DecorationBuilder
     {
@@ -26,17 +26,22 @@ namespace FarmIdle.EditorTools
         }
 
         // En el orden de compra, de la más barata a la más cara: 500.000 monedas en total (~1,4 h de juego con el ingreso del final,
-        // ECONOMIA_V1.md). Lugares: el césped libre a los lados de la plaza (x ±11,9 es la valla), a la vista desde adentro.
+        // ECONOMIA_V1.md). Lugares (F-23): alrededor de las granjas, no de la plaza. Los campos son de 8 x 8 (centros x -11, 0, 11 en
+        // z 7 y z 19, y desde F-24 una tercera fila en z 31), así que quedan libres la franja de afuera (x ±17 a ±20) y los pasillos
+        // entre filas (z 13 y z 25).
+        // Las dos primeras flanquean la entrada de la granja inicial, que es donde el jugador pasa más; el resto da la vuelta por
+        // los costados y el fondo, y cada una queda junto a una granja que le hace sentido (molino junto a la quinta, fardo junto a
+        // la chacra, estanque y banco junto a las huertas de al lado).
         private static readonly DecorationSpec[] Specs =
         {
-            new DecorationSpec { Id = "deco_lamp", Name = "Farol", Cost = 25000, Position = new Vector3(-14f, 0f, -12f) },
-            new DecorationSpec { Id = "deco_scarecrow", Name = "Espantapájaros", Cost = 35000, Position = new Vector3(14f, 0f, -12f), Yaw = 15f },
-            new DecorationSpec { Id = "deco_bench", Name = "Banco", Cost = 45000, Position = new Vector3(-14f, 0f, -17f), Yaw = 90f },
-            new DecorationSpec { Id = "deco_flowers", Name = "Parterre de flores", Cost = 55000, Position = new Vector3(14f, 0f, -17f) },
-            new DecorationSpec { Id = "deco_pond", Name = "Estanque", Cost = 70000, Position = new Vector3(-15f, 0f, -23f) },
-            new DecorationSpec { Id = "deco_windmill", Name = "Molino", Cost = 80000, Position = new Vector3(15f, 0f, -23f) },
-            new DecorationSpec { Id = "deco_flag", Name = "Bandera", Cost = 90000, Position = new Vector3(-19f, 0f, -14f) },
-            new DecorationSpec { Id = "deco_haystack", Name = "Fardo de heno", Cost = 100000, Position = new Vector3(19f, 0f, -14f), Yaw = 30f },
+            new DecorationSpec { Id = "deco_lamp", Name = "Farol", Cost = 25000, Position = new Vector3(-4.6f, 0f, 1.5f) },
+            new DecorationSpec { Id = "deco_scarecrow", Name = "Espantapájaros", Cost = 35000, Position = new Vector3(4.6f, 0f, 1.5f), Yaw = 15f },
+            new DecorationSpec { Id = "deco_bench", Name = "Banco", Cost = 45000, Position = new Vector3(17.6f, 0f, 7f), Yaw = 90f },
+            new DecorationSpec { Id = "deco_flowers", Name = "Parterre de flores", Cost = 55000, Position = new Vector3(-11f, 0f, 13f) },
+            new DecorationSpec { Id = "deco_pond", Name = "Estanque", Cost = 70000, Position = new Vector3(-18.4f, 0f, 7f) },
+            new DecorationSpec { Id = "deco_windmill", Name = "Molino", Cost = 80000, Position = new Vector3(18.3f, 0f, 19.5f) },
+            new DecorationSpec { Id = "deco_flag", Name = "Bandera", Cost = 90000, Position = new Vector3(-11f, 0f, 25f) },
+            new DecorationSpec { Id = "deco_haystack", Name = "Fardo de heno", Cost = 100000, Position = new Vector3(-19.2f, 0f, 19.5f), Yaw = 30f },
         };
 
         // Ayudantes (tanda 2): tres niveles, 850.000 en total (~2,4 h con el ingreso del final). Share = fracción de la producción de
@@ -128,6 +133,8 @@ namespace FarmIdle.EditorTools
                 AssetDatabase.CreateAsset(data, SkinPath(skin.id));
             }
 
+            SkinLooks.Apply(DataFolder);   // IN-04: sombrero y diseño de cada skin (también en las que ya existían)
+
             AssetDatabase.SaveAssets();
             LinkConfig();
             AssetDatabase.SaveAssets();
@@ -168,6 +175,7 @@ namespace FarmIdle.EditorTools
             // Los dos pads del sector Almacén (junto al de la mejora de almacén): decoraciones y ayudantes.
             Phase8SceneBuilder.BuildDwellPad<DecorationBuyPad>(parent, "DecorationPad_Buy", new Vector3(PlazaBuilder.DecorX, 0f, PlazaBuilder.StoreRowZ), Phase8SceneBuilder.PadIcon.Decor);
             Phase8SceneBuilder.BuildDwellPad<SkinBuyPad>(parent, "SkinPad_Buy", new Vector3(PlazaBuilder.SkinX, 0f, PlazaBuilder.AttributeRow2Z), Phase8SceneBuilder.PadIcon.Skin);
+            Phase8SceneBuilder.BuildDwellPad<TruckBuyPad>(parent, "TruckPad_Buy", new Vector3(PlazaBuilder.SkinX, 0f, PlazaBuilder.AttributeRow1Z), Phase8SceneBuilder.PadIcon.Truck);   // sector Atributos, junto a las skins
             Phase8SceneBuilder.BuildDwellPad<HelperBuyPad>(parent, "HelperPad_Buy", new Vector3(PlazaBuilder.HelperX, 0f, PlazaBuilder.StoreRowZ), Phase8SceneBuilder.PadIcon.Helper);
 
             var material = Phase2SceneBuilder.LoadRequired<Material>(Phase3SceneBuilder.PaletteMaterialPath);
@@ -299,6 +307,24 @@ namespace FarmIdle.EditorTools
                 mesh.AddBox(new Vector3(0f, y + 1.1f, -0.42f), new Vector3(0.26f, 0.26f, 0.26f), Quaternion.identity, Palette.White);
                 mesh.AddBox(new Vector3(0.78f, y + 0.9f, 0f), new Vector3(0.34f, 0.34f, 0.08f), Quaternion.Euler(0f, 0f, 45f), Palette.Flower);
                 mesh.AddBox(new Vector3(0.78f, y + 0.9f, 0f), new Vector3(0.34f, 0.34f, 0.08f), Quaternion.identity, Palette.Purple);
+                return;
+            }
+
+            if (icon == Phase8SceneBuilder.PadIcon.Truck)
+            {
+                // Un camioncito de costado: caja de madera, cabina roja, ruedas y una estrella dorada arriba ("mejorar").
+                mesh.AddBox(new Vector3(-0.2f, y + 0.55f, 0f), new Vector3(1.0f, 0.5f, 0.6f), Quaternion.identity, Palette.Wood);
+                mesh.AddBox(new Vector3(0.55f, y + 0.5f, 0f), new Vector3(0.5f, 0.6f, 0.6f), Quaternion.identity, Palette.TomatoRed);
+                mesh.AddBox(new Vector3(0.62f, y + 0.62f, -0.31f), new Vector3(0.28f, 0.22f, 0.02f), Quaternion.identity, Palette.Cream);
+                Quaternion axisZ = Quaternion.Euler(90f, 0f, 0f);
+                foreach (float x in new[] { -0.55f, 0.55f })
+                {
+                    mesh.AddCylinder(new Vector3(x, y + 0.22f, -0.3f), 0.22f, 0.12f, 10, axisZ, Palette.SoilDark);
+                    mesh.AddCylinder(new Vector3(x, y + 0.22f, 0.3f), 0.22f, 0.12f, 10, axisZ, Palette.SoilDark);
+                }
+
+                mesh.AddBox(new Vector3(0f, y + 1.3f, 0f), new Vector3(0.3f, 0.3f, 0.08f), Quaternion.Euler(0f, 0f, 45f), Palette.WheatGold);
+                mesh.AddBox(new Vector3(0f, y + 1.3f, 0f), new Vector3(0.3f, 0.3f, 0.08f), Quaternion.identity, Palette.WheatGold);
                 return;
             }
 

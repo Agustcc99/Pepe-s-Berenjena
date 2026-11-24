@@ -66,6 +66,38 @@ namespace FarmIdle.Tests
             Assert.AreEqual(700000L, total, "F-17: ~2 h con el ingreso del final (ECONOMIA_V1.md).");
         }
 
+        // IN-04: comprar una skin no es solo cambiar de color: cada una trae su sombrero y su diseño, distintos entre sí.
+        [Test]
+        public void EverySkin_BringsItsOwnHat_AndAPattern()
+        {
+            var hats = new HashSet<SkinHat>();
+            for (int i = 0; i < _config.Skins.Count; i++)
+            {
+                SkinData skin = _config.Skins[i];
+                Assert.AreNotEqual(SkinHat.Straw, skin.Hat, "Sombrero de fábrica: " + skin.Id);
+                Assert.IsTrue(hats.Add(skin.Hat), "Sombrero repetido: " + skin.Id);
+                Assert.AreNotEqual(SkinPattern.None, skin.Pattern, "Sin diseño: " + skin.Id);
+            }
+        }
+
+        [Test]
+        public void ThePlayerPrefab_HasAGroupForEveryHatAndPattern()
+        {
+            // Los grupos los arma el builder; acá se comprueba que los nombres que busca PlayerSkinView existan en la escena generada.
+            string[] guids = AssetDatabase.FindAssets("t:Scene MainLevel");
+            Assert.IsNotEmpty(guids, "Falta la escena MainLevel.");
+            string text = System.IO.File.ReadAllText(AssetDatabase.GUIDToAssetPath(guids[0]));
+            foreach (SkinHat hat in System.Enum.GetValues(typeof(SkinHat)))
+            {
+                if (hat != SkinHat.Straw) StringAssert.Contains("m_Name: Hat_" + hat, text);
+            }
+
+            foreach (SkinPattern pattern in System.Enum.GetValues(typeof(SkinPattern)))
+            {
+                if (pattern != SkinPattern.None) StringAssert.Contains("m_Name: Pat_" + pattern, text);
+            }
+        }
+
         [Test]
         public void Buying_FollowsTheList_ChargesEach_AndPutsTheNewSkinOn()
         {

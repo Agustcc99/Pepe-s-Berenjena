@@ -53,7 +53,7 @@ namespace FarmIdle.EditorTools
 
         private static string RewardPath(RewardSpec reward) { return RewardsFolder + "/" + reward.File + ".asset"; }
 
-        internal enum PadIcon { Use, Buy, Video, Turbo, Symbol, SymbolBase, Decor, Helper, Skin, Order }
+        internal enum PadIcon { Use, Buy, Video, Turbo, Symbol, SymbolBase, Decor, Helper, Skin, Order, Truck }
 
         private static string MeshPath(PadIcon icon) { return MeshesFolder + "/SM_Reward_" + icon + ".asset"; }
 
@@ -123,7 +123,7 @@ namespace FarmIdle.EditorTools
 
             foreach (RewardSpec spec in Rewards) CreateRewardData(spec);
 
-            foreach (PadIcon icon in new[] { PadIcon.Use, PadIcon.Buy, PadIcon.Video, PadIcon.Turbo, PadIcon.Symbol, PadIcon.SymbolBase, PadIcon.Decor, PadIcon.Helper, PadIcon.Skin, PadIcon.Order })
+            foreach (PadIcon icon in new[] { PadIcon.Use, PadIcon.Buy, PadIcon.Video, PadIcon.Turbo, PadIcon.Symbol, PadIcon.SymbolBase, PadIcon.Decor, PadIcon.Helper, PadIcon.Skin, PadIcon.Order, PadIcon.Truck })
             {
                 Phase3SceneBuilder.SaveMesh(BuildMesh(icon).ToMesh("SM_Reward_" + icon), MeshPath(icon));
             }
@@ -240,7 +240,7 @@ namespace FarmIdle.EditorTools
 
                 case PadIcon.Decor:
                 case PadIcon.Helper:
-                case PadIcon.Skin:
+                case PadIcon.Skin: case PadIcon.Truck:
                     DecorationBuilder.AddPadIcon(mesh, y, icon);   // F-17
                     break;
                 case PadIcon.Order: OrdersBuilder.AddPadIcon(mesh, y); break;   // F-18

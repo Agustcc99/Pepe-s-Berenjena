@@ -237,6 +237,7 @@ namespace FarmIdle.Tests
 
         private bool IsPlayed(ZoneData zone)
         {
+            if (zone.RequiredSeason > 0) return false;   // F-24: el bot juega la temporada 0; las granjas de temporada no existen todavía
             if (_zoneIds == null) return true;
 
             foreach (string id in _zoneIds)
@@ -535,6 +536,33 @@ namespace FarmIdle.Tests
             CoinsEarned += whole;
         }
 
+        // IN-02: el cultivo del día paga DailyCropBonus de más. El bot no usa fechas: supone que cada cultivo abierto sale con la misma
+        // probabilidad (1 / cultivos abiertos) y que vende en proporción, y acredita ese extra esperado sobre cada venta.
+        private double _dailyCarry;
+
+        private void CreditDailyCrop(long coins)
+        {
+            if (_config.DailyCropBonus <= 0f) return;
+
+            int open = 0;
+            var rules = _config.OrderCrops;
+            for (int i = 0; i < rules.Count; i++)
+            {
+                if (rules[i] != null && (string.IsNullOrEmpty(rules[i].ZoneId) || _openZones.Contains(rules[i].ZoneId))) open++;
+            }
+
+            if (open <= 0) return;
+
+            _dailyCarry += coins * (double)_config.DailyCropBonus / open;
+
+            long whole = (long)_dailyCarry;
+            if (whole <= 0L) return;
+
+            _dailyCarry -= whole;
+            _coins += whole;
+            CoinsEarned += whole;
+        }
+
         private void CreditRareHarvest(CropData crop)
         {
             double expected = _config.RareHarvestChance * _config.RareHarvestMultiplier
@@ -566,6 +594,7 @@ namespace FarmIdle.Tests
                 _coins += coins;
                 CoinsEarned += coins;
                 CreditOrderBonus(coins);
+                CreditDailyCrop(coins);
                 BaseXp += Math.Max(1L, (long)Math.Round(crop.SellPrice * (double)_start.XpMultiplier));   // como ProgressionManager (x1 = el precio base)
                 Advance(_config.SellIntervalSeconds);
 

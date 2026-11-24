@@ -27,6 +27,7 @@ namespace FarmIdle.EditorTools
             public long Cost;
             public Vector3 Center, Gate;
             public string[] Rows;
+            public int Season;   // F-24: desde qué temporada se puede comprar (0 = desde el principio)
         }
 
         internal static readonly ZoneSpec[] Zones =
@@ -63,6 +64,29 @@ namespace FarmIdle.EditorTools
                 File = "Zone_NorthEast", Id = "zone_northeast", Name = "Quinta del Nordeste", Cost = 83000,
                 Center = new Vector3(11f, 0f, 19f), Gate = new Vector3(5.5f, 0f, 19f),
                 Rows = new[] { "Watermelon", "Sunflower", "Sunflower" }
+            },
+
+            // F-24: la tercera fila, al norte, una granja nueva por temporada (la primera aparece al empezar la temporada 1). Cada
+            // temporada hay una más para comprar antes de poder cerrarla. Todas de girasol (el mejor cultivo); los costos son
+            // PROVISORIOS (B-05): la venta ya rinde x1,25 por temporada y la tienda de semillas suma monedas de arranque. El portón
+            // del primero queda en el campo del medio de la fila anterior (hay que abrirlo antes), y los de los costados, en el primero.
+            new ZoneSpec
+            {
+                File = "Zone_Dawn", Id = "zone_dawn", Name = "Campo del Alba", Cost = 150000, Season = 1,
+                Center = new Vector3(0f, 0f, 31f), Gate = new Vector3(0f, 0f, 25f),
+                Rows = new[] { "Sunflower", "Sunflower", "Sunflower" }
+            },
+            new ZoneSpec
+            {
+                File = "Zone_Oak", Id = "zone_oak", Name = "Quinta del Roble", Cost = 260000, Season = 2,
+                Center = new Vector3(-11f, 0f, 31f), Gate = new Vector3(-5.5f, 0f, 31f),
+                Rows = new[] { "Sunflower", "Sunflower", "Sunflower" }
+            },
+            new ZoneSpec
+            {
+                File = "Zone_Estate", Id = "zone_estate", Name = "Estancia Dorada", Cost = 400000, Season = 3,
+                Center = new Vector3(11f, 0f, 31f), Gate = new Vector3(5.5f, 0f, 31f),
+                Rows = new[] { "Sunflower", "Sunflower", "Sunflower" }
             },
         };
 
@@ -125,6 +149,7 @@ namespace FarmIdle.EditorTools
 
                 var serialized = new SerializedObject(zone);
                 serialized.FindProperty("unlockCost").longValue = spec.Cost;
+                serialized.FindProperty("requiredSeason").intValue = spec.Season;
                 serialized.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(zone);
             }
@@ -173,6 +198,7 @@ namespace FarmIdle.EditorTools
             serialized.FindProperty("id").stringValue = spec.Id;
             serialized.FindProperty("displayName").stringValue = spec.Name;
             serialized.FindProperty("unlockCost").longValue = spec.Cost;
+            serialized.FindProperty("requiredSeason").intValue = spec.Season;
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             AssetDatabase.CreateAsset(zone, path);

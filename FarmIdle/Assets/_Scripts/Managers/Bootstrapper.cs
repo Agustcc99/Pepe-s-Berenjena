@@ -116,6 +116,14 @@ namespace FarmIdle
             OrdersManager orders = AddService<OrdersManager>(root.transform);
             orders.Initialize(config);
 
+            // Cultivo del día (IN-02): elige uno por fecha entre las zonas abiertas y le avisa a la economía; no guarda nada.
+            DailyCropManager dailyCrop = AddService<DailyCropManager>(root.transform);
+            dailyCrop.Initialize(config);
+
+            // Mejoras visuales del camión de reparto: cosméticas, se compran con monedas.
+            TruckManager truck = AddService<TruckManager>(root.transform);
+            truck.Initialize(config);
+
             // Lo sembrado entre sesiones (B-11): los campos se anotan solos; solo necesita el GameConfig.
             PlotStateManager plotStates = AddService<PlotStateManager>(root.transform);
             plotStates.Initialize(config);
@@ -154,6 +162,7 @@ namespace FarmIdle
             save.Register(helpers);
             save.Register(skins);
             save.Register(orders);
+            save.Register(truck);
             save.Register(plotStates);
             save.Load();
 
@@ -185,7 +194,7 @@ namespace FarmIdle
             PortalManager portal = AddService<PortalManager>(root.transform);
             portal.Initialize();
 
-            Debug.Log("[FarmIdle] Servicios listos: GameManager, PoolManager, EconomyManager, PlotCensus, BackpackManager, ProgressionManager, BuffManager, FertilizerManager, PrestigeManager, OfflineManager, MissionManager, AchievementManager, DailyRewardManager, DecorationManager, HelperManager, SkinManager, OrdersManager, PlotStateManager, SettingsManager, TutorialManager, SaveManager, AdsManager, OfferManager, AudioManager, HapticsManager, AnalyticsManager, PortalManager.");
+            Debug.Log("[FarmIdle] Servicios listos: GameManager, PoolManager, EconomyManager, PlotCensus, BackpackManager, ProgressionManager, BuffManager, FertilizerManager, PrestigeManager, OfflineManager, MissionManager, AchievementManager, DailyRewardManager, DecorationManager, HelperManager, SkinManager, OrdersManager, DailyCropManager, TruckManager, PlotStateManager, SettingsManager, TutorialManager, SaveManager, AdsManager, OfferManager, AudioManager, HapticsManager, AnalyticsManager, PortalManager.");
         }
 
         private static T AddService<T>(Transform parent) where T : Component

@@ -21,7 +21,6 @@ namespace FarmIdle.EditorTools
 
         internal const int LevelBaseXp = 325;
 
-        private const float PerkZ = PlazaBuilder.PointsRowZ;   // el sector Puntos de la plaza, al este de la avenida
 
         // ---------- Tablas de diseño ----------
 
@@ -36,12 +35,20 @@ namespace FarmIdle.EditorTools
             public int MaxPicks;
             public int Accent;      // color del aro del pad (celda de la paleta)
             public float X;         // posición en la fila de perks
+            public float Z = PlazaBuilder.PointsRowZ;   // primera fila; IN-04 abre una segunda (PointsRow2Z)
         }
 
         private static readonly PerkSpec[] Perks =
         {
             new PerkSpec { File = "Perk_Strength", Id = "perk_strength", Name = "Fuerza", Short = "Fue", Kind = PerkKind.BackpackCapacity, ValuePerPick = 1f, MaxPicks = 10, Accent = Palette.TomatoRed, X = PlazaBuilder.EastNearX },
             new PerkSpec { File = "Perk_Speed", Id = "perk_speed", Name = "Velocidad", Short = "Vel", Kind = PerkKind.MoveSpeed, ValuePerPick = 0.015f, MaxPicks = 10, Accent = Palette.Flower, X = PlazaBuilder.EastFarX },
+            // F-24: Suerte, la tercera columna del sector Puntos. +0,5 puntos de probabilidad de cosecha dorada por elección: al máximo
+            // (10) la dorada pasa de 3 % a 8 % (J-04). PROVISORIO: se ajusta con datos reales (B-05).
+            new PerkSpec { File = "Perk_Luck", Id = "perk_luck", Name = "Suerte", Short = "Sue", Kind = PerkKind.RareChance, ValuePerPick = 0.005f, MaxPicks = 10, Accent = Palette.WheatGold, X = PlazaBuilder.HelperX },
+            // IN-04: segunda fila del sector Puntos. +1 % de precio / de crecimiento por elección (+10 % al máximo), un multiplicador
+            // APARTE del de las mejoras y de la tienda de prestigio (que mantienen su tope). PROVISORIOS: se ajustan con datos reales (B-05).
+            new PerkSpec { File = "Perk_Barter", Id = "perk_barter", Name = "Regateo", Short = "Reg", Kind = PerkKind.SellPrice, ValuePerPick = 0.01f, MaxPicks = 10, Accent = Palette.CarrotOrange, X = PlazaBuilder.EastNearX, Z = PlazaBuilder.PointsRow2Z },
+            new PerkSpec { File = "Perk_GreenThumb", Id = "perk_greenthumb", Name = "Mano verde", Short = "Man", Kind = PerkKind.GrowthSpeed, ValuePerPick = 0.01f, MaxPicks = 10, Accent = Palette.LeafLight, X = PlazaBuilder.EastFarX, Z = PlazaBuilder.PointsRow2Z },
         };
 
         private static string PerkPath(PerkSpec perk) { return PerksFolder + "/" + perk.File + ".asset"; }
@@ -123,6 +130,7 @@ namespace FarmIdle.EditorTools
             var perks = new List<Object>();
             foreach (PerkSpec perk in Perks) perks.Add(Phase2SceneBuilder.LoadRequired<PerkData>(PerkPath(perk)));
             FillIfEmpty(serialized, "perks", perks);
+            AppendMissing(serialized, "perks", perks);   // perks nuevos (F-24) entran a un config que ya tenía la lista
 
             var crops = new List<Object>();
             foreach (Phase2SceneBuilder.CropSpec crop in Phase2SceneBuilder.CropSpecs)
@@ -220,6 +228,33 @@ namespace FarmIdle.EditorTools
                         mesh.AddBox(new Vector3(-arm * 0.35f, y + 0.05f, z), new Vector3(arm, 0.1f, 0.15f), Quaternion.Euler(0f, -45f, 0f), Palette.Flower);
                     }
                     break;
+
+                case PerkKind.RareChance:
+                    // Un trébol de cuatro hojas con el centro dorado y un tallito.
+                    for (int i = 0; i < 4; i++)
+                    {
+                        float angle = i * 90f * Mathf.Deg2Rad;
+                        var leaf = new Vector3(Mathf.Cos(angle) * 0.34f, y + 0.07f, Mathf.Sin(angle) * 0.34f);
+                        mesh.AddCylinder(leaf, 0.3f, 0.14f, 12, Quaternion.identity, i % 2 == 0 ? Palette.LeafLight : Palette.LeafDark);
+                    }
+
+                    mesh.AddSphere(new Vector3(0f, y + 0.16f, 0f), 0.17f, Palette.WheatGold);
+                    mesh.AddBox(new Vector3(0.18f, y + 0.04f, -0.6f), new Vector3(0.08f, 0.08f, 0.5f), Quaternion.Euler(0f, 20f, 0f), Palette.LeafDark);
+                    break;
+
+                case PerkKind.SellPrice:
+                    // Regateo: una pila de tres monedas de oro con una más parada de canto detrás.
+                    for (int i = 0; i < 3; i++) mesh.AddCylinder(new Vector3(-0.2f, y + 0.07f + i * 0.14f, 0.15f), 0.5f, 0.12f, 14, Quaternion.identity, i == 2 ? Palette.WheatGold : Palette.CarrotOrange);
+                    mesh.AddCylinder(new Vector3(0.45f, y + 0.5f, -0.2f), 0.5f, 0.12f, 14, Quaternion.Euler(90f, 0f, 0f), Palette.WheatGold);
+                    break;
+
+                case PerkKind.GrowthSpeed:
+                    // Mano verde: un brote con dos hojas saliendo de una maceta.
+                    mesh.AddCylinder(new Vector3(0f, y + 0.15f, 0f), 0.7f, 0.3f, 12, Quaternion.identity, Palette.Wood);
+                    mesh.AddBox(new Vector3(0f, y + 0.5f, 0f), new Vector3(0.09f, 0.55f, 0.09f), Quaternion.identity, Palette.LeafDark);
+                    mesh.AddBox(new Vector3(0.28f, y + 0.82f, 0f), new Vector3(0.6f, 0.07f, 0.34f), Quaternion.Euler(0f, 0f, 28f), Palette.LeafLight);
+                    mesh.AddBox(new Vector3(-0.28f, y + 0.74f, 0f), new Vector3(0.6f, 0.07f, 0.34f), Quaternion.Euler(0f, 0f, -28f), Palette.LeafLight);
+                    break;
             }
 
             return mesh;
@@ -240,7 +275,7 @@ namespace FarmIdle.EditorTools
 
                 var pad = new GameObject(spec.File.Replace("Perk_", "PerkPad_"));
                 pad.transform.SetParent(root.transform, false);
-                pad.transform.position = new Vector3(spec.X, 0f, PerkZ);
+                pad.transform.position = new Vector3(spec.X, 0f, spec.Z);
 
                 // Trigger de la altura del jugador (2), como los demás pads.
                 var trigger = pad.AddComponent<BoxCollider>();

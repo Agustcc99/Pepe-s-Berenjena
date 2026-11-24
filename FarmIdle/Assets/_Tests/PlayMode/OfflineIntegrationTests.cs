@@ -157,7 +157,7 @@ namespace FarmIdle.Tests
 
             UpgradePad pad = All<UpgradePad>().First(p => p.Upgrade.Kind == UpgradeKind.OfflineCap);
             Assert.AreEqual(3.1f, pad.transform.position.x, 1e-3f, "Sector Almacén de la plaza (este de la avenida).");
-            Assert.AreEqual(-25f, pad.transform.position.z, 1e-3f, "Sector Almacén de la plaza, al fondo.");
+            Assert.AreEqual(-28.8f, pad.transform.position.z, 1e-3f, "Sector Almacén de la plaza, al fondo (IN-04: bajó 3,8 por la segunda fila de perks).");
             StringAssert.Contains(pad.Upgrade.CostOfLevel(1).ToString(), pad.Label.text);
             StringAssert.Contains(pad.Upgrade.DisplayName, pad.Label.text);
 

@@ -13,7 +13,11 @@ namespace FarmIdle
         [SerializeField, Min(1), Tooltip("Monedas que cuesta desbloquear la zona.")]
         private long unlockCost = 300;
 
+        [SerializeField, Min(0), Tooltip("F-24: desde qué temporada aparece esta granja para comprarla (0 = desde el principio). Antes no se ve, ni su portón, ni cuenta para cerrar la temporada.")]
+        private int requiredSeason;
+
         public string DisplayName => LocalizedName(displayName);
         public long UnlockCost => unlockCost;
+        public int RequiredSeason => requiredSeason;
     }
 }

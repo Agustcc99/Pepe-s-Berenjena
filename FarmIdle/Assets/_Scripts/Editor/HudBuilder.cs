@@ -203,19 +203,20 @@ namespace FarmIdle.EditorTools
             backdrop.type = Image.Type.Simple;
             EditorUi.Stretch(backdrop.rectTransform);
 
+            // Texto largo (qué se reinicia, qué queda, qué se gana): tarjeta alta y letra de 38.
             Image card = EditorUi.CreateCard(backdrop.transform);
-            EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860f, 900f));
+            EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900f, 1320f));
 
             TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@season.title", 72f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
-            EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -90f), new Vector2(760f, 100f));
+            EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -90f), new Vector2(800f, 100f));
 
-            TextMeshProUGUI body = EditorUi.CreateText("Body", card.transform, "", 46f, Color.white, TextAlignmentOptions.Center);
+            TextMeshProUGUI body = EditorUi.CreateText("Body", card.transform, "", 38f, Color.white, TextAlignmentOptions.Center);
             body.textWrappingMode = TextWrappingModes.Normal;
-            EditorUi.Anchor(body.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 90f), new Vector2(760f, 480f));
+            EditorUi.Anchor(body.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -200f), new Vector2(800f, 820f));
 
-            Button yes = AddCardButton(card.transform, "SeasonYesButton", "@season.yes", new Color(0.93f, 0.68f, 0.12f), -660f, 120f, out TextMeshProUGUI yesLabel);
+            Button yes = AddCardButton(card.transform, "SeasonYesButton", "@season.yes", new Color(0.93f, 0.68f, 0.12f), -1090f, 120f, out TextMeshProUGUI yesLabel);
             yesLabel.color = new Color(0.20f, 0.12f, 0.02f);
-            Button no = AddCardButton(card.transform, "SeasonNoButton", "@season.no", new Color(0.30f, 0.50f, 0.78f), -800f, 110f, out _);
+            Button no = AddCardButton(card.transform, "SeasonNoButton", "@season.no", new Color(0.30f, 0.50f, 0.78f), -1230f, 110f, out _);
 
             var view = holder.gameObject.AddComponent<SeasonPanelView>();
             EditorUi.Wire(view,
@@ -244,34 +245,39 @@ namespace FarmIdle.EditorTools
             EditorUi.Anchor((RectTransform)open.transform, new Vector2(0f, 1f), new Vector2(0f, 0.5f), new Vector2(20f, -545f), new Vector2(560f, 110f));
             open.gameObject.SetActive(false);
 
-            Image backdrop = EditorUi.CreatePanel("ShopBackdrop", canvas, new Color(0.02f, 0.05f, 0.03f, 0.70f), true);
+            // Compacta (antes ocupaba casi toda la pantalla): fondo más suave, filas de 2 líneas y 6 filas en ~1/2 de la altura útil.
+            Image backdrop = EditorUi.CreatePanel("ShopBackdrop", canvas, new Color(0.02f, 0.05f, 0.03f, 0.40f), true);
             backdrop.sprite = null;
             backdrop.type = Image.Type.Simple;
             EditorUi.Stretch(backdrop.rectTransform);
 
-            float cardHeight = 330f + rows * 200f + 190f;
+            const float rowHeight = 120f;
+            const float rowStep = 130f;
+            const float firstRowY = -270f;
+            float closeY = firstRowY - (rows - 1) * rowStep - rowHeight * 0.5f - 90f;   // centro del botón, bajo la última fila
+            float cardHeight = -closeY + 55f + 40f;
             Image card = EditorUi.CreateCard(backdrop.transform);
-            EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(920f, cardHeight));
+            EditorUi.Anchor(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900f, cardHeight));
 
-            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@shop.title", 68f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
-            EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -80f), new Vector2(820f, 100f));
+            TextMeshProUGUI title = EditorUi.CreateText("Title", card.transform, "@shop.title", 60f, new Color(1f, 0.92f, 0.55f), TextAlignmentOptions.Center, FontStyles.Bold);
+            EditorUi.Anchor(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -70f), new Vector2(800f, 90f));
 
-            TextMeshProUGUI seeds = EditorUi.CreateText("Seeds", card.transform, "", 48f, Color.white, TextAlignmentOptions.Center);
-            EditorUi.Anchor(seeds.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -180f), new Vector2(820f, 70f));
+            TextMeshProUGUI seeds = EditorUi.CreateText("Seeds", card.transform, "", 44f, Color.white, TextAlignmentOptions.Center);
+            EditorUi.Anchor(seeds.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -150f), new Vector2(800f, 60f));
 
             var buttons = new System.Collections.Generic.List<UnityEngine.Object>();
             var labels = new System.Collections.Generic.List<UnityEngine.Object>();
             for (int i = 0; i < rows; i++)
             {
                 Button row = EditorUi.CreateButton("ShopRow" + i, card.transform, "", new Color(0.30f, 0.50f, 0.78f), out TextMeshProUGUI label);
-                label.fontSize = 34f;
+                label.fontSize = 32f;
                 label.textWrappingMode = TextWrappingModes.Normal;
-                EditorUi.Anchor((RectTransform)row.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0f, -330f - i * 200f), new Vector2(820f, 185f));
+                EditorUi.Anchor((RectTransform)row.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0f, firstRowY - i * rowStep), new Vector2(820f, rowHeight));
                 buttons.Add(row);
                 labels.Add(label);
             }
 
-            Button close = AddCardButton(card.transform, "ShopCloseButton", "@shop.close", new Color(0.93f, 0.68f, 0.12f), -(330f + rows * 200f + 20f), 110f, out TextMeshProUGUI closeLabel);
+            Button close = AddCardButton(card.transform, "ShopCloseButton", "@shop.close", new Color(0.93f, 0.68f, 0.12f), closeY, 110f, out TextMeshProUGUI closeLabel);
             closeLabel.color = new Color(0.20f, 0.12f, 0.02f);
 
             var view = holder.gameObject.AddComponent<PrestigeShopView>();

@@ -108,13 +108,13 @@ namespace FarmIdle.Tests
             CollectionAssert.AreEqual(new[]
             {
                 "GameManager", "PoolManager", "EconomyManager", "PlotCensus", "BackpackManager", "ProgressionManager",
-                "BuffManager", "FertilizerManager", "PrestigeManager", "OfflineManager", "MissionManager", "AchievementManager", "DailyRewardManager", "DecorationManager", "HelperManager", "SkinManager", "OrdersManager", "PlotStateManager", "SettingsManager", "TutorialManager", "SaveManager", "AdsManager", "OfferManager",
+                "BuffManager", "FertilizerManager", "PrestigeManager", "OfflineManager", "MissionManager", "AchievementManager", "DailyRewardManager", "DecorationManager", "HelperManager", "SkinManager", "OrdersManager", "DailyCropManager", "TruckManager", "PlotStateManager", "SettingsManager", "TutorialManager", "SaveManager", "AdsManager", "OfferManager",
                 "AudioManager", "HapticsManager", "AnalyticsManager", "PortalManager"
             }, order);
 
             // Las secciones nuevas se registraron después de las existentes (y el SaveManager las tiene todas): economía, progreso,
             // mochila, buffs y fertilizante (Fase 8) más ajustes y guía (Fase 9), prestigio, offline, misiones, logros y premio diario.
-            Assert.AreEqual(17, SaveManager.Instance.SaveableCount);   // F-18: más la sección "orders"; B-11: más "plots"
+            Assert.AreEqual(18, SaveManager.Instance.SaveableCount);   // F-18: más la sección "orders"; B-11: más "plots"; F-26: más "truck"
         }
 
         [UnityTest]

@@ -17,3 +17,7 @@ MonoBehaviour:
   cost: 60000
   bodyColor: {r: 0.85, g: 0.2, b: 0.18, a: 1}
   noseColor: {r: 1, g: 0.9, b: 0.5, a: 1}
+  hat: 1
+  pattern: 1
+  hatColor: {r: 0.62, g: 0.1, b: 0.1, a: 1}
+  accentColor: {r: 1, g: 0.92, b: 0.55, a: 1}

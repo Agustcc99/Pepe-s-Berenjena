@@ -117,6 +117,14 @@ namespace FarmIdle
         [SerializeField, Tooltip("F-18: los cultivos que pueden salir en un pedido, con su zona y su peso.")]
         private OrderCropRule[] orderCrops = OrderCropRule.Defaults();
 
+        [Header("Cultivo del día (IN-02)")]
+        [SerializeField, Range(0f, 2f), Tooltip("IN-02: cuánto más paga el cultivo del día (0,25 = +25 %). Se elige por fecha entre los cultivos de las zonas abiertas. 0 = apagado. PROVISORIO (B-05).")]
+        private float dailyCropBonus = 0.25f;
+
+        [Header("Camión de reparto")]
+        [SerializeField, Tooltip("Mejoras visuales del camión, en el orden en que se compran (el pad vende siempre la siguiente). Solo adorno.")]
+        private TruckSkinRule[] truckSkins = TruckSkinRule.Defaults();
+
         [Header("Progreso offline (B-01)")]
         [SerializeField, Range(0f, 1f), Tooltip("Qué fracción de lo que rendirían las parcelas cosechadas sin parar se acredita por el tiempo fuera (nadie cosecha ni vende).")]
         private float offlineEfficiency = 0.15f;
@@ -253,6 +261,8 @@ namespace FarmIdle
         public float OrderBigRefillSeconds => orderBigRefillSeconds;
         public int OrderSeedsPerSeasonCap => orderSeedsPerSeasonCap;
         public IReadOnlyList<OrderCropRule> OrderCrops => orderCrops;
+        public float DailyCropBonus => dailyCropBonus;
+        public IReadOnlyList<TruckSkinRule> TruckSkins => truckSkins;
         public float RareHarvestChance => rareHarvestChance;
         public float RareHarvestMultiplier => rareHarvestMultiplier;
         public System.Collections.Generic.IReadOnlyList<PrestigeShopItem> PrestigeShop => prestigeShop;

@@ -65,7 +65,7 @@ namespace FarmIdle
             if (crop == null || economy == null) return 0L;
 
             float bonus = OrderBoard.IsBig(slot) ? _config.OrderBigBonus : _config.OrderBonus;
-            return (long)Math.Round(_board[slot].Quantity * (double)economy.Pricing.FinalPrice(crop.SellPrice) * (1d + bonus));
+            return (long)Math.Round(_board[slot].Quantity * (double)economy.Pricing.FinalPrice(crop.SellPrice, crop.Id) * (1d + bonus));
         }
 
         // Semillas que daría ese pedido al completarse.

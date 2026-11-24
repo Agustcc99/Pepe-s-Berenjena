@@ -135,6 +135,7 @@ namespace FarmIdle.EditorTools
 
             var plotField = field.AddComponent<PlotField>();
             EditorUi.WireArray(plotField, "plots", plots);
+            DailyCropBuilder.AddMarkers(field.transform, plots);   // IN-02
             field.SetActive(false);
 
             var controller = zoneObject.AddComponent<ZoneController>();

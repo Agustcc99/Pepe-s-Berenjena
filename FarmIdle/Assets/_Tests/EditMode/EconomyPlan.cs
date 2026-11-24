@@ -49,14 +49,16 @@ namespace FarmIdle.Tests
             Zone("zone_north", 90f),
             Up("upgrade_growth", 106f),
             Up("upgrade_price", 124f),
-            Zone("zone_northwest", 143f),
-            Up("upgrade_growth", 166f),
-            Up("upgrade_price", 190f),
-            Zone("zone_northeast", 214f),
-            Up("upgrade_growth", 238f),
-            Up("upgrade_price", 262f),
-            Up("upgrade_offline", 280f),   // B-01 (tanda 2): el Almacén es una compra de fin de juego (3 h y 4 h de tope offline)
-            Up("upgrade_offline", 303f),
+            // IN-02: el cultivo del día (+25 %) acelera el final ~15 %: de aquí en adelante los minutos objetivo son los nuevos (antes 143, 166,
+            // 190, 214, 238, 262, 280 y 303). Hasta la compra 17 el plan original sigue valiendo.
+            Zone("zone_northwest", 122f),
+            Up("upgrade_growth", 140.5f),
+            Up("upgrade_price", 159f),
+            Zone("zone_northeast", 179f),
+            Up("upgrade_growth", 199f),
+            Up("upgrade_price", 219f),
+            Up("upgrade_offline", 234.5f),   // B-01 (tanda 2): el Almacén es una compra de fin de juego (3 h y 4 h de tope offline)
+            Up("upgrade_offline", 252f),
         };
 
         private static Entry Zone(string id, float minutes) { return new Entry { ZoneId = id, Minutes = minutes }; }

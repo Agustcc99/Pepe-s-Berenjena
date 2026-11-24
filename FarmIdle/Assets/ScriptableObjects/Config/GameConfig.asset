@@ -22,6 +22,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bebcd4a10d5f2d841b95ca7fc7b04047, type: 2}
   - {fileID: 11400000, guid: 793809a597a24fe4c8913a0b49b2f7bd, type: 2}
   - {fileID: 11400000, guid: 5dac8589070c0f64f8b3cf27fc42824a, type: 2}
+  - {fileID: 11400000, guid: a6dfa5bf0371655459ac00ab99b85f06, type: 2}
+  - {fileID: 11400000, guid: abf55177b8e94e14baac57c6effb4257, type: 2}
+  - {fileID: 11400000, guid: f2062c5fa401aff4796b36573138f542, type: 2}
   upgrades:
   - {fileID: 11400000, guid: 5269c9fe838a4a447b8e2eb79ae1742b, type: 2}
   - {fileID: 11400000, guid: d84d3bbf048403540a547b67416d4ff8, type: 2}
@@ -42,6 +45,9 @@ MonoBehaviour:
   perks:
   - {fileID: 11400000, guid: b13a697e4b3d16c4c902a1af63d5fa2f, type: 2}
   - {fileID: 11400000, guid: f3781ae10722d494e99c7dc3365f48eb, type: 2}
+  - {fileID: 11400000, guid: e2c99f9a43d106549960c280a500278f, type: 2}
+  - {fileID: 11400000, guid: ee3a14dc056ce8141b6625968252dfa2, type: 2}
+  - {fileID: 11400000, guid: a6c9267dd6343854a9946d754aba77b5, type: 2}
   levelBaseXp: 325
   maxLevel: 20
   maxMoveSpeedMultiplier: 1.5
@@ -131,6 +137,14 @@ MonoBehaviour:
   - cropId: sunflower
     zoneId: zone_northeast
     weight: 3
+  dailyCropBonus: 0.25
+  truckSkins:
+  - id: truck_red
+    cost: 4000
+  - id: truck_green
+    cost: 30000
+  - id: truck_gold
+    cost: 120000
   offlineEfficiency: 0.15
   offlineBaseCapSeconds: 7200
   offlineMaxCoinsPerHour: 15000

@@ -117,7 +117,7 @@ namespace FarmIdle
         {
             if (crop == null) throw new ArgumentNullException(nameof(crop));
 
-            long coins = _pricing.FinalPrice(crop.SellPrice);
+            long coins = _pricing.FinalPrice(crop.SellPrice, crop.Id);   // IN-02: con el extra si es el cultivo del día
             _wallet.Add(coins);
 
             SoldUnits++;
@@ -129,6 +129,11 @@ namespace FarmIdle
         // J-04: azar de la cosecha rara (0 a 1). Las pruebas lo reemplazan por uno fijo.
         public Func<float> RareRoll { get; set; } = () => UnityEngine.Random.value;
 
+        // F-24: probabilidad extra que suma el perk de Suerte (la fija ProgressionManager al aplicar los efectos).
+        private float _rareChanceBonus;
+        public float RareChanceBonus => _rareChanceBonus;
+        public void SetRareChanceBonus(float bonus) { _rareChanceBonus = Math.Max(0f, bonus); }
+
         // N-06: salió una cosecha rara (cultivo, monedas ya acreditadas). Para quien no ve el mundo (la analítica).
         public event Action<CropData, long> RareHarvested;
 
@@ -139,9 +144,11 @@ namespace FarmIdle
             if (crop == null || _config == null) return 0L;
 
             float chance = _config.RareHarvestChance;
-            if (chance <= 0f || RareRoll() >= chance) return 0L;
+            if (chance <= 0f) return 0L;   // apagado en el GameConfig: ni el perk de Suerte lo prende
+            chance = Math.Min(1f, chance + _rareChanceBonus);
+            if (RareRoll() >= chance) return 0L;
 
-            long bonus = (long)Math.Round(_pricing.FinalPrice(crop.SellPrice) * (double)_config.RareHarvestMultiplier);
+            long bonus = (long)Math.Round(_pricing.FinalPrice(crop.SellPrice, crop.Id) * (double)_config.RareHarvestMultiplier);
             if (bonus <= 0L) return 0L;
 
             _wallet.Add(bonus);

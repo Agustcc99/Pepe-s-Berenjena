@@ -16,6 +16,8 @@ namespace FarmIdle
         private float _buffMultiplier = 1f;
         private float _prestigeMultiplier = 1f;
         private float _charmMultiplier = 1f;
+        private string _dailyCropId = "";
+        private float _dailyBonus;
 
         // Multiplicador del encanto de las decoraciones compradas (1 = ninguna). Lo fija DecorationManager.
         public float CharmMultiplier => _charmMultiplier;
@@ -49,10 +51,28 @@ namespace FarmIdle
             _prestigeMultiplier = Validate(multiplier, nameof(multiplier));
         }
 
+        // IN-02: el cultivo del día paga un extra (0,5 = +50 %). Sin cultivo del día (id vacío) o con bonus 0 no cambia nada. Lo fija
+        // DailyCropManager.
+        public string DailyCropId => _dailyCropId;
+        public float DailyBonus => _dailyBonus;
+
+        public void SetDailyCrop(string cropId, float bonus)
+        {
+            _dailyCropId = cropId ?? "";
+            _dailyBonus = Validate(bonus, nameof(bonus));
+        }
+
         // El precio de una unidad con los multiplicadores actuales.
         public long FinalPrice(int basePrice)
         {
             return FinalPrice(basePrice, _upgradeMultiplier, _buffMultiplier, _prestigeMultiplier * _charmMultiplier);
+        }
+
+        // Igual, para un cultivo concreto: si es el del día suma su extra (IN-02). Sin asignaciones.
+        public long FinalPrice(int basePrice, string cropId)
+        {
+            float daily = _dailyBonus > 0f && _dailyCropId.Length > 0 && string.Equals(cropId, _dailyCropId, StringComparison.Ordinal) ? 1f + _dailyBonus : 1f;
+            return FinalPrice(basePrice, _upgradeMultiplier, _buffMultiplier, _prestigeMultiplier * _charmMultiplier * daily);
         }
 
         // La cuenta sola, sin estado: sirve para mostrar "cuánto pagaría" con otros multiplicadores (por ejemplo, el

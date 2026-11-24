@@ -52,7 +52,10 @@ namespace FarmIdle.EditorTools
 
             Phase3SceneBuilder.SaveMesh(BuildPad().ToMesh("SM_SellPad"), PadMeshPath);
             Phase3SceneBuilder.SaveMesh(BuildStand().ToMesh("SM_SellStand"), StandMeshPath);
-            Phase3SceneBuilder.SaveMesh(BuildTruck().ToMesh("SM_SellTruck"), TruckMeshPath);
+            for (int level = 0; level < TruckLevels; level++)
+            {
+                Phase3SceneBuilder.SaveMesh(BuildTruck(level).ToMesh(level == 0 ? "SM_SellTruck" : "SM_SellTruck_" + level), TruckMeshPathFor(level));
+            }
             Phase3SceneBuilder.SaveMesh(BuildCrate().ToMesh("SM_SellCrate"), CrateMeshPath);
             Phase3SceneBuilder.SaveMesh(BuildCoin().ToMesh("SM_Coin"), CoinMeshPath);
             CreateCoinPrefab();
@@ -243,10 +246,22 @@ namespace FarmIdle.EditorTools
 
         // El camión de reparto: cabina azul con ventanas y techo claro, capó, caja de madera abierta (para ver los cajones desde la cámara)
         // y ruedas. Mide 1,3 de ancho (X) por 3,9 de largo; la cabina mira a +Z (lejos de la cámara). Origen en el suelo, al centro.
-        private static PaletteMeshBuilder BuildTruck()
+        // El camión de fábrica es el nivel 0; cada mejora comprada en el pad del camión (TruckManager) es un nivel más y cambia de modelo:
+        //   1 rojo con franja y faros, 2 verde con toldo de lona, 3 dorado con baliza, escapes y llantas doradas. Todo con la paleta.
+        internal const int TruckLevels = 4;
+
+        internal static string TruckMeshPathFor(int level)
+        {
+            return level <= 0 ? TruckMeshPath : TruckMeshPath.Replace(".asset", "_" + level + ".asset");
+        }
+
+        private static PaletteMeshBuilder BuildTruck(int level)
         {
             var mesh = new PaletteMeshBuilder();
             Quaternion axisX = Quaternion.Euler(0f, 0f, 90f);
+
+            int cab = level == 1 ? Palette.TomatoRed : (level == 2 ? Palette.LeafDark : (level >= 3 ? Palette.WheatGold : Palette.Water));
+            int hub = level >= 3 ? Palette.WheatGold : Palette.Cream;
 
             mesh.AddBox(new Vector3(0f, 0.38f, 0f), new Vector3(1.1f, 0.16f, 3.9f), Quaternion.identity, Palette.SoilDark);   // chasis
 
@@ -255,7 +270,7 @@ namespace FarmIdle.EditorTools
                 foreach (float z in new[] { 1.1f, -1.05f })
                 {
                     mesh.AddCylinder(new Vector3(x, 0.3f, z), 0.3f, 0.22f, 12, axisX, Palette.SoilDark);
-                    mesh.AddCylinder(new Vector3(x + Mathf.Sign(x) * 0.02f, 0.3f, z), 0.14f, 0.22f, 8, axisX, Palette.Cream);
+                    mesh.AddCylinder(new Vector3(x + Mathf.Sign(x) * 0.02f, 0.3f, z), 0.14f, 0.22f, 8, axisX, hub);
                 }
             }
 
@@ -268,12 +283,54 @@ namespace FarmIdle.EditorTools
             mesh.AddBox(new Vector3(0f, 0.42f, -1.98f), new Vector3(1.2f, 0.12f, 0.1f), Quaternion.identity, Palette.Stone);   // paragolpes
 
             // Cabina y capó.
-            mesh.AddBox(new Vector3(0f, 1f, 0.95f), new Vector3(1.25f, 0.95f, 0.95f), Quaternion.identity, Palette.Water);
+            mesh.AddBox(new Vector3(0f, 1f, 0.95f), new Vector3(1.25f, 0.95f, 0.95f), Quaternion.identity, cab);
             mesh.AddBox(new Vector3(0f, 1.5f, 0.95f), new Vector3(1.32f, 0.07f, 1.05f), Quaternion.identity, Palette.Cream);
             mesh.AddBox(new Vector3(-0.63f, 1.2f, 0.95f), new Vector3(0.04f, 0.34f, 0.6f), Quaternion.identity, Palette.Cream);
             mesh.AddBox(new Vector3(0.63f, 1.2f, 0.95f), new Vector3(0.04f, 0.34f, 0.6f), Quaternion.identity, Palette.Cream);
             mesh.AddBox(new Vector3(0f, 1.2f, 0.47f), new Vector3(0.8f, 0.3f, 0.04f), Quaternion.identity, Palette.Cream);
-            mesh.AddBox(new Vector3(0f, 0.8f, 1.7f), new Vector3(1.2f, 0.5f, 0.55f), Quaternion.identity, Palette.Water);
+            mesh.AddBox(new Vector3(0f, 0.8f, 1.7f), new Vector3(1.2f, 0.5f, 0.55f), Quaternion.identity, cab);
+
+            if (level >= 1)
+            {
+                // Franja clara a lo largo de la caja y faros delanteros.
+                foreach (float x in new[] { -0.66f, 0.66f })
+                {
+                    mesh.AddBox(new Vector3(x, 0.8f, -0.8f), new Vector3(0.03f, 0.1f, 2.2f), Quaternion.identity, Palette.Cream);
+                }
+
+                foreach (float x in new[] { -0.38f, 0.38f })
+                {
+                    mesh.AddBox(new Vector3(x, 0.84f, 1.99f), new Vector3(0.22f, 0.16f, 0.04f), Quaternion.identity, Palette.WheatGold);
+                }
+            }
+
+            if (level >= 2)
+            {
+                // Toldo de lona sobre la caja: cuatro postes y un techo apenas inclinado.
+                foreach (float x in new[] { -0.61f, 0.61f })
+                {
+                    foreach (float z in new[] { -1.82f, 0.2f })
+                    {
+                        mesh.AddStanding(new Vector3(x, 0.97f, z), new Vector3(0.06f, 0.6f, 0.06f), Quaternion.identity, Palette.Wood);
+                    }
+                }
+
+                mesh.AddBox(new Vector3(0f, 1.6f, -0.8f), new Vector3(1.5f, 0.05f, 2.4f), Quaternion.Euler(3f, 0f, 0f), Palette.WheatStraw);
+                mesh.AddBox(new Vector3(0f, 1.6f, -2.0f), new Vector3(1.5f, 0.12f, 0.06f), Quaternion.identity, Palette.TomatoRed);
+            }
+
+            if (level >= 3)
+            {
+                // Baliza en el techo de la cabina, dos escapes cromados detrás y paragolpes dorado.
+                mesh.AddCylinder(new Vector3(0f, 1.62f, 0.95f), 0.14f, 0.12f, 10, Quaternion.identity, Palette.TomatoRed);
+                foreach (float x in new[] { -0.5f, 0.5f })
+                {
+                    mesh.AddStanding(new Vector3(x, 1.0f, 0.38f), new Vector3(0.07f, 0.9f, 0.07f), Quaternion.identity, Palette.Stone);
+                }
+
+                mesh.AddBox(new Vector3(0f, 0.42f, -1.98f), new Vector3(1.24f, 0.14f, 0.12f), Quaternion.identity, Palette.WheatGold);
+            }
+
             return mesh;
         }
 
@@ -389,6 +446,10 @@ namespace FarmIdle.EditorTools
             SerializedProperty list = serialized.FindProperty("crates");
             list.arraySize = crates.Length;
             for (int i = 0; i < crates.Length; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = crates[i];
+
+            SerializedProperty skins = serialized.FindProperty("skinMeshes");   // un modelo por nivel de mejora (TruckManager)
+            skins.arraySize = TruckLevels;
+            for (int i = 0; i < TruckLevels; i++) skins.GetArrayElementAtIndex(i).objectReferenceValue = Phase2SceneBuilder.LoadRequired<Mesh>(TruckMeshPathFor(i));
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 

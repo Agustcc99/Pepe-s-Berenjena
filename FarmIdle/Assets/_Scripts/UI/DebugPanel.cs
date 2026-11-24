@@ -435,7 +435,7 @@ namespace FarmIdle
         // "Progreso: zonas 1/2 | Crec 0/3 Moch 2/3 Vel 0/3 Prec 1/3": zonas abiertas y nivel de cada mejora.
         private void AppendProgress(StringBuilder text)
         {
-            text.Append("\nProgreso: zonas ").Append(_progression.UnlockedZoneCount).Append('/').Append(_progression.Zones.Count);
+            text.Append("\nProgreso: zonas ").Append(_progression.UnlockedZoneCount).Append('/').Append(_progression.AvailableZoneCount);
 
             IReadOnlyList<UpgradeData> upgrades = _progression.Upgrades;
             for (int i = 0; i < upgrades.Count; i++)

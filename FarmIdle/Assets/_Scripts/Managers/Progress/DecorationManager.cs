@@ -46,7 +46,7 @@ namespace FarmIdle
             get
             {
                 ProgressionManager progression = ProgressionManager.Instance;
-                return progression == null || progression.UnlockedZoneCount >= progression.Zones.Count;
+                return progression == null || progression.UnlockedZoneCount >= progression.AvailableZoneCount;   // F-24: las granjas de temporada que aún no aparecieron no cuentan
             }
         }
 

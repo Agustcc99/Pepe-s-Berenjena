@@ -43,6 +43,11 @@ namespace FarmIdle
         private int _shown;
         private bool _wired;
         private bool _popping;
+        private TruckManager _truck;
+        private MeshFilter _bodyFilter;
+
+        [SerializeField, Tooltip("Los modelos del camión por nivel (0 = de fábrica, 1.. = las mejoras que se compran en el pad del camión).")]
+        private Mesh[] skinMeshes = new Mesh[0];
 
         // Para pruebas y depuración.
         public int ShownCrates => _shown;
@@ -51,6 +56,7 @@ namespace FarmIdle
         private void OnEnable()
         {
             _wired = false;
+            HookSkin();
             if (zone == null || body == null) return;
 
             _parked = body.localPosition;
@@ -64,8 +70,31 @@ namespace FarmIdle
             _wired = true;
         }
 
+        // Modelo del camión según las mejoras compradas (TruckManager). Sin el manager o sin modelos queda el de la escena.
+        private void HookSkin()
+        {
+            _truck = TruckManager.Instance;
+            _bodyFilter = body != null ? body.GetComponent<MeshFilter>() : null;
+            if (_truck != null) _truck.Changed += ApplySkin;
+            ApplySkin();
+        }
+
+        private void ApplySkin()
+        {
+            if (_truck == null || _bodyFilter == null || skinMeshes == null || skinMeshes.Length == 0) return;
+
+            Mesh mesh = skinMeshes[Mathf.Clamp(_truck.Owned, 0, skinMeshes.Length - 1)];
+            if (mesh != null && _bodyFilter.sharedMesh != mesh) _bodyFilter.sharedMesh = mesh;
+        }
+
         private void OnDisable()
         {
+            if (_truck != null)
+            {
+                _truck.Changed -= ApplySkin;
+                _truck = null;
+            }
+
             if (!_wired) return;
 
             zone.Sold -= OnSold;

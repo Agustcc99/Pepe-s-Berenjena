@@ -21,12 +21,12 @@ namespace FarmIdle.EditorTools
         // Cada sector deja un pasillo libre al norte (la puerta da a él) y los pads al fondo: entrar no obliga a pisar un pad (playtest Q-01).
         // Las vallas tienen colisión, así que se llega a cada sector solo por su puerta.
         internal const float PlazaNorthZ = -10.2f;   // la valla norte, con la entrada
-        internal const float PlazaSouthZ = -27f;
+        internal const float PlazaSouthZ = -30.8f;   // IN-04: -3,8 más al sur por la segunda fila de perks (antes -27)
         internal const float PlazaHalfWidth = 11.9f;   // F-17: una tercera columna (x ±10,3, pads de 2,6) a cada lado, con la valla pasando el borde del pad
         internal const float AvenueHalfWidth = 1.2f;   // la entrada tiene el mismo ancho que la avenida
         internal const float DoorWidth = 1.8f;
         internal const float DividerZ = -16.4f;        // el divisor entre las dos bandas (oeste y este)
-        internal const float EastDividerZ = -22f;      // el divisor entre Puntos y Almacén
+        internal const float EastDividerZ = -25.8f;    // el divisor entre Puntos y Almacén (antes -22; Puntos tiene dos filas desde IN-04)
 
         // Dónde va cada pad. Dos columnas por sector (a 3,6 de paso, con pads de 2,6) y el Almacén, con un solo pad, en el medio.
         internal const float WestFarX = -6.7f;
@@ -42,7 +42,8 @@ namespace FarmIdle.EditorTools
         internal const float AttributeRow1Z = -20.6f;  // Atributos: Crecimiento y Precio
         internal const float AttributeRow2Z = -24.4f;  // Atributos: Velocidad y Mochila
         internal const float PointsRowZ = -19.8f;      // Puntos (perks)
-        internal const float StoreRowZ = -25.0f;       // Almacén
+        internal const float PointsRow2Z = -23.6f;     // Puntos, segunda fila (IN-04: Regateo y Mano verde)
+        internal const float StoreRowZ = -28.8f;       // Almacén
         private const string PlazaMeshPath = MeshesFolder + "/SM_PlazaDecor.asset";
 
         private sealed class SectorSpec
@@ -59,8 +60,8 @@ namespace FarmIdle.EditorTools
             new SectorSpec { Key = "plaza.videos", West = true, NorthZ = PlazaNorthZ, SouthZ = DividerZ, DoorZ = -11.4f, FarX = WestFarX, Accent = Palette.Water },
             new SectorSpec { Key = "plaza.attributes", West = true, NorthZ = DividerZ, SouthZ = PlazaSouthZ, DoorZ = -17.8f, FarX = SkinX, Accent = Palette.WheatGold },
             new SectorSpec { Key = "plaza.fertilizer", West = false, NorthZ = PlazaNorthZ, SouthZ = DividerZ, DoorZ = -11.4f, FarX = EastFarX, Accent = Palette.LeafLight },
-            new SectorSpec { Key = "plaza.points", West = false, NorthZ = DividerZ, SouthZ = EastDividerZ, DoorZ = -17.45f, FarX = EastFarX, Accent = Palette.TomatoRed },
-            new SectorSpec { Key = "plaza.storage", West = false, NorthZ = EastDividerZ, SouthZ = PlazaSouthZ, DoorZ = -23.05f, FarX = HelperX, Accent = Palette.CarrotOrange },
+            new SectorSpec { Key = "plaza.points", West = false, NorthZ = DividerZ, SouthZ = EastDividerZ, DoorZ = -17.45f, FarX = HelperX, Accent = Palette.TomatoRed },   // F-24: tercera columna (Suerte)
+            new SectorSpec { Key = "plaza.storage", West = false, NorthZ = EastDividerZ, SouthZ = PlazaSouthZ, DoorZ = -26.85f, FarX = HelperX, Accent = Palette.CarrotOrange },
         };
 
         private static string PadMeshPath(ProgressionData.UpgradeSpec upgrade) { return MeshesFolder + "/SM_UpgradePad_" + upgrade.Kind + ".asset"; }
@@ -191,9 +192,7 @@ namespace FarmIdle.EditorTools
 
             mesh.AddBox(new Vector3(0f, 2.1f, PlazaNorthZ), new Vector3(AvenueHalfWidth * 2f + 0.3f, 0.2f, 0.2f), Quaternion.identity, Palette.Wood);
             mesh.AddBox(new Vector3(0f, 1.6f, PlazaNorthZ), new Vector3(1.5f, 0.8f, 0.08f), Quaternion.identity, Palette.Cream);
-            Quaternion faceCamera = Quaternion.Euler(90f, 0f, 0f);
-            mesh.AddCylinder(new Vector3(0f, 1.6f, PlazaNorthZ - 0.05f), 0.28f, 0.04f, 14, faceCamera, Palette.WheatStraw);
-            mesh.AddCylinder(new Vector3(0f, 1.6f, PlazaNorthZ - 0.07f), 0.21f, 0.04f, 14, faceCamera, Palette.WheatGold);
+            // IN-02: el tablón de la entrada anuncia el cultivo del día (DailyCropSign pone el texto; antes llevaba una moneda dorada).
             return mesh;
         }
 
@@ -286,6 +285,7 @@ namespace FarmIdle.EditorTools
 
             BuildPlazaWallColliders(plaza.transform);
             BuildPlazaSignLabels(plaza.transform);
+            DailyCropBuilder.BuildSign(plaza.transform, new Vector3(0f, 1.6f, PlazaNorthZ - 0.07f));   // IN-02: el cartel de la entrada
         }
 
         private static void BuildUpgradePadObject(Transform parent, ProgressionData.UpgradeSpec spec)

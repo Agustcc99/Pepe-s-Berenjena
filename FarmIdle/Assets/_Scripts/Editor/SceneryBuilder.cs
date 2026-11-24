@@ -17,7 +17,7 @@ namespace FarmIdle.EditorTools
 
         // El área jugable (hasta donde llega el jugador) y el grosor del bosque de cada lado. La cámara mira al norte
         // inclinada 55°: hacia el norte se ve lejos (bosque profundo) y hacia el sur casi nada (bosque angosto).
-        internal const float WestX = -22.5f, EastX = 22.5f, SouthZ = -30.5f, NorthZ = 26.5f;
+        internal const float WestX = -22.5f, EastX = 22.5f, SouthZ = -34.5f, NorthZ = 38.5f;   // F-24: +12 al norte para la tercera fila de granjas (z 27 a 35)
         private const float SideDepth = 11f, NorthDepth = 20f, SouthDepth = 6f;
 
         private static readonly string[] Chunks = { "North", "South", "East", "West" };
@@ -213,9 +213,13 @@ namespace FarmIdle.EditorTools
             new Vector4(-15.8f, -3.6f, 2.2f, 11.8f),      // zona oeste + portón
             new Vector4(3.6f, 15.8f, 2.2f, 11.8f),        // zona este + portón
             new Vector4(-15.8f, 15.8f, 14.2f, 23.8f),     // las tres zonas del norte + portones
-            new Vector4(-13f, 13f, -30.5f, -9.4f),        // la plaza de mejoras y los pads de perk detrás
-            new Vector4(-21.5f, -12f, -26f, -9.8f),       // decoraciones del oeste
-            new Vector4(12f, 21.5f, -26f, -9.8f),         // decoraciones del este
+            new Vector4(-15.8f, 15.8f, 23.8f, 35.8f),     // F-24: la tercera fila (granjas de temporada, portones y bandera)
+            new Vector4(-13f, 13f, -34.5f, -9.4f),        // la plaza de mejoras y los pads de perk detrás
+            new Vector4(15.8f, 19.6f, 4.4f, 9.6f),        // F-23: banco (este)
+            new Vector4(-21.6f, -15.2f, 3.6f, 10.4f),     // F-23: estanque (oeste)
+            new Vector4(15.6f, 21f, 16.4f, 22.6f),        // F-23: molino (este)
+            new Vector4(-21.8f, -15.6f, 16.4f, 22.6f),    // F-23: fardo de heno (oeste)
+            new Vector4(-13.6f, -8.4f, 11.8f, 14.2f),     // F-23: parterre de flores (pasillo entre filas)
             new Vector4(-10f, -6f, -6.5f, 3f),            // símbolos de oferta (oeste)
             new Vector4(6f, 10f, -6.5f, 3f),              // símbolos de oferta (este)
             new Vector4(-11.6f, -2.2f, -9.6f, -4.6f),     // cartel de pedidos y sus pads (F-18)

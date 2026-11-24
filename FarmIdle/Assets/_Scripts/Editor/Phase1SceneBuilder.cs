@@ -79,6 +79,8 @@ namespace FarmIdle.EditorTools
             CreatePlayerPart(PrimitiveType.Cylinder, "SombreroAla", visual.transform, new Vector3(0f, 0.8f, 0f), new Vector3(1.25f, 0.02f, 1.25f), hatMaterial);
             CreatePlayerPart(PrimitiveType.Cylinder, "SombreroCopa", visual.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.68f, 0.1f, 0.68f), hatMaterial);
 
+            BuildSkinParts(visual.transform, hatMaterial);
+
             // Manos y pies sueltos (estilo muñeco): cuelgan de la raíz y los mueve PlayerAnimator. Llevan el color de la nariz (y de la skin).
             var footScale = new Vector3(0.3f, 0.2f, 0.46f);
             var handScale = new Vector3(0.26f, 0.26f, 0.26f);
@@ -91,6 +93,86 @@ namespace FarmIdle.EditorTools
             EditorUi.Wire(animator, ("body", visual.transform), ("leftFoot", leftFoot), ("rightFoot", rightFoot), ("leftHand", leftHand), ("rightHand", rightHand));
 
             return player;
+        }
+
+        // IN-04: sombreros y diseños de las skins. Cada uno es un grupo apagado ("Hat_<Nombre>", "Pat_<Nombre>") colgado del cuerpo; PlayerSkinView
+        // prende el de la skin puesta y lo pinta (las piezas cuyo nombre termina en "Acc" van con el color de detalle). Nada se crea en juego.
+        // Medidas en el espacio del cuerpo (cápsula de radio 0,5 y alto 2, el frente es +Z). Cilindro: x/z = diámetro, y = mitad del alto.
+        private static void BuildSkinParts(Transform visual, Material material)
+        {
+            Transform cap = SkinGroup(visual, "Hat_" + SkinHat.Cap);
+            SkinPart(PrimitiveType.Sphere, "Dome", cap, new Vector3(0f, 0.8f, 0f), new Vector3(0.98f, 0.6f, 0.98f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cube, "VisorAcc", cap, new Vector3(0f, 0.76f, 0.6f), new Vector3(0.62f, 0.05f, 0.5f), new Vector3(10f, 0f, 0f), material);
+
+            Transform beanie = SkinGroup(visual, "Hat_" + SkinHat.Beanie);
+            SkinPart(PrimitiveType.Sphere, "Dome", beanie, new Vector3(0f, 0.78f, 0f), new Vector3(1.0f, 0.75f, 1.0f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cylinder, "Cuff", beanie, new Vector3(0f, 0.64f, 0f), new Vector3(0.98f, 0.07f, 0.98f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Sphere, "PompomAcc", beanie, new Vector3(0f, 1.16f, 0f), new Vector3(0.26f, 0.26f, 0.26f), Vector3.zero, material);
+
+            Transform sprout = SkinGroup(visual, "Hat_" + SkinHat.Sprout);
+            SkinPart(PrimitiveType.Cylinder, "StemAcc", sprout, new Vector3(0f, 1.1f, 0f), new Vector3(0.07f, 0.1f, 0.07f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Sphere, "LeafL", sprout, new Vector3(-0.17f, 1.24f, 0f), new Vector3(0.36f, 0.08f, 0.2f), new Vector3(0f, 0f, 25f), material);
+            SkinPart(PrimitiveType.Sphere, "LeafR", sprout, new Vector3(0.17f, 1.24f, 0f), new Vector3(0.36f, 0.08f, 0.2f), new Vector3(0f, 0f, -25f), material);
+
+            Transform topHat = SkinGroup(visual, "Hat_" + SkinHat.TopHat);
+            SkinPart(PrimitiveType.Cylinder, "Brim", topHat, new Vector3(0f, 0.86f, 0f), new Vector3(1.0f, 0.02f, 1.0f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cylinder, "Tube", topHat, new Vector3(0f, 1.16f, 0f), new Vector3(0.62f, 0.3f, 0.62f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cylinder, "BandAcc", topHat, new Vector3(0f, 0.95f, 0f), new Vector3(0.64f, 0.06f, 0.64f), Vector3.zero, material);
+
+            Transform flower = SkinGroup(visual, "Hat_" + SkinHat.Flower);   // el sombrero de paja se queda; esto va encima
+            SkinPart(PrimitiveType.Cylinder, "Petals", flower, new Vector3(0.26f, 1.04f, 0.12f), new Vector3(0.5f, 0.03f, 0.5f), new Vector3(0f, 0f, -12f), material);
+            SkinPart(PrimitiveType.Sphere, "CenterAcc", flower, new Vector3(0.27f, 1.09f, 0.12f), new Vector3(0.18f, 0.18f, 0.18f), Vector3.zero, material);
+
+            Transform crown = SkinGroup(visual, "Hat_" + SkinHat.Crown);
+            SkinPart(PrimitiveType.Cylinder, "Band", crown, new Vector3(0f, 0.98f, 0f), new Vector3(0.72f, 0.1f, 0.72f), Vector3.zero, material);
+            Vector2[] spikes = { new Vector2(0.28f, 0f), new Vector2(-0.28f, 0f), new Vector2(0f, 0.28f), new Vector2(0f, -0.28f) };
+            for (int i = 0; i < spikes.Length; i++)
+            {
+                SkinPart(PrimitiveType.Cube, "Spike" + i, crown, new Vector3(spikes[i].x, 1.18f, spikes[i].y), new Vector3(0.15f, 0.26f, 0.15f), new Vector3(0f, 45f, 0f), material);
+            }
+
+            SkinPart(PrimitiveType.Sphere, "GemAcc", crown, new Vector3(0f, 0.99f, 0.37f), new Vector3(0.15f, 0.15f, 0.15f), Vector3.zero, material);
+
+            Transform stripe = SkinGroup(visual, "Pat_" + SkinPattern.Stripe);
+            SkinPart(PrimitiveType.Cylinder, "BeltAcc", stripe, new Vector3(0f, -0.1f, 0f), new Vector3(1.04f, 0.07f, 1.04f), Vector3.zero, material);
+
+            Transform scarf = SkinGroup(visual, "Pat_" + SkinPattern.Scarf);
+            SkinPart(PrimitiveType.Cylinder, "NeckAcc", scarf, new Vector3(0f, 0.43f, 0f), new Vector3(1.03f, 0.09f, 1.03f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cube, "TailAcc", scarf, new Vector3(0.24f, 0.18f, 0.5f), new Vector3(0.16f, 0.5f, 0.08f), new Vector3(0f, 0f, -8f), material);
+
+            Transform overalls = SkinGroup(visual, "Pat_" + SkinPattern.Overalls);
+            SkinPart(PrimitiveType.Cube, "BibAcc", overalls, new Vector3(0f, -0.08f, 0.52f), new Vector3(0.54f, 0.5f, 0.1f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cube, "StrapLAcc", overalls, new Vector3(-0.2f, 0.28f, 0.47f), new Vector3(0.09f, 0.5f, 0.07f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cube, "StrapRAcc", overalls, new Vector3(0.2f, 0.28f, 0.47f), new Vector3(0.09f, 0.5f, 0.07f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cube, "BackAcc", overalls, new Vector3(0f, -0.1f, -0.52f), new Vector3(0.54f, 0.34f, 0.1f), Vector3.zero, material);   // la espalda, que es lo que más ve la cámara
+            SkinPart(PrimitiveType.Cube, "BackStrapLAcc", overalls, new Vector3(-0.2f, 0.26f, -0.47f), new Vector3(0.09f, 0.5f, 0.07f), Vector3.zero, material);
+            SkinPart(PrimitiveType.Cube, "BackStrapRAcc", overalls, new Vector3(0.2f, 0.26f, -0.47f), new Vector3(0.09f, 0.5f, 0.07f), Vector3.zero, material);
+
+            Transform dots = SkinGroup(visual, "Pat_" + SkinPattern.Dots);
+            // Adelante y atrás: la cámara mira al jugador desde atrás casi todo el tiempo.
+            Vector3[] spots =
+            {
+                new Vector3(0f, 0.2f, 0.49f), new Vector3(-0.28f, -0.1f, 0.41f), new Vector3(0.28f, -0.1f, 0.41f), new Vector3(0f, -0.38f, 0.49f),
+                new Vector3(0f, 0.2f, -0.49f), new Vector3(-0.28f, -0.1f, -0.41f), new Vector3(0.28f, -0.1f, -0.41f), new Vector3(0f, -0.38f, -0.49f),
+            };
+            for (int i = 0; i < spots.Length; i++)
+            {
+                SkinPart(PrimitiveType.Sphere, "Dot" + i + "Acc", dots, spots[i], new Vector3(0.17f, 0.17f, 0.17f), Vector3.zero, material);
+            }
+        }
+
+        private static Transform SkinGroup(Transform visual, string name)
+        {
+            var group = new GameObject(name);
+            group.transform.SetParent(visual, false);
+            group.SetActive(false);
+            return group.transform;
+        }
+
+        private static void SkinPart(PrimitiveType type, string name, Transform group, Vector3 position, Vector3 scale, Vector3 eulerAngles, Material material)
+        {
+            Transform part = CreatePlayerPart(type, name, group, position, scale, material);
+            part.localRotation = Quaternion.Euler(eulerAngles);
         }
 
         // Una pieza del muñeco: primitiva sin collider (bloquearía al CharacterController) y sin sombra propia que recibir de más.

@@ -34,20 +34,20 @@ settings.close,Cerrar,Close
 hud.level_short,Nv,Lv
 hud.xp,XP,XP
 hud.level_up,¡Nivel {0}!,Level {0}!
-hud.points_one,{0} punto: ¡elegí un perk en la plaza!,{0} point: pick a perk at the plaza!
-hud.points_many,{0} puntos: ¡elegí un perk en la plaza!,{0} points: pick a perk at the plaza!
+hud.points_one,{0} punto: ¡mejorá un atributo en la plaza!,{0} point: upgrade an attribute at the plaza!
+hud.points_many,{0} puntos: ¡mejorá un atributo en la plaza!,{0} points: upgrade an attribute at the plaza!
 hud.fertilizer,Fertilizante,Fertilizer
-season.button,¡Nueva temporada!,New season!
+season.button,Reiniciar con bonus,Restart with bonus
 season.title,Nueva temporada,New season
-season.body,"Empezás de cero: monedas, zonas y mejoras vuelven al inicio.\nTus ventas pasan a pagar x{0} (ahora x{1}).\nGanás {2} semillas doradas para la tienda.\nConservás tu nivel, tus perks, el fertilizante y las mejoras de la tienda.","You start over: coins, zones and upgrades go back to the beginning.\nYour sales will pay x{0} (now x{1}).\nYou earn {2} golden seeds for the shop.\nYou keep your level, perks, fertilizer and shop upgrades."
-season.yes,¡Empezar!,Start!
-season.no,Todavía no,Not yet
+season.body,"Volvés a empezar la granja, pero más fuerte. Es opcional: podés seguir jugando sin reiniciar.\n\n<b><color=orange>SE REINICIA</color></b>\nMonedas, zonas abiertas, mejoras de la granja y mochila.\n\n<b><color=green>TE QUEDA</color></b>\nTu nivel, tus atributos (Fuerza y Velocidad), el fertilizante y las mejoras de semillas.\n\n<b><color=yellow>GANÁS</color></b>\nTodo se vende x{0} (ahora x{1}), para siempre.\n+{2} semillas doradas para mejoras permanentes.","You start the farm over, but stronger. It's optional: you can keep playing without restarting.\n\n<b><color=orange>RESETS</color></b>\nCoins, open zones, farm upgrades and backpack.\n\n<b><color=green>YOU KEEP</color></b>\nYour level, attributes (Strength and Speed), fertilizer and seed upgrades.\n\n<b><color=yellow>YOU GET</color></b>\nEverything sells x{0} (now x{1}), forever.\n+{2} golden seeds for permanent upgrades."
+season.yes,¡Reiniciar!,Restart!
+season.no,Cancelar,Cancel
 shop.button,Semillas,Seeds
 shop.title,Semillas doradas,Golden seeds
 shop.seeds,Semillas: {0},Seeds: {0}
 shop.close,Cerrar,Close
-shop.row,"{0}  ({1}/{2})\n{3}\nCosto: {4}","{0}  ({1}/{2})\n{3}\nCost: {4}"
-shop.row_max,"{0}  (máx.)\n{1}","{0}  (max)\n{1}"
+shop.row,"<b>{0}</b> ({1}/{2}) · Costo: {4}\n<size=80%>{3}</size>","<b>{0}</b> ({1}/{2}) · Cost: {4}\n<size=80%>{3}</size>"
+shop.row_max,"<b>{0}</b> (máx.)\n<size=80%>{1}</size>","<b>{0}</b> (max)\n<size=80%>{1}</size>"
 shop.name.shop_coins,Monedas iniciales,Starting coins
 shop.desc.shop_coins,Cada temporada arrancás con más monedas,Start each season with more coins
 shop.name.shop_growth,Cultivos veloces,Fast crops
@@ -127,12 +127,18 @@ data.zone_west,Huerto Dorado,Golden Orchard
 data.zone_north,Huerta del Norte,Northern Garden
 data.zone_northwest,Chacra del Noroeste,Northwest Farm
 data.zone_northeast,Quinta del Nordeste,Northeast Grove
+data.zone_dawn,Campo del Alba,Dawn Field
+data.zone_oak,Quinta del Roble,Oak Grove
+data.zone_estate,Estancia Dorada,Golden Estate
 data.upgrade_capacity,Mochila,Backpack
 data.upgrade_speed,Velocidad,Speed
 data.upgrade_growth,Crecimiento,Growth
 data.upgrade_price,Precio,Price
 data.perk_strength,Fuerza,Strength
 data.perk_speed,Velocidad,Speed
+data.perk_luck,Suerte,Luck
+data.perk_barter,Regateo,Haggling
+data.perk_greenthumb,Mano verde,Green thumb
 data.reward_turbo,Turbo,Turbo
 data.reward_fertilizer,Fertilizante,Fertilizer
 data.reward_offline_double,Duplicar ganancia,Double earnings
@@ -204,3 +210,10 @@ guide.can_buy,¡Te alcanza! Comprá acá,You can afford this!
 settings.control_floating,Control: Flotante,Controls: Floating
 settings.control_fixed,Control: Fijo,Controls: Fixed
 backpack.full_cheer,¡Llena!,Full!
+pad.truck,Mejorar el camión,Upgrade the truck
+pad.truck_done,Camión al máximo,Truck maxed out
+truck.truck_red,Camión rojo,Red truck
+truck.truck_green,Camión con toldo,Canvas truck
+truck.truck_gold,Camión dorado,Golden truck
+daily.sign,HOY +{0} %<br>{1},TODAY +{0}%<br>{1}
+daily.sign_none,Cultivo del día,Crop of the day

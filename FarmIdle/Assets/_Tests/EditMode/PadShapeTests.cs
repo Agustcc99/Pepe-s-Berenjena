@@ -13,7 +13,7 @@ namespace FarmIdle.Tests
         private static readonly string[] PadMeshes =
         {
             "SM_UpgradePad_GrowthSpeed", "SM_UpgradePad_BackpackCapacity", "SM_UpgradePad_MoveSpeed", "SM_UpgradePad_SellPrice", "SM_UpgradePad_OfflineCap",
-            "SM_PerkPad_BackpackCapacity", "SM_PerkPad_MoveSpeed",
+            "SM_PerkPad_BackpackCapacity", "SM_PerkPad_MoveSpeed", "SM_PerkPad_RareChance", "SM_PerkPad_SellPrice", "SM_PerkPad_GrowthSpeed",
             "SM_Reward_Use", "SM_Reward_Buy", "SM_Reward_Video", "SM_Reward_Turbo", "SM_Reward_Decor", "SM_Reward_Helper", "SM_Reward_Skin", "SM_Reward_Order",
             "SM_ZoneGate", "SM_SellPad"
         };

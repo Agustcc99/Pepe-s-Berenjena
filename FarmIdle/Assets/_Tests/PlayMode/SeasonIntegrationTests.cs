@@ -150,7 +150,7 @@ namespace FarmIdle.Tests
 
             // Una zona abierta jugando: al completarse el pago su portón se achica y se apaga (y apagado no escucharía el reinicio).
             ProgressionManager progression = ProgressionManager.Instance;
-            ZoneController controller = All<ZoneController>().First();
+            ZoneController controller = All<ZoneController>().First(zone => zone.Zone.RequiredSeason == 0);   // F-24: una de las de siempre
             ZoneUnlockPad gate = controller.GetComponentsInChildren<ZoneUnlockPad>(true).First(pad => pad.Zone == controller.Zone);
             EconomyManager.Instance.AddCoins(progression.CostOf(controller.Zone));
             Assert.Greater(progression.TryPay(controller.Zone, progression.CostOf(controller.Zone)), 0L);
@@ -173,7 +173,8 @@ namespace FarmIdle.Tests
 
             foreach (ZoneController zone in All<ZoneController>())
             {
-                Assert.IsTrue(zone.LockedRoot.activeSelf, zone.name + ": vuelve a verse cerrada.");
+                // F-24: las granjas de temporada que todavía no aparecieron no se ven (en la temporada 1 solo se suma el Campo del Alba).
+                Assert.AreEqual(progression.IsZoneAvailable(zone.Zone), zone.LockedRoot.activeSelf, zone.name + ": vuelve a verse cerrada (si existe esta temporada).");
                 Assert.IsFalse(zone.UnlockedRoot.activeSelf, zone.name + ": sus parcelas se apagan.");
             }
 
